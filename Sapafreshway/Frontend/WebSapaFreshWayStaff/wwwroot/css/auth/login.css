@@ -1,0 +1,213 @@
+﻿/* =============== GLOBAL =============== */
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #f3f4f6;
+}
+
+/* =============== CONTAINER =============== */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 60px;
+}
+
+/* =============== LOGO SECTION =============== */
+.logo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    flex-shrink: 0;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+/* =============== LOGIN SECTION =============== */
+.login-section {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* =============== LEFT SECTION =============== */
+.left-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eaeaea;
+}
+
+.background-image {
+    width: 75%;
+    height: 50%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* =============== RIGHT SECTION =============== */
+.right-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eaeaea;
+}
+
+.login-box {
+    width: 600px;
+    background-color: #fff;
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+    .login-box .welcome-header {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+    }
+
+    .login-box h2 {
+        font-size: 26px;
+        color: #333;
+        font-weight: 600;
+        margin: 0;
+        display: inline-block;
+    }
+
+    .login-box h3 {
+        font-size: 28px;
+        color: var(--primary-500, #FF6B6B);
+        font-weight: 800;
+        margin: 0;
+        display: inline-block;
+    }
+
+    .login-box h3 span {
+        color: var(--primary-500, #FF6B6B);
+    }
+
+/* =============== FORM ELEMENTS =============== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    padding: 10px 15px;
+    transition: all 0.2s;
+}
+
+    .input-wrapper {
+        border: 1px solid var(--neutral-gray-300, #E0E0E0);
+    }
+
+    .input-wrapper:focus-within {
+        border: 1px solid var(--primary-500, #FF6B6B);
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    .input-wrapper i {
+        font-size: 18px;
+        color: #555;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .input-wrapper input {
+        border: none;
+        outline: none;
+        flex: 1;
+        background: transparent;
+        font-size: 15px;
+        color: #333;
+    }
+
+/* =============== ERROR MESSAGES =============== */
+.text-danger {
+    display: block;
+    font-size: 12px;
+    color: #dc3545;
+    margin-top: 6px;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.form-group .text-danger {
+    margin-top: 4px;
+}
+
+/* =============== FORGOT PASSWORD + BUTTON =============== */
+.forgot-password {
+    text-align: right;
+    margin-bottom: 25px;
+}
+
+    .forgot-password a {
+        color: #6c63ff;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+/* Button styles now use Design System classes */
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 992px) {
+    .login-container {
+        height: auto;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .logo-section {
+        padding: 0 20px 20px 20px;
+    }
+
+    .logo-section img {
+        height: 120px;
+    }
+
+    .login-section {
+        padding: 0 20px;
+        align-items: center;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 400px;
+    }
+}

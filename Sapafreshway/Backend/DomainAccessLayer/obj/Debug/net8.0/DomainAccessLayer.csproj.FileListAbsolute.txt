@@ -1,0 +1,11 @@
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\bin\Debug\net8.0\DomainAccessLayer.deps.json
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\bin\Debug\net8.0\DomainAccessLayer.dll
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\bin\Debug\net8.0\DomainAccessLayer.pdb
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\DomainAccessLayer.GeneratedMSBuildEditorConfig.editorconfig
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\DomainAccessLayer.AssemblyInfoInputs.cache
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\DomainAccessLayer.AssemblyInfo.cs
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\DomainAccessLayer.csproj.CoreCompileInputs.cache
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\DomainAccessLayer.dll
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\refint\DomainAccessLayer.dll
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\DomainAccessLayer.pdb
+D:\DoAn\Sapafreshway\Backend\DomainAccessLayer\obj\Debug\net8.0\ref\DomainAccessLayer.dll

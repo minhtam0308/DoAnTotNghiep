@@ -1,0 +1,453 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|d:\\doan\\sapafreshway\\backend\\sapabackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\ownerwarehousealertservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\repositories\\inventoryingredientrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\repositories\\interfaces\\iinventoryingredientrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|d:\\doan\\sapafreshway\\backend\\sapabackend\\controllers\\ownerwarehousealertcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|solutionrelative:controllers\\ownerwarehousealertcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C810EE34-98FD-4C11-9460-4DB865D4AFFA}|..\\DomainAccessLayer\\DomainAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\domainaccesslayer\\models\\ingredient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C810EE34-98FD-4C11-9460-4DB865D4AFFA}|..\\DomainAccessLayer\\DomainAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\domainaccesslayer\\models\\inventorybatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\unitofwork\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\interfaces\\iownerwarehousealertservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|d:\\doan\\sapafreshway\\backend\\sapabackend\\controllers\\ownerrevenuecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|solutionrelative:controllers\\ownerrevenuecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\repositories\\paymentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\ownerrevenueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\reservationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\interfaces\\iownerrevenueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\repositories\\interfaces\\ipaymentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|d:\\doan\\sapafreshway\\backend\\sapabackend\\controllers\\ownerdashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|solutionrelative:controllers\\ownerdashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\tableservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|d:\\doan\\sapafreshway\\backend\\sapabackend\\controllers\\tablemanagercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|solutionrelative:controllers\\tablemanagercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|d:\\doan\\sapafreshway\\backend\\sapabackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{E9D413C4-82EC-4641-87F5-E2CA09419975}|Sapabackend.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\repositories\\tablerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C69F829A-7276-48E6-8328-E780D800C849}|..\\DataAccessLayer\\DataAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\dataaccesslayer\\repositories\\interfaces\\itablerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\services\\interfaces\\itableservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\dtos\\tablecreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\dtos\\tablemanagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\dtos\\customers\\customerprofileupdaterequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC2B17AD-4E53-46EB-99F6-CF1ECB777B94}|..\\BusinessAccessLayer\\BusinessAccessLayer.csproj|d:\\doan\\sapafreshway\\backend\\businessaccesslayer\\dtos\\tabledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IInventoryIngredientRepository.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\Interfaces\\IInventoryIngredientRepository.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\Repositories\\Interfaces\\IInventoryIngredientRepository.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\Interfaces\\IInventoryIngredientRepository.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\Repositories\\Interfaces\\IInventoryIngredientRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:52:30.633Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T10:38:49.875Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InventoryIngredientRepository.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\InventoryIngredientRepository.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\Repositories\\InventoryIngredientRepository.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\InventoryIngredientRepository.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\Repositories\\InventoryIngredientRepository.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:40:07.04Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OwnerWarehouseAlertService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\OwnerWarehouseAlertService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\OwnerWarehouseAlertService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\OwnerWarehouseAlertService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\OwnerWarehouseAlertService.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAEwCAAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:38:43.303Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "OwnerWarehouseAlertController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\OwnerWarehouseAlertController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OwnerWarehouseAlertController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\OwnerWarehouseAlertController.cs",
+              "RelativeToolTip": "Controllers\\OwnerWarehouseAlertController.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABYAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:37:35.837Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Ingredient.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DomainAccessLayer\\Models\\Ingredient.cs",
+              "RelativeDocumentMoniker": "..\\DomainAccessLayer\\Models\\Ingredient.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DomainAccessLayer\\Models\\Ingredient.cs",
+              "RelativeToolTip": "..\\DomainAccessLayer\\Models\\Ingredient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:48:19.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "InventoryBatch.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DomainAccessLayer\\Models\\InventoryBatch.cs",
+              "RelativeDocumentMoniker": "..\\DomainAccessLayer\\Models\\InventoryBatch.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DomainAccessLayer\\Models\\InventoryBatch.cs",
+              "RelativeToolTip": "..\\DomainAccessLayer\\Models\\InventoryBatch.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:48:36.775Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IOwnerWarehouseAlertService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerWarehouseAlertService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerWarehouseAlertService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerWarehouseAlertService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerWarehouseAlertService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:38:26.46Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UnitOfWork.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\UnitOfWork\\UnitOfWork.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\UnitOfWork\\UnitOfWork.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\UnitOfWork\\UnitOfWork.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\UnitOfWork\\UnitOfWork.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T15:23:43.393Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "OwnerRevenueController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\OwnerRevenueController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OwnerRevenueController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\OwnerRevenueController.cs",
+              "RelativeToolTip": "Controllers\\OwnerRevenueController.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAAwCoAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T15:19:02.561Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ReservationService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\ReservationService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\ReservationService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\ReservationService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\ReservationService.cs",
+              "ViewState": "AgIAAKgAAAAAAAAAAAAAALAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T10:32:56.516Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "OwnerRevenueService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\OwnerRevenueService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\OwnerRevenueService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\OwnerRevenueService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\OwnerRevenueService.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwBcAAABZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T15:21:16.015Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "PaymentRepository.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\PaymentRepository.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\Repositories\\PaymentRepository.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\PaymentRepository.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\Repositories\\PaymentRepository.cs",
+              "ViewState": "AgIAAAkBAAAAAAAAAADwvxwBAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T15:33:40.327Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "IOwnerRevenueService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerRevenueService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerRevenueService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerRevenueService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\Interfaces\\IOwnerRevenueService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:04:38.331Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "IPaymentRepository.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\Interfaces\\IPaymentRepository.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\Repositories\\Interfaces\\IPaymentRepository.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\Interfaces\\IPaymentRepository.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\Repositories\\Interfaces\\IPaymentRepository.cs",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAswFwAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T15:33:04.617Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "OwnerDashboardController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\OwnerDashboardController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OwnerDashboardController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\OwnerDashboardController.cs",
+              "RelativeToolTip": "Controllers\\OwnerDashboardController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T15:17:15.344Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-29T11:07:35.967Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "TableRepository.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\TableRepository.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\Repositories\\TableRepository.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\TableRepository.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\Repositories\\TableRepository.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABcAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:04:45.01Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "ITableRepository.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\Interfaces\\ITableRepository.cs",
+              "RelativeDocumentMoniker": "..\\DataAccessLayer\\Repositories\\Interfaces\\ITableRepository.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\DataAccessLayer\\Repositories\\Interfaces\\ITableRepository.cs",
+              "RelativeToolTip": "..\\DataAccessLayer\\Repositories\\Interfaces\\ITableRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:04:01.963Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "TableService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\TableService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\TableService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\TableService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\TableService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:03:22.297Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "TableManagerController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\TableManagerController.cs",
+              "RelativeDocumentMoniker": "Controllers\\TableManagerController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\Sapabackend\\Controllers\\TableManagerController.cs",
+              "RelativeToolTip": "Controllers\\TableManagerController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:00:39.685Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "TableCreateDto.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\TableCreateDto.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\DTOs\\TableCreateDto.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\TableCreateDto.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\DTOs\\TableCreateDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:02:57.033Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "TableManageDto.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\TableManageDto.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\DTOs\\TableManageDto.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\TableManageDto.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\DTOs\\TableManageDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:01:58.994Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "ITableService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\Interfaces\\ITableService.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\Services\\Interfaces\\ITableService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\Services\\Interfaces\\ITableService.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\Services\\Interfaces\\ITableService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T11:01:23.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "CustomerProfileUpdateRequest.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\Customers\\CustomerProfileUpdateRequest.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\DTOs\\Customers\\CustomerProfileUpdateRequest.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\Customers\\CustomerProfileUpdateRequest.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\DTOs\\Customers\\CustomerProfileUpdateRequest.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAgwBoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T10:42:13.072Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "TableDto.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\TableDto.cs",
+              "RelativeDocumentMoniker": "..\\BusinessAccessLayer\\DTOs\\TableDto.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Backend\\BusinessAccessLayer\\DTOs\\TableDto.cs",
+              "RelativeToolTip": "..\\BusinessAccessLayer\\DTOs\\TableDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-29T10:41:56.616Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

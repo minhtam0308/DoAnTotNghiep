@@ -1,0 +1,346 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\views\\ownerwarehousealert\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:views\\ownerwarehousealert\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\views\\ownerrevenue\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:views\\ownerrevenue\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\controllers\\ownerwarehousealertcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:controllers\\ownerwarehousealertcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\services\\api\\ownerwarehousealertapiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:services\\api\\ownerwarehousealertapiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\models\\owner\\warehousealertviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:models\\owner\\warehousealertviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\services\\api\\interfaces\\iownerwarehousealertapiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:services\\api\\interfaces\\iownerwarehousealertapiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\dtos\\owner\\ownerdashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:dtos\\owner\\ownerdashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\dtos\\owner\\revenuedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:dtos\\owner\\revenuedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\dtos\\owner\\warehousealertdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:dtos\\owner\\warehousealertdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\controllers\\homemanagercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:controllers\\homemanagercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\views\\shared\\_layoutmanager.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:views\\shared\\_layoutmanager.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\views\\ownerdashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:views\\ownerdashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|d:\\doan\\sapafreshway\\frontend\\websapafreshwaystaff\\controllers\\ownerrevenuecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00546677-5E6C-461B-AF8A-3A52F1F7C589}|WebSapaFreshWayStaff.csproj|solutionrelative:controllers\\ownerrevenuecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\OwnerWarehouseAlert\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\OwnerWarehouseAlert\\Index.cshtml",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\OwnerWarehouseAlert\\Index.cshtml",
+              "RelativeToolTip": "Views\\OwnerWarehouseAlert\\Index.cshtml",
+              "ViewState": "AgIAABoAAAAAAAAAAAAEwCEAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-31T17:04:25.091Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T17:03:19.76Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "OwnerWarehouseAlertController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\OwnerWarehouseAlertController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OwnerWarehouseAlertController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\OwnerWarehouseAlertController.cs",
+              "RelativeToolTip": "Controllers\\OwnerWarehouseAlertController.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAYwCkAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:29:41.691Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_LayoutAdmin.cshtml",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_LayoutAdmin.cshtml",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_LayoutAdmin.cshtml",
+              "ViewState": "AgIAAHUAAAAAAAAAAAAAAI0AAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-31T16:25:22.267Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\OwnerRevenue\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\OwnerRevenue\\Index.cshtml",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\OwnerRevenue\\Index.cshtml",
+              "RelativeToolTip": "Views\\OwnerRevenue\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-31T15:54:47.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "OwnerWarehouseAlertApiService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Services\\Api\\OwnerWarehouseAlertApiService.cs",
+              "RelativeDocumentMoniker": "Services\\Api\\OwnerWarehouseAlertApiService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Services\\Api\\OwnerWarehouseAlertApiService.cs",
+              "RelativeToolTip": "Services\\Api\\OwnerWarehouseAlertApiService.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAYwBgAAABPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:31:37.669Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "WarehouseAlertViewModel.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Models\\Owner\\WarehouseAlertViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\Owner\\WarehouseAlertViewModel.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Models\\Owner\\WarehouseAlertViewModel.cs",
+              "RelativeToolTip": "Models\\Owner\\WarehouseAlertViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:33:33.449Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IOwnerWarehouseAlertApiService.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Services\\Api\\Interfaces\\IOwnerWarehouseAlertApiService.cs",
+              "RelativeDocumentMoniker": "Services\\Api\\Interfaces\\IOwnerWarehouseAlertApiService.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Services\\Api\\Interfaces\\IOwnerWarehouseAlertApiService.cs",
+              "RelativeToolTip": "Services\\Api\\Interfaces\\IOwnerWarehouseAlertApiService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:30:29.142Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "OwnerDashboardDto.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\DTOs\\Owner\\OwnerDashboardDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\Owner\\OwnerDashboardDto.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\DTOs\\Owner\\OwnerDashboardDto.cs",
+              "RelativeToolTip": "DTOs\\Owner\\OwnerDashboardDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:31:17.704Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RevenueDto.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\DTOs\\Owner\\RevenueDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\Owner\\RevenueDto.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\DTOs\\Owner\\RevenueDto.cs",
+              "RelativeToolTip": "DTOs\\Owner\\RevenueDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:31:15.212Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "WarehouseAlertDto.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\DTOs\\Owner\\WarehouseAlertDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\Owner\\WarehouseAlertDto.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\DTOs\\Owner\\WarehouseAlertDto.cs",
+              "RelativeToolTip": "DTOs\\Owner\\WarehouseAlertDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:31:08.827Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "HomeManagerController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\HomeManagerController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeManagerController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\HomeManagerController.cs",
+              "RelativeToolTip": "Controllers\\HomeManagerController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:28:08.745Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:28:05.585Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:28:04.618Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T16:27:06.821Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "_LayoutManager.cshtml",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\Shared\\_LayoutManager.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_LayoutManager.cshtml",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\Shared\\_LayoutManager.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_LayoutManager.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-31T16:25:21.647Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\OwnerDashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\OwnerDashboard\\Index.cshtml",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Views\\OwnerDashboard\\Index.cshtml",
+              "RelativeToolTip": "Views\\OwnerDashboard\\Index.cshtml",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAEwJkAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-31T16:23:44.354Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "OwnerRevenueController.cs",
+              "DocumentMoniker": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\OwnerRevenueController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OwnerRevenueController.cs",
+              "ToolTip": "D:\\DoAn\\Sapafreshway\\Frontend\\WebSapaFreshWayStaff\\Controllers\\OwnerRevenueController.cs",
+              "RelativeToolTip": "Controllers\\OwnerRevenueController.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAYwDIAAABbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T14:15:13.551Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

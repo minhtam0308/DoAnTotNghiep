@@ -1,0 +1,1436 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using DomainAccessLayer.Models;
+using Microsoft.Extensions.Configuration;
+namespace DataAccessLayer.Dbcontext;
+
+public partial class SapaBackendContext : DbContext
+{
+
+    public SapaBackendContext(DbContextOptions<SapaBackendContext> options)
+        : base(options)
+    {
+    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+            var connectionString = configuration.GetConnectionString("MyDatabase");
+
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+        }
+    }
+
+
+    public virtual DbSet<Announcement> Announcements { get; set; }
+    public virtual DbSet<Area> Areas { get; set; } = null!;
+    public virtual DbSet<Attendance> Attendances { get; set; }
+
+    public virtual DbSet<BrandBanner> BrandBanners { get; set; }
+
+    public virtual DbSet<Combo> Combos { get; set; }
+
+    public virtual DbSet<ComboItem> ComboItems { get; set; }
+
+    public virtual DbSet<Customer> Customers { get; set; }
+    public virtual DbSet<Department> Departments { get; set; }
+
+    public virtual DbSet<Event> Events { get; set; }
+
+    public virtual DbSet<Ingredient> Ingredients { get; set; }
+
+    public virtual DbSet<InventoryBatch> InventoryBatches { get; set; }
+
+    public virtual DbSet<KitchenTicket> KitchenTickets { get; set; }
+
+    public virtual DbSet<KitchenTicketDetail> KitchenTicketDetails { get; set; }
+
+    public virtual DbSet<MarketingCampaign> MarketingCampaigns { get; set; }
+
+    public virtual DbSet<MenuCategory> MenuCategories { get; set; }
+
+    public virtual DbSet<MenuItem> MenuItems { get; set; }
+
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderHistory> OrderHistories { get; set; }
+
+    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+
+    public virtual DbSet<OrderComboItem> OrderComboItems { get; set; }
+
+    public virtual DbSet<Payment> Payments { get; set; }
+
+    public virtual DbSet<Payroll> Payrolls { get; set; }
+
+    public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+
+    public virtual DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
+
+    public virtual DbSet<Recipe> Recipes { get; set; }
+
+    public virtual DbSet<Regulation> Regulations { get; set; }
+
+    public virtual DbSet<Reservation> Reservations { get; set; }
+    public virtual DbSet<ReservationDeposit> ReservationDeposits { get; set; } = null!;
+    public virtual DbSet<ReservationTable> ReservationTables { get; set; }
+
+    public virtual DbSet<RestaurantIntro> RestaurantIntros { get; set; }
+
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<Position> Positions { get; set; }
+
+    public virtual DbSet<SalaryRule> SalaryRules { get; set; }
+
+    public virtual DbSet<Shift> Shifts { get; set; }
+
+    public virtual DbSet<ShiftHistory> ShiftHistorys { get; set; }
+    public virtual DbSet<ShiftTemplate> ShiftTemplates { get; set; }
+
+    public virtual DbSet<Staff> Staffs { get; set; }
+    public DbSet<DayType> DayTypes { get; set; }
+    public DbSet<DayCalendar> DayCalendars { get; set; }
+    public DbSet<ShiftAssignment> ShiftAssignments { get; set; }
+    public virtual DbSet<StockTransaction> StockTransactions { get; set; }
+
+    public virtual DbSet<Transaction> Transactions { get; set; }
+
+    public virtual DbSet<SalaryChangeRequest> SalaryChangeRequests { get; set; }
+
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
+
+    public virtual DbSet<OrderLock> OrderLocks { get; set; }
+
+    public virtual DbSet<Supplier> Suppliers { get; set; }
+
+    public virtual DbSet<SystemLogo> SystemLogos { get; set; }
+
+    public virtual DbSet<Table> Tables { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+    public DbSet<Warehouse> Warehouses { get; set; } = null!;
+
+    public DbSet<Unit> Units { get; set; }
+
+    public virtual DbSet<Voucher> Vouchers { get; set; }
+
+    public DbSet<ZaloMessage> ZaloMessages { get; set; }
+
+    // Thêm bảng mới
+    public DbSet<AssistanceRequest> AssistanceRequests { get; set; }
+
+    public virtual DbSet<AuditInventory> AuditInventories { get; set; } = null!;
+
+
+    public virtual DbSet<VerificationCode> VerificationCodes { get; set; }
+
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+
+    //}
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Announcement>(entity =>
+        {
+            entity.HasKey(e => e.AnnouncementId).HasName("PK__Announce__9DE44574FCC6531E");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(200);
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Announcements)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_Announcements_Users");
+        });
+        // Shift - Department (tắt cascade)
+        modelBuilder.Entity<Shift>()
+            .HasOne(s => s.Department)
+            .WithMany(d => d.Shifts)
+            .HasForeignKey(s => s.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ShiftTemplate - Department (tắt cascade)
+        modelBuilder.Entity<ShiftTemplate>()
+            .HasOne(t => t.Department)
+            .WithMany(d => d.ShiftTemplates)
+            .HasForeignKey(t => t.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Shift - ShiftTemplate (tắt cascade)
+        modelBuilder.Entity<Shift>()
+            .HasOne(s => s.Template)
+            .WithMany(t => t.Shifts)
+            .HasForeignKey(s => s.TemplateId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Attendance>(entity =>
+        {
+            entity.HasKey(e => e.AttendanceId).HasName("PK__Attendan__8B69261CA90042EB");
+
+            entity.ToTable("Attendance");
+
+            entity.Property(e => e.CheckIn).HasColumnType("datetime");
+            entity.Property(e => e.CheckOut).HasColumnType("datetime");
+            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.Status).HasMaxLength(20);
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.Attendances)
+                .HasForeignKey(d => d.StaffId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Attendanc__Staff__208CD6FA");
+        });
+
+        modelBuilder.Entity<BrandBanner>(entity =>
+        {
+            entity.HasKey(e => e.BannerId).HasName("PK__BrandBan__32E86AD1BEC82691");
+
+            entity.Property(e => e.ImageUrl).HasMaxLength(300);
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Active");
+            entity.Property(e => e.Title).HasMaxLength(200);
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.BrandBanners)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_BrandBanners_Users");
+        });
+
+        modelBuilder.Entity<Combo>(entity =>
+        {
+            entity.HasKey(e => e.ComboId).HasName("PK__Combos__DD42582ED39A0BC4");
+
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+        });
+
+        modelBuilder.Entity<ComboItem>(entity =>
+        {
+            entity.HasKey(e => e.ComboItemId).HasName("PK__ComboIte__EE32F8052CD60470");
+
+            entity.HasOne(d => d.Combo).WithMany(p => p.ComboItems)
+                .HasForeignKey(d => d.ComboId)
+                .HasConstraintName("FK__ComboItem__Combo__22751F6C");
+
+            entity.HasOne(d => d.MenuItem).WithMany(p => p.ComboItems)
+                .HasForeignKey(d => d.MenuItemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ComboItem__MenuI__236943A5");
+        });
+
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64D856DD828A");
+
+            entity.Property(e => e.LoyaltyPoints).HasDefaultValue(0);
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.IsVip)
+                .HasDefaultValue(false);
+
+            entity.HasOne(d => d.User).WithMany(p => p.Customers)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__Customers__UserI__245D67DE");
+        });
+
+        modelBuilder.Entity<Event>(entity =>
+        {
+            entity.HasKey(e => e.EventId).HasName("PK__Events__7944C8104BD3C2A9");
+
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Location).HasMaxLength(200);
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Events)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_Events_Users");
+        });
+
+        modelBuilder.Entity<Ingredient>(entity =>
+        {
+            entity.HasKey(e => e.IngredientId).HasName("PK__Ingredie__BEAEB25ACD112DE2");
+
+            entity.Property(e => e.IngredientCode).HasMaxLength(50);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.ReorderLevel)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.HasOne(d => d.Unit)
+      .WithMany(p => p.Ingredients)
+      .HasForeignKey(d => d.UnitId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+        });
+
+        modelBuilder.Entity<InventoryBatch>(entity =>
+        {
+            entity.HasKey(e => e.BatchId).HasName("PK__Inventor__5D55CE5868089E90");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.QuantityRemaining)
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(e => e.QuantityReserved)
+                .HasColumnType("decimal(18, 2)")
+                .HasDefaultValue(0);
+
+            // Available là computed column trong database
+            entity.Property(e => e.Available)
+                .HasColumnType("decimal(18, 2)")
+                .HasComputedColumnSql("([QuantityRemaining] - [QuantityReserved])", stored: true);
+
+            entity.Property(e => e.IsActive)
+        .HasDefaultValue(true)
+        .IsRequired();
+
+            // ====== Quan hệ Ingredient - InventoryBatch ======
+            entity.HasOne(d => d.Ingredient)
+                .WithMany(p => p.InventoryBatches)
+                .HasForeignKey(d => d.IngredientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Inventory__Ingre__2645B050");
+
+            // ====== Quan hệ PurchaseOrderDetail - InventoryBatch ======
+            entity.HasOne(d => d.PurchaseOrderDetail)
+                .WithMany(p => p.InventoryBatches)
+                .HasForeignKey(d => d.PurchaseOrderDetailId)
+                .HasConstraintName("FK__Inventory__Purch__2739D489");
+
+            // ====== Quan hệ Warehouse - InventoryBatch ======
+            entity.HasOne(d => d.Warehouse)
+                  .WithMany(w => w.InventoryBatches)
+                  .HasForeignKey(d => d.WarehouseId)
+                  .OnDelete(DeleteBehavior.Restrict)
+                  .HasConstraintName("FK_InventoryBatch_Warehouses");
+
+        });
+
+
+        modelBuilder.Entity<Warehouse>(entity =>
+        {
+            entity.HasKey(e => e.WarehouseId).HasName("PK__Warehouse__ID");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+        });
+
+
+        modelBuilder.Entity<KitchenTicket>(entity =>
+        {
+            entity.HasKey(e => e.TicketId).HasName("PK__KitchenT__712CC607458F9C2B");
+
+            entity.Property(e => e.CourseType).HasMaxLength(20);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.KitchenTickets)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK__KitchenTi__Order__2A164134");
+        });
+
+        modelBuilder.Entity<KitchenTicketDetail>(entity =>
+        {
+            entity.HasKey(e => e.TicketDetailId).HasName("PK__KitchenT__39BFBDE6C33E07F4");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+            entity.Property(e => e.StartedAt).HasColumnType("datetime");
+            entity.Property(e => e.CompletedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.OrderDetail).WithMany(p => p.KitchenTicketDetails)
+                .HasForeignKey(d => d.OrderDetailId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__KitchenTi__Order__282DF8C2");
+
+            entity.HasOne(d => d.Ticket).WithMany(p => p.KitchenTicketDetails)
+                .HasForeignKey(d => d.TicketId)
+                .HasConstraintName("FK__KitchenTi__Ticke__29221CFB");
+
+            entity.HasOne(d => d.AssignedUser).WithMany()
+                .HasForeignKey(d => d.AssignedUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<MarketingCampaign>(entity =>
+        {
+            entity.HasKey(e => e.CampaignId).HasName("PK__Marketin__3F5E8A994B3A216D");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Active");
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.TargetRevenue)
+             .HasPrecision(18, 2);
+
+            entity.Property(e => e.Budget).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CampaignType).HasMaxLength(20);
+            entity.Property(e => e.TargetAudience).HasMaxLength(20);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.ViewCount).HasDefaultValue(0);
+            entity.Property(e => e.RevenueGenerated).HasColumnType("decimal(18, 2)").HasDefaultValue(0m);
+
+            entity.HasOne(d => d.CreatedByNavigation)
+                .WithMany(p => p.MarketingCampaigns)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_MarketingCampaigns_Users");
+
+            entity.HasOne(d => d.Voucher)
+             // Thay WithMany() bằng WithMany(p => p.MarketingCampaigns)
+             .WithMany(p => p.MarketingCampaigns)
+             .HasForeignKey(d => d.VoucherId)
+             .HasConstraintName("FK_MarketingCampaigns_Vouchers")
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<MenuCategory>(entity =>
+        {
+            entity.HasKey(e => e.CategoryId).HasName("PK__MenuCate__19093A0BBB85F1C6");
+
+            entity.Property(e => e.CategoryName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<MenuItem>(entity =>
+        {
+            entity.HasKey(e => e.MenuItemId).HasName("PK__MenuItem__8943F72267633489");
+
+            entity.Property(e => e.CourseType).HasMaxLength(20);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
+            entity.Property(e => e.IsAds).HasDefaultValue(false);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.TimeCook).HasColumnType("int");
+            entity.Property(e => e.BatchSize).HasColumnType("int").HasDefaultValue(1);
+
+            // NEW: Configure BillingType enum
+            // Use C# property initializer instead of database default to avoid sentinel ambiguity
+            entity.Property(e => e.BillingType)
+                .HasConversion<int>() // Store as int in database
+                .IsRequired();
+
+            entity.HasOne(d => d.Category).WithMany(p => p.MenuItems)
+                .HasForeignKey(d => d.CategoryId)
+                .HasConstraintName("FK__MenuItems__Categ__2BFE89A6");
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCF098341D1");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ConfirmedAt)
+                .HasColumnType("datetime");
+            entity.Property(e => e.OrderType).HasMaxLength(20);
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+            entity.Property(e => e.TotalAmount)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__Orders__Customer__2EDAF651");
+
+            entity.HasOne(d => d.Reservation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.ReservationId)
+                .HasConstraintName("FK__Orders__Reservat__2FCF1A8A");
+
+            entity.HasOne(d => d.ConfirmedByStaff).WithMany(p => p.ConfirmedOrders)
+                .HasForeignKey(d => d.ConfirmedByStaffId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+        modelBuilder.Entity<OrderHistory>(entity =>
+        {
+            entity.HasKey(e => e.OrderHistoryId);
+
+            entity.Property(e => e.Action)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Reason)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("(getutcdate())");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderHistories)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.OrderHistories)
+                .HasForeignKey(d => d.StaffId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<OrderDetail>(entity =>
+        {
+            entity.HasKey(e => e.OrderDetailId).HasName("PK__OrderDet__D3B9D36CA2DB7F7A");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.IsUrgent).HasDefaultValue(false);
+            entity.Property(e => e.ReadyAt).HasColumnType("datetime");
+            entity.Property(e => e.StartedAt).HasColumnType("datetime");
+
+            // NEW: Configure QuantityUsed (nullable - only set when customer confirms)
+            entity.Property(e => e.QuantityUsed)
+                .HasDefaultValue(null)
+                .IsRequired(false);
+
+            entity.HasOne(d => d.MenuItem).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.MenuItemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__OrderDeta__MenuI__2CF2ADDF");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK__OrderDeta__Order__2DE6D218");
+
+            entity.HasOne(od => od.Combo)
+                .WithMany(c => c.OrderDetails)
+                .HasForeignKey(od => od.ComboId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<OrderComboItem>(entity =>
+        {
+            entity.HasKey(e => e.OrderComboItemId).HasName("PK__OrderComboItem__OrderComboItemId");
+
+            entity.ToTable("OrderComboItems");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(1)
+                .IsRequired();
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("(getdate())");
+
+            entity.Property(e => e.Notes).HasMaxLength(500);
+
+            entity.Property(e => e.IsUrgent).HasDefaultValue(false);
+
+            entity.Property(e => e.StartedAt).HasColumnType("datetime");
+
+            entity.Property(e => e.ReadyAt).HasColumnType("datetime");
+
+            // Foreign key to OrderDetail
+            entity.HasOne(d => d.OrderDetail)
+                .WithMany(od => od.OrderComboItems)
+                .HasForeignKey(d => d.OrderDetailId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__OrderComboItem__OrderDetail__OrderDetailId");
+
+            // Foreign key to MenuItem
+            entity.HasOne(d => d.MenuItem)
+                .WithMany()
+                .HasForeignKey(d => d.MenuItemId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK__OrderComboItem__MenuItem__MenuItemId");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A3858E58FB6");
+
+            entity.Property(e => e.DiscountAmount)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.FinalAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.PaymentDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PaymentMethod).HasMaxLength(20);
+            entity.Property(e => e.Subtotal).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Vatamount)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("VATAmount");
+            entity.Property(e => e.Vatpercent)
+                .HasDefaultValue(10m)
+                .HasColumnType("decimal(5, 2)")
+                .HasColumnName("VATPercent");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payments__OrderI__30C33EC3");
+
+            entity.HasOne(d => d.Voucher).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.VoucherId)
+                .HasConstraintName("FK__Payments__Vouche__31B762FC");
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__55433A6B");
+
+            entity.ToTable("Transactions");
+
+            entity.Property(e => e.TransactionCode)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.Amount)
+                .HasColumnType("decimal(18, 2)")
+                .IsRequired();
+
+            entity.Property(e => e.PaymentMethod)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending")
+                .IsRequired();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .IsRequired();
+
+            entity.Property(e => e.CompletedAt)
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.SessionId)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500);
+
+            // Relationship: Transaction -> Order (Many-to-One)
+            entity.HasOne(d => d.Order)
+                .WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Restrict) // Không cho phép xóa Order nếu có Transaction
+                .HasConstraintName("FK__Transacti__Order__Transaction_OrderId");
+
+            // Relationship: Transaction -> Reservation (Many-to-One, optional)
+            entity.HasOne(d => d.Reservation)
+                .WithMany() // Reservation không có collection Transactions (có thể thêm sau nếu cần)
+                .HasForeignKey(d => d.ReservationId)
+                .OnDelete(DeleteBehavior.NoAction) // Không xóa Reservation khi xóa Transaction
+                .HasConstraintName("FK__Transactions__ReservationId");
+
+            // Index cho SessionId để tìm kiếm nhanh
+            entity.HasIndex(e => e.SessionId)
+                .HasDatabaseName("IX_Transactions_SessionId");
+
+            // Index cho OrderId
+            entity.HasIndex(e => e.OrderId)
+                .HasDatabaseName("IX_Transactions_OrderId");
+
+            // Index cho ReservationId (để query nhanh)
+            entity.HasIndex(e => e.ReservationId)
+                .HasDatabaseName("IX_Transactions_ReservationId");
+
+            // New columns for Payment Flow
+            entity.Property(e => e.AmountReceived)
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(e => e.RefundAmount)
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(e => e.GatewayReference)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.GatewayErrorCode)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.GatewayErrorMessage)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.RetryCount)
+                .HasDefaultValue(0)
+                .IsRequired();
+
+            entity.Property(e => e.LastRetryAt)
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.ParentTransactionId);
+
+            entity.Property(e => e.IsManualConfirmed)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            entity.Property(e => e.ConfirmedByUserId);
+
+            // Self-referencing relationship for Split Bill
+            entity.HasOne(d => d.ParentTransaction)
+                .WithMany(p => p.ChildTransactions)
+                .HasForeignKey(d => d.ParentTransactionId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK__Transactions__ParentTransactionId");
+
+            // Relationship: Transaction -> User (ConfirmedBy)
+            entity.HasOne(d => d.ConfirmedByUser)
+                .WithMany()
+                .HasForeignKey(d => d.ConfirmedByUserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK__Transactions__ConfirmedByUserId");
+
+            // Index cho Status
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_Transactions_Status");
+        });
+
+        // Configure AuditLog entity
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.AuditLogId).HasName("PK__AuditLogs__AuditLogId");
+
+            entity.ToTable("AuditLogs");
+
+            entity.Property(e => e.EventType)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.EntityType)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.EntityId)
+                .IsRequired();
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.Metadata)
+                .HasColumnType("nvarchar(max)");
+
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .IsRequired();
+
+            // Relationship: AuditLog -> User
+            entity.HasOne(d => d.User)
+                .WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK__AuditLogs__UserId");
+
+            // Indexes
+            entity.HasIndex(e => e.EventType)
+                .HasDatabaseName("IX_AuditLogs_EventType");
+
+            entity.HasIndex(e => new { e.EntityType, e.EntityId })
+                .HasDatabaseName("IX_AuditLogs_EntityType_EntityId");
+
+            entity.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("IX_AuditLogs_CreatedAt");
+
+            entity.HasIndex(e => e.UserId)
+                .HasDatabaseName("IX_AuditLogs_UserId");
+        });
+
+        // Configure OrderLock entity
+        modelBuilder.Entity<OrderLock>(entity =>
+        {
+            entity.HasKey(e => e.OrderLockId).HasName("PK__OrderLocks__OrderLockId");
+
+            entity.ToTable("OrderLocks");
+
+            entity.Property(e => e.OrderId)
+                .IsRequired();
+
+            entity.Property(e => e.LockedByUserId)
+                .IsRequired();
+
+            entity.Property(e => e.SessionId)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Reason)
+                .HasMaxLength(500)
+                .HasDefaultValue("Payment in progress")
+                .IsRequired();
+
+            entity.Property(e => e.LockedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .IsRequired();
+
+            entity.Property(e => e.ExpiresAt)
+                .HasColumnType("datetime")
+                .IsRequired();
+
+            // Relationship: OrderLock -> Order
+            entity.HasOne(d => d.Order)
+                .WithMany(p => p.OrderLocks)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__OrderLocks__OrderId");
+
+            // Relationship: OrderLock -> User
+            entity.HasOne(d => d.LockedByUser)
+                .WithMany()
+                .HasForeignKey(d => d.LockedByUserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK__OrderLocks__LockedByUserId");
+
+            // Indexes
+            entity.HasIndex(e => e.OrderId)
+                .HasDatabaseName("IX_OrderLocks_OrderId");
+
+            entity.HasIndex(e => e.ExpiresAt)
+                .HasDatabaseName("IX_OrderLocks_ExpiresAt");
+        });
+
+        modelBuilder.Entity<Payroll>(entity =>
+        {
+            entity.HasKey(e => e.PayrollId).HasName("PK__Payroll__99DFC672704E2373");
+
+            entity.ToTable("Payroll");
+
+            entity.Property(e => e.BaseSalary).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MonthYear)
+                .HasMaxLength(7)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.NetSalary).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+            entity.Property(e => e.TotalBonus).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalPenalty).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.Payrolls)
+                .HasForeignKey(d => d.StaffId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payroll__StaffId__32AB8735");
+        });
+
+        modelBuilder.Entity<PurchaseOrder>(entity =>
+        {
+            entity.HasKey(e => e.PurchaseOrderId).HasName("PK__Purchase__036BACA49E3BAAAB");
+
+            // Cấu hình PurchaseOrderId là string và không tự động tạo
+            entity.Property(e => e.PurchaseOrderId)
+                .HasMaxLength(50) // Hoặc độ dài phù hợp
+                .ValueGeneratedNever(); // Không tự động tạo giá trị
+
+            entity.Property(e => e.OrderDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.TimeConfirm)
+            .HasColumnType("datetime")
+            .HasDefaultValue(null);
+
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.Supplier).WithMany(p => p.PurchaseOrders)
+                .HasForeignKey(d => d.SupplierId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__PurchaseO__Suppl__3587F3E0");
+            entity.HasOne(d => d.Creator)
+                .WithMany()
+                .HasForeignKey(d => d.IdCreator)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_PurchaseOrders_Users_Creator");
+            entity.HasOne(d => d.Confirmer)
+                .WithMany()
+                .HasForeignKey(d => d.IdConfirm)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_PurchaseOrders_Users_Confirmer");
+            entity.Property(e => e.UrlImg)
+                .HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<PurchaseOrderDetail>(entity =>
+        {
+            // 🔑 Khóa chính
+            entity.HasKey(e => e.PurchaseOrderDetailId);
+
+            entity.Property(e => e.PurchaseOrderDetailId)
+                  .ValueGeneratedOnAdd();
+
+            // 🔗 FK đến PurchaseOrder
+            entity.Property(e => e.PurchaseOrderId)
+                  .HasMaxLength(50)
+                  .IsRequired();
+
+            // 🧾 Thông tin snapshot nguyên liệu
+            entity.Property(e => e.IngredientCode)
+                  .HasMaxLength(50);
+            entity.Property(e => e.IngredientName)
+                  .HasMaxLength(255);
+            entity.Property(e => e.Unit)
+                  .HasMaxLength(50);
+            entity.Property(e => e.WarehouseName)
+          .HasMaxLength(200);
+
+            // 💰 Giá trị số
+            entity.Property(e => e.Quantity)
+                  .HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.UnitPrice)
+                  .HasColumnType("decimal(15, 2)");
+            entity.Property(e => e.Subtotal)
+                  .HasColumnType("decimal(15, 2)");
+
+            // 🔗 Quan hệ với PurchaseOrder
+            entity.HasOne(d => d.PurchaseOrder)
+                  .WithMany(p => p.PurchaseOrderDetails)
+                  .HasForeignKey(d => d.PurchaseOrderId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK_PurchaseOrderDetails_PurchaseOrders");
+
+            // 🔗 Quan hệ với Ingredient (nullable)
+            entity.HasOne(d => d.Ingredient)
+                  .WithMany(p => p.PurchaseOrderDetails)
+                  .HasForeignKey(d => d.IngredientId)
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .HasConstraintName("FK_PurchaseOrderDetails_Ingredients");
+            entity.Property(e => e.ExpiryDate)
+    .HasConversion(
+        v => v.HasValue ? v.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null,
+        v => v.HasValue ? DateOnly.FromDateTime(v.Value) : (DateOnly?)null
+    )
+    .HasColumnType("date");
+
+        });
+
+
+
+        modelBuilder.Entity<Recipe>(entity =>
+        {
+            entity.HasKey(e => e.RecipeId).HasName("PK__Recipes__FDD988B0DF0083A6");
+
+            entity.Property(e => e.QuantityNeeded).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.Ingredient).WithMany(p => p.Recipes)
+                .HasForeignKey(d => d.IngredientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Recipes__Ingredi__367C1819");
+
+            entity.HasOne(d => d.MenuItem).WithMany(p => p.Recipes)
+                .HasForeignKey(d => d.MenuItemId)
+                .HasConstraintName("FK__Recipes__MenuIte__37703C52");
+        });
+
+        modelBuilder.Entity<Regulation>(entity =>
+        {
+            entity.HasKey(e => e.RegulationId).HasName("PK__Regulati__A192C7E99A0E3BC4");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(200);
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Regulations)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_Regulations_Users");
+        });
+
+        modelBuilder.Entity<Reservation>(entity =>
+        {
+            entity.HasKey(e => e.ReservationId).HasName("PK__Reservat__B7EE5F24CA6A82D8");
+
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.ReservationTime).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Reservations)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Reservati__Custo__395884C4");
+        });
+
+        modelBuilder.Entity<ReservationTable>(entity =>
+        {
+            entity.HasKey(e => e.ReservationTableId).HasName("PK__Reservat__A32A1796F8F3916A");
+
+            entity.HasIndex(e => new { e.ReservationId, e.TableId }, "UQ_Reservation_Table").IsUnique();
+
+            entity.HasOne(d => d.Reservation).WithMany(p => p.ReservationTables)
+                .HasForeignKey(d => d.ReservationId)
+                .HasConstraintName("FK__Reservati__Reser__3A4CA8FD");
+
+            entity.HasOne(d => d.Table).WithMany(p => p.ReservationTables)
+                .HasForeignKey(d => d.TableId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Reservati__Table__3B40CD36");
+        });
+
+        modelBuilder.Entity<RestaurantIntro>(entity =>
+        {
+            entity.HasKey(e => e.IntroId).HasName("PK__Restaura__303BA93E4A2E3861");
+
+            entity.ToTable("RestaurantIntro");
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.RestaurantIntros)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_RestaurantIntro_Users");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE1A130D6FE2");
+
+            entity.HasIndex(e => e.RoleName, "UQ__Roles__8A2B61607CE6A2D3").IsUnique();
+
+            entity.Property(e => e.RoleName).HasMaxLength(50);
+
+            // Seed standard roles
+            entity.HasData(
+                new Role { RoleId = 1, RoleName = "Owner" },
+                new Role { RoleId = 2, RoleName = "Admin" },
+                new Role { RoleId = 3, RoleName = "Manager" },
+                new Role { RoleId = 4, RoleName = "Staff" },
+                new Role { RoleId = 5, RoleName = "Customer" }
+            );
+        });
+
+        modelBuilder.Entity<SalaryRule>(entity =>
+        {
+            entity.HasKey(e => e.RuleId).HasName("PK__SalaryRu__110458E235EAB065");
+
+            entity.Property(e => e.BaseWorkDays).HasDefaultValue(26);
+            entity.Property(e => e.BonusPerShift)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.FullSalaryCondition).HasDefaultValue(26);
+            entity.Property(e => e.PenaltyAbsent)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.PenaltyLate)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+        });
+
+        modelBuilder.Entity<Unit>(entity =>
+        {
+            entity.HasKey(e => e.UnitId);
+
+            entity.Property(e => e.UnitName)
+                  .HasMaxLength(50)
+                  .IsRequired();
+
+            entity.Property(e => e.UnitType)
+                  .IsRequired();
+        });
+
+
+
+
+        modelBuilder.Entity<Staff>(entity =>
+        {
+            entity.HasKey(e => e.StaffId).HasName("PK__Staffs__96D4AB17BB2B00FA");
+
+            entity.Property(e => e.SalaryBase).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Status).HasDefaultValue(0);
+            entity.HasOne(d => d.User).WithMany(p => p.Staff)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Staffs__UserId__3E1D39E1");
+        });
+
+        modelBuilder.Entity<Position>(entity =>
+        {
+            entity.HasKey(e => e.PositionId).HasName("PK__Position__60BB9D7D");
+            entity.Property(e => e.PositionName).HasMaxLength(100);
+            entity.Property(e => e.Status).HasDefaultValue(0);
+            entity.Property(e => e.BaseSalary)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+        });
+
+        modelBuilder.Entity<SalaryChangeRequest>(entity =>
+        {
+            entity.HasKey(e => e.RequestId).HasName("PK__SalaryChangeRequest__RequestId");
+
+            entity.ToTable("SalaryChangeRequests");
+
+            entity.Property(e => e.CurrentBaseSalary)
+                .HasColumnType("decimal(18, 2)")
+                .IsRequired();
+
+            entity.Property(e => e.ProposedBaseSalary)
+                .HasColumnType("decimal(18, 2)")
+                .IsRequired();
+
+            entity.Property(e => e.Reason)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending")
+                .IsRequired();
+
+            entity.Property(e => e.OwnerNotes)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .IsRequired();
+
+            entity.Property(e => e.ReviewedAt)
+                .HasColumnType("datetime");
+
+            // Relationship: SalaryChangeRequest -> Position (Many-to-One)
+            entity.HasOne(d => d.Position)
+                .WithMany(p => p.SalaryChangeRequests)
+                .HasForeignKey(d => d.PositionId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK__SalaryChangeRequest__Position");
+
+            // Relationship: SalaryChangeRequest -> User (RequestedBy) (Many-to-One)
+            entity.HasOne(d => d.RequestedByUser)
+                .WithMany()
+                .HasForeignKey(d => d.RequestedBy)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK__SalaryChangeRequest__RequestedBy");
+
+            // Relationship: SalaryChangeRequest -> User (ApprovedBy) (Many-to-One, nullable)
+            entity.HasOne(d => d.ApprovedByUser)
+                .WithMany()
+                .HasForeignKey(d => d.ApprovedBy)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK__SalaryChangeRequest__ApprovedBy");
+
+            // Indexes
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_SalaryChangeRequests_Status");
+
+            entity.HasIndex(e => e.PositionId)
+                .HasDatabaseName("IX_SalaryChangeRequests_PositionId");
+
+            entity.HasIndex(e => e.RequestedBy)
+                .HasDatabaseName("IX_SalaryChangeRequests_RequestedBy");
+        });
+
+        modelBuilder.Entity<Staff>()
+            .HasMany(s => s.Positions)
+            .WithMany(p => p.Staff)
+            .UsingEntity<Dictionary<string, object>>(
+                "StaffPosition",
+                j => j
+                    .HasOne<Position>()
+                    .WithMany()
+                    .HasForeignKey("PositionId")
+                    .HasConstraintName("FK_StaffPosition_Position")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j => j
+                    .HasOne<Staff>()
+                    .WithMany()
+                    .HasForeignKey("StaffId")
+                    .HasConstraintName("FK_StaffPosition_Staff")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j =>
+                {
+                    j.HasKey("StaffId", "PositionId");
+                    j.ToTable("StaffPositions");
+                });
+
+        modelBuilder.Entity<StockTransaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK__StockTra__55433A6BCADEE2CE");
+
+            entity.Property(e => e.Note).HasMaxLength(500);
+            entity.Property(e => e.Quantity).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TransactionDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Type).HasMaxLength(20);
+
+            entity.HasOne(d => d.Batch).WithMany(p => p.StockTransactions)
+                .HasForeignKey(d => d.BatchId)
+                .HasConstraintName("FK_StockTransactions_Batch");
+
+            entity.HasOne(d => d.Ingredient).WithMany(p => p.StockTransactions)
+                .HasForeignKey(d => d.IngredientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__StockTran__Ingre__3F115E1A");
+        });
+
+        modelBuilder.Entity<Supplier>(entity =>
+        {
+            entity.HasKey(e => e.SupplierId).HasName("PK__Supplier__4BE666B426C1529C");
+
+            entity.Property(e => e.Address).HasMaxLength(200);
+            entity.Property(e => e.ContactInfo).HasMaxLength(200);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.CodeSupplier).HasMaxLength(50);
+        });
+
+        // Cấu hình AuditInventory
+        modelBuilder.Entity<AuditInventory>(entity =>
+        {
+            entity.HasKey(e => e.AuditId)
+                .HasName("PK__AuditInventory__AuditId");
+
+            entity.ToTable("AuditInventory");
+
+            entity.Property(e => e.AuditId)
+        .IsRequired()
+        .HasMaxLength(50)
+        .ValueGeneratedNever();
+
+            entity.Property(e => e.BatchId)
+    .IsRequired();
+
+            entity.Property(e => e.PurchaseOrderId)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.IngredientCode)
+                .IsRequired()
+                .HasMaxLength(50);
+
+
+            entity.Property(e => e.ingredientName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+
+            entity.Property(e => e.unit)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.OriginalQuantity)
+                .IsRequired()
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(e => e.ExpiryDate)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null,
+                    v => v.HasValue ? DateOnly.FromDateTime(v.Value) : (DateOnly?)null
+                )
+                .HasColumnType("date");
+
+            // Thông tin người tạo
+            entity.Property(e => e.CreatorId)
+                .IsRequired();
+
+            entity.Property(e => e.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.CreatorName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CreatorPosition)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CreatorPhone)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.Reason)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(e => e.AdjustmentQuantity)
+                .IsRequired()
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(e => e.IsAddition)
+                .IsRequired();
+
+            entity.Property(e => e.IngredientStatus)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.AuditStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(500);
+
+            // Thông tin người xác nhận (nullable)
+            entity.Property(e => e.ConfirmedAt)
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.ConfirmerName)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.ConfirmerPosition)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.ConfirmerPhone)
+                .HasMaxLength(20);
+
+            // Relationships
+            entity.HasOne(d => d.Creator)
+                .WithMany()
+                .HasForeignKey(d => d.CreatorId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK__AuditInventory__CreatorId");
+
+            entity.HasOne(d => d.Confirmer)
+                .WithMany()
+                .HasForeignKey(d => d.ConfirmerId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK__AuditInventory__ConfirmerId");
+
+            // Indexes
+            entity.HasIndex(e => e.PurchaseOrderId)
+                .HasDatabaseName("IX_AuditInventory_PurchaseOrderId");
+
+            entity.HasIndex(e => e.IngredientCode)
+                .HasDatabaseName("IX_AuditInventory_IngredientCode");
+
+            entity.HasIndex(e => e.AuditStatus)
+                .HasDatabaseName("IX_AuditInventory_AuditStatus");
+
+            entity.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("IX_AuditInventory_CreatedAt");
+
+            entity.HasIndex(e => e.CreatorId)
+                .HasDatabaseName("IX_AuditInventory_CreatorId");
+        });
+
+
+
+        modelBuilder.Entity<SystemLogo>(entity =>
+        {
+            entity.HasKey(e => e.LogoId).HasName("PK__SystemLo__C620158D671959EF");
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.LogoName).HasMaxLength(200);
+            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.SystemLogos)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_SystemLogos_Users");
+        });
+
+        modelBuilder.Entity<Table>(entity =>
+        {
+            entity.HasKey(e => e.TableId).HasName("PK__Tables__7D5F01EE063230D4");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("Available");
+            entity.Property(e => e.TableNumber).HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C331B3280");
+
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053492261D22").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.PasswordHash).HasMaxLength(200);
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.AvatarUrl).HasMaxLength(500);
+            entity.Property(e => e.Status).HasDefaultValue(0);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Users__RoleId__41EDCAC5");
+        });
+
+        modelBuilder.Entity<VerificationCode>(entity =>
+        {
+            entity.HasKey(e => e.VerificationCodeId);
+            entity.Property(e => e.Code).HasMaxLength(10);
+            entity.Property(e => e.Purpose).HasMaxLength(50);
+            entity.Property(e => e.IsUsed).HasDefaultValue(false);
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Voucher>(entity =>
+        {
+            entity.HasKey(e => e.VoucherId).HasName("PK__Vouchers__3AEE7921766B4882");
+
+            // Thay đổi Unique Index từ Code thành Code + StartDate + EndDate
+            entity.HasIndex(e => new { e.Code, e.StartDate, e.EndDate })
+                  .IsUnique()
+                  .HasDatabaseName("UQ_Vouchers_Code_StartDate_EndDate");
+
+            entity.Property(e => e.Code).HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.DiscountType).HasMaxLength(20);
+            entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MaxDiscount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MinOrderValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Status)
+                  .HasMaxLength(20)
+                  .HasDefaultValue("Active");
+            entity.Property(e => e.IsDelete)
+                  .HasColumnName("IsDelete")
+                  .HasDefaultValue(false);
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
