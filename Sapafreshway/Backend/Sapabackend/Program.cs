@@ -1,4 +1,5 @@
-﻿using BusinessAccessLayer.Services;
+﻿using BusinessAccessLayer.Mapping;
+using BusinessAccessLayer.Services;
 using BusinessAccessLayer.Services.Interfaces;
 using DataAccessLayer.Dbcontext;
 using DataAccessLayer.Repositories;
@@ -99,6 +100,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     options.SlidingExpiration = true;
 });
 
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
@@ -115,6 +120,10 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IOwnerRevenueService, OwnerRevenueService>();
 builder.Services.AddScoped<IInventoryIngredientRepository, InventoryIngredientRepository>();
 builder.Services.AddScoped<IOwnerWarehouseAlertService, OwnerWarehouseAlertService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 // Đăng ký dịch vụ chạy ngầm của chúng ta
 builder.Services.AddHostedService<OrderStatusUpdaterService>();

@@ -1,0 +1,163 @@
+# =========================
+
+# Build results
+
+# =========================
+
+bin/
+obj/
+out/
+*/bin/
+*/obj/
+*/out/
+# =========================
+
+# Visual Studio
+
+# =========================
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+
+# Rider / VS Code
+
+# =========================
+
+.idea/
+.vscode/
+*.code-workspace
+
+# =========================
+
+# Logs
+
+# =========================
+
+*.log
+
+# =========================
+
+# OS generated files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# NuGet
+
+# =========================
+
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# =========================
+
+# Publish output
+
+# =========================
+
+publish/
+*.publishproj
+
+# =========================
+
+# ASP.NET Scaffolding
+
+# =========================
+
+ScaffoldingReadMe.txt
+
+# =========================
+
+# Entity Framework
+
+# =========================
+
+Migrations/*Designer.cs
+Migrations/*Snapshot.cs
+
+# =========================
+
+# Secrets / Config
+
+# =========================
+
+appsettings.Development.json
+secrets.json
+
+# =========================
+
+# IIS Express
+
+# =========================
+
+iisexpress/
+
+# =========================
+
+# Azure
+
+# =========================
+
+*.azurePubxml
+*.publishsettings
+
+# =========================
+
+# Resharper
+
+# =========================
+
+_ReSharper*/
+*.DotSettings.user
+
+# =========================
+
+# Test Results
+
+# =========================
+
+TestResults/
+*.trx
+
+# =========================
+
+# Coverage
+
+# =========================
+
+coverage/
+*.coverage
+*.coveragexml
+
+# =========================
+
+# Node (nếu có frontend)
+
+# =========================
+
+node_modules/
+dist/
+build/
+
+# =========================
+
+# Misc
+
+# =========================
+
+*.cache
+*.tmp
+*.temp
+/Sapafreshway/Backend/BusinessAccessLayer/obj
+/Sapafreshway/Backend/BusinessAccessLayer/obj
