@@ -251,8 +251,8 @@
                                                 <i class="fas fa-check"></i> Kích hoạt
                                             </button>
                                         }
-                                        <button type="button" class="btn btn-sm bg-danger-light" onclick="openDeleteModal(@user.UserId, '@user.FullName')">
-                                            <i class="fas fa-trash"></i> Xóa
+                                        <button type="button" class="btn btn-sm bg-danger-light text-danger" onclick="openDeleteModal(@user.UserId, '@user.FullName')">
+                                            <i class="fas fa-trash text-danger"></i> Xóa
                                         </button>
                                     </div>
                                 </td>
@@ -436,32 +436,39 @@
         </div>
     </div>
 </div>
+@{
+    var successMessage = TempData["SuccessMessage"] as string;
+    var errorMessage = TempData.Peek("ErrorMessage") as string;
+    var warningMessage = TempData.Peek("WarningMessage") as string;
+}
 
 @section Scripts {
     <script src="~/js/admin-user-management.js"></script>
     <script>
         // Initialize on page load
+            
         $(document).ready(function() {
             initializeUserManagement();
         });
 
         // Show success/error messages from TempData
-        @if (TempData["SuccessMessage"] != null)
+        @if (!string.IsNullOrEmpty(successMessage))
         {
             <text>
-            toastr.success('@TempData["SuccessMessage"]');
+                // toastr.success('@successMessage');
+                    showSuccessToast('@successMessage');
             </text>
         }
-        @if (TempData["ErrorMessage"] != null)
+        @if (errorMessage != null)
         {
             <text>
-            toastr.error('@TempData["ErrorMessage"]');
+                toastr.error('@errorMessage');
             </text>
         }
-        @if (TempData["WarningMessage"] != null)
+        @if (warningMessage != null)
         {
             <text>
-            toastr.warning('@TempData["WarningMessage"]');
+                toastr.warning('@warningMessage');
             </text>
         }
 

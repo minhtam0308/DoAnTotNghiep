@@ -117,11 +117,43 @@ namespace SapaFoRestRMSAPI.Controllers
         /// </summary>
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, [FromForm] UserUpdateRequest? formRequest, [FromBody] UserUpdateRequest? jsonRequest, CancellationToken ct)
+        public async Task<IActionResult> UpdateJson(int id, [FromBody] UserUpdateRequest? jsonRequest, CancellationToken ct)
         {
             // Prefer form request if available (for file upload), otherwise use JSON request
-            var request = formRequest ?? jsonRequest;
+            var request = jsonRequest;
             
+            if (request == null)
+            {
+                return BadRequest(new { message = "Request body is required" });
+            }
+
+            // Note: RoleId in request is ignored in UpdateAsync (preserved from original user)
+            // The id parameter is the user ID to update
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await _userService.UpdateAsync(id, request, ct);
+                return NoContent();
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPut("{id:int}/with-file")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateWithfile(int id, [FromForm] UserUpdateRequest? formRequest, CancellationToken ct)
+        {
+            // Prefer form request if available (for file upload), otherwise use JSON request
+            var request = formRequest;
+
             if (request == null)
             {
                 return BadRequest(new { message = "Request body is required" });

@@ -23,7 +23,7 @@ function initializeUserManagement() {
     //});
 
     // Update bulk action button state
-    updateBulkActionButton();
+    //updateBulkActionButton();
 }
 
 /**

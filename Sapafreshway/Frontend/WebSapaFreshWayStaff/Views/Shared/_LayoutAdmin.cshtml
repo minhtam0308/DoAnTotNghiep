@@ -31,6 +31,13 @@
     <link rel="stylesheet" href="~/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!--  Toastr CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" /> 
+
+    <!--  jQuery + Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- endinject -->
     <!-- Plugin css for this page -->
@@ -171,7 +178,7 @@
                 </div>
                 <footer class="footer">
                     <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">SapaFoRest RMS Admin</span>
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Sapa Fresh Way Admin</span>
                         <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">© 2025</span>
                     </div>
                 </footer>
@@ -189,13 +196,154 @@
     <script src="~/assets/js/hoverable-collapse.js"></script>
     <script src="~/assets/js/todolist.js"></script>
     <script src="~/assets/js/jquery.cookie.js" type="text/javascript"></script>
-    <script src="~/assets/js/dashboard.js"></script>
+    <script src="~/assets/js/dashboard.js"></script> 
     <!-- Bootstrap Bundle for tooltips/popovers (ensure available) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Toast Notification System -->
-    <script src="~/js/toast-notification.js"></script>
+     <script>
+                 /**
+         * Toast Notification System
+         * Replaces alert() with Bootstrap 5 Toasts
+         * Design System compliant
+         */
+
+        (function () {
+            'use strict';
+
+            // Ensure toast container exists
+            function ensureToastContainer() {
+                let container = document.getElementById('toast-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'toast-container';
+                    container.className = 'toast-container-custom';
+                    document.body.appendChild(container);
+                }
+                return container;
+            }
+            window.showToast = function (message, type = 'info', duration = 3000) {
+                const container = ensureToastContainer();
+
+                // Map type to Bootstrap classes and icons
+                const toastConfig = {
+                    success: {
+                        bgClass: 'bg-success text-white',
+                        icon: '<i class="mdi mdi-check-circle toast-icon"></i>',
+                        title: 'Thành công'
+                    },
+                    error: {
+                        bgClass: 'bg-danger text-white',
+                        icon: '<i class="mdi mdi-alert-circle toast-icon"></i>',
+                        title: 'Lỗi'
+                    },
+                    warning: {
+                        bgClass: 'bg-warning text-dark',
+                        icon: '<i class="mdi mdi-alert toast-icon"></i>',
+                        title: 'Cảnh báo'
+                    },
+                    info: {
+                        bgClass: 'bg-primary text-white',
+                        icon: '<i class="mdi mdi-information-outline toast-icon"></i>',
+                        title: 'Thông tin'
+                    }
+                };
+
+                const config = toastConfig[type] || toastConfig.info;
+
+                // Create toast element
+                const toastId = 'toast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const toast = document.createElement('div');
+                toast.id = toastId;
+                toast.className = `toast align-items-center border-0 ${config.bgClass}`;
+                toast.setAttribute('role', 'alert');
+                toast.setAttribute('aria-live', 'assertive');
+                toast.setAttribute('aria-atomic', 'true');
+                toast.style.minWidth = '320px';
+
+                // Toast content
+                toast.innerHTML = `
+                    <div class="toast-body-custom">
+                        <div class="d-flex align-items-center w-100">
+                            ${config.icon}
+                            <div class="flex-grow-1">
+                                <strong>${config.title}</strong>
+                                <div class="mt-1">${(message)}</div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                // Append to container
+                container.appendChild(toast);
+
+                // Initialize and show Bootstrap Toast
+                const toastBootstrap = new bootstrap.Toast(toast, {
+                    delay: duration,
+                    autohide: duration > 0
+                });
+
+                toastBootstrap.show();
+
+                // Remove from DOM after hiding
+                toast.addEventListener('hidden.bs.toast', function () {
+                    toast.remove();
+                });
+
+                return toastBootstrap;
+            };
+
+            /**
+             * Show Success Toast
+             */
+            window.showSuccessToast = function (message, duration = 3000) {
+                return showToast(message, 'success', duration);
+            };
+
+            /**
+             * Show Error Toast
+             */
+            window.showErrorToast = function (message, duration = 5000) {
+                return showToast(message, 'error', duration);
+            };
+
+            /**
+             * Show Warning Toast
+             */
+            window.showWarningToast = function (message, duration = 4000) {
+                return showToast(message, 'warning', duration);
+            };
+
+            /**
+             * Show Info Toast
+             */
+            window.showInfoToast = function (message, duration = 3000) {
+                return showToast(message, 'info', duration);
+            };
+
+            /**
+             * Escape HTML to prevent XSS
+             */
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return String(text || '').replace(/[&<>"']/g, m => map[m]);
+            }
+
+            // Expose escapeHtml for use in other scripts
+            window.escapeHtml = escapeHtml;
+
+        })();
+
+
+     </script> 
     <!-- Toast Container -->
-    <div id="toastContainer" class="toast-container-custom"></div>
+    <div id="toast-container" class="toast-container-custom"></div>
     <style>
         /* Ensure dropdown menu is visible and clickable */
         .user-dropdown .dropdown-menu {

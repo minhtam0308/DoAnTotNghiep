@@ -19,7 +19,7 @@ namespace BusinessAccessLayer.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRoleRepository _roleRepository;
-        //private readonly IEmailService _emailService;
+        private readonly IEmailService _emailService;
         //private readonly ICloudinaryService? _cloudinaryService;
         private static readonly HashSet<int> RestrictedCreationRoleIds = new() { 2, 5 };
 
@@ -32,11 +32,12 @@ namespace BusinessAccessLayer.Services
         //    _cloudinaryService = cloudinaryService;
         //}
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IRoleRepository roleRepository)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IRoleRepository roleRepository, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _roleRepository = roleRepository;
+            _emailService = emailService;
 
         }
 
@@ -201,18 +202,18 @@ namespace BusinessAccessLayer.Services
 
         public async Task<UserDto> CreateAsync(UserCreateRequest request, CancellationToken ct = default)
         {
-            //            // Business validation
-            //            if (await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
-            //            {
-            //                throw new InvalidOperationException("Email already exists");
-            //            }
+            // Business validation
+            if (await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
+            {
+                throw new InvalidOperationException("Email already exists");
+            }
 
-            //            if (RestrictedCreationRoleIds.Contains(request.RoleId))
-            //            {
-            //                throw new InvalidOperationException("Không được phép tạo tài khoản Admin hoặc Customer bằng chức năng này");
-            //            }
+            if (RestrictedCreationRoleIds.Contains(request.RoleId))
+            {
+                throw new InvalidOperationException("Không được phép tạo tài khoản Admin hoặc Customer bằng chức năng này");
+            }
 
-            //            // Determine password: ưu tiên Password, sau đó TemporaryPassword, cuối cùng tự sinh
+            // Determine password: ưu tiên Password, sau đó TemporaryPassword, cuối cùng tự sinh
             var effectivePassword = !string.IsNullOrWhiteSpace(request.Password)
                 ? request.Password.Trim()
                 : !string.IsNullOrWhiteSpace(request.TemporaryPassword)
@@ -240,42 +241,42 @@ namespace BusinessAccessLayer.Services
                 IsDeleted = false
             };
 
-            //            await _unitOfWork.Users.AddAsync(user);
-            //            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
 
-            //            if (request.SendEmailNotification)
-            //            {
-            //                // Send credentials to user's email (best-effort)
-            //                try
-            //                {
-            //                    var subject = "Tài khoản SapaFreshWay đã được tạo";
-            //                    var body = $@"
-            //<div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
-            //  <p>Chào {request.FullName},</p>
-            //  <p>Tài khoản của bạn đã được tạo trên hệ thống SapaFoRest RMS.</p>
-            //  <p><strong>Thông tin đăng nhập:</strong></p>
-            //  <ul>
-            //    <li>Email: <strong>{request.Email}</strong></li>
-            //    <li>Mật khẩu tạm thời: <strong>{effectivePassword}</strong></li>
-            //  </ul>
-            //  <p>Vui lòng đăng nhập và đổi mật khẩu sau lần đăng nhập đầu tiên để đảm bảo an toàn.</p>
-            //  <p>Trân trọng,</p>
-            //  <p>SapaFoRest RMS</p>
-            //  <hr />
-            //  <small>Đây là email tự động, vui lòng không trả lời.</small>
-            //</div>";
-            //                    await _emailService.SendAsync(request.Email, subject, body);
-            //                }
-            //                catch
-            //                {
-            //                    // Intentionally swallow email errors to not block account creation
-            //                }
-            //            }
+            if (request.SendEmailNotification)
+            {
+                // Send credentials to user's email (best-effort)
+                try
+                {
+                    var subject = "Tài khoản SapaFreshWay đã được tạo";
+                    var body = $@"
+            <div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
+              <p>Chào {request.FullName},</p>
+              <p>Tài khoản của bạn đã được tạo trên hệ thống SapaFoReshWay.</p>
+              <p><strong>Thông tin đăng nhập:</strong></p>
+              <ul>
+                <li>Email: <strong>{request.Email}</strong></li>
+                <li>Mật khẩu tạm thời: <strong>{effectivePassword}</strong></li>
+              </ul>
+              <p>Vui lòng đăng nhập và đổi mật khẩu sau lần đăng nhập đầu tiên để đảm bảo an toàn.</p>
+              <p>Trân trọng,</p>
+              <p>Sapa Fresh Way RMS</p>
+              <hr />
+              <small>Đây là email tự động, vui lòng không trả lời.</small>
+            </div>";
+                    await _emailService.SendAsync(request.Email, subject, body);
+                }
+                catch
+                {
+                    // Intentionally swallow email errors to not block account creation
+                }
+            }
 
-            //            // Map to DTO for response
+            // Map to DTO for response
             var userDto = _mapper.Map<UserDto>(user);
-            //            var role = await _roleRepository.GetByIdAsync(user.RoleId);
-            //            userDto.RoleName = role?.RoleName ?? "Unknown";
+            var role = await _roleRepository.GetByIdAsync(user.RoleId);
+            userDto.RoleName = role?.RoleName ?? "Unknown";
 
             return userDto;
         }
@@ -283,41 +284,41 @@ namespace BusinessAccessLayer.Services
         public async Task UpdateAsync(int id, UserUpdateRequest request, CancellationToken ct = default)
         {
                 var user = await _unitOfWork.Users.GetByIdAsync(id);
-            //    if (user == null || user.IsDeleted == true)
-            //    {
-            //        throw new InvalidOperationException("User not found");
-            //    }
+            //if (user == null || user.IsDeleted == true)
+            //{
+            //    throw new InvalidOperationException("User not found");
+            //}
 
-            //    // Check if email is being changed and if new email already exists
-            //    if (user.Email != request.Email && await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
-            //    {
-            //        throw new InvalidOperationException("Email already exists");
-            //    }
+            //// Check if email is being changed and if new email already exists
+            //if (user.Email != request.Email && await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
+            //{
+            //    throw new InvalidOperationException("Email already exists");
+            //}
 
-            //    // Update user properties
-            //    // NOTE: RoleId cannot be changed when editing user - preserve original role
-            //    user.FullName = request.FullName;
-            //    user.Email = request.Email;
-            //    user.Phone = request.Phone;
-            //    // user.RoleId = request.RoleId; // DO NOT UPDATE ROLE - Role cannot be changed when editing
-            //    user.Status = request.Status;
+            //// Update user properties
+            //// NOTE: RoleId cannot be changed when editing user - preserve original role
+            //user.FullName = request.FullName;
+            //user.Email = request.Email;
+            //user.Phone = request.Phone;
+            //// user.RoleId = request.RoleId; // DO NOT UPDATE ROLE - Role cannot be changed when editing
+            //user.Status = request.Status;
 
-            //    // Handle avatar upload - ưu tiên upload file lên Cloudinary nếu có
-            //    if (request.AvatarFile != null && request.AvatarFile.Length > 0 && _cloudinaryService != null)
+            //// Handle avatar upload - ưu tiên upload file lên Cloudinary nếu có
+            //if (request.AvatarFile != null && request.AvatarFile.Length > 0 && _cloudinaryService != null)
+            //{
+            //    var uploadedUrl = await _cloudinaryService.UploadImageAsync(request.AvatarFile, "avatars");
+            //    if (!string.IsNullOrWhiteSpace(uploadedUrl))
             //    {
-            //        var uploadedUrl = await _cloudinaryService.UploadImageAsync(request.AvatarFile, "avatars");
-            //        if (!string.IsNullOrWhiteSpace(uploadedUrl))
-            //        {
-            //            user.AvatarUrl = uploadedUrl;
-            //        }
+            //        user.AvatarUrl = uploadedUrl;
             //    }
-            //    else if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
-            //    {
-            //        // Fallback: sử dụng URL nếu không có file upload
-            //        user.AvatarUrl = request.AvatarUrl.Trim();
-            //    }
+            //}
+            //else if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
+            //{
+            //    // Fallback: sử dụng URL nếu không có file upload
+            //    user.AvatarUrl = request.AvatarUrl.Trim();
+            //}
 
-            //    user.ModifiedAt = DateTime.UtcNow;
+            //user.ModifiedAt = DateTime.UtcNow;
 
             await _unitOfWork.Users.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();

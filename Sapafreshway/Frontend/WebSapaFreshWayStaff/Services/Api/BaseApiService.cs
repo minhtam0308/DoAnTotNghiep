@@ -173,6 +173,11 @@ namespace WebSapaFreshWayStaff.Services.Api
                     response = await send(client2);
                 }
             }
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(content);
+            }
             return response;
         }
 

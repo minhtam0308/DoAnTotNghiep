@@ -9,10 +9,10 @@
 
     // Ensure toast container exists
     function ensureToastContainer() {
-        let container = document.getElementById('toastContainer');
+        let container = document.getElementById('toast-container');
         if (!container) {
             container = document.createElement('div');
-            container.id = 'toastContainer';
+            container.id = 'toast-container';
             container.className = 'toast-container-custom';
             document.body.appendChild(container);
         }
@@ -71,7 +71,7 @@
                     ${config.icon}
                     <div class="flex-grow-1">
                         <strong>${config.title}</strong>
-                        <div class="mt-1">${escapeHtml(message)}</div>
+                        <div class="mt-1">${decodeHtml(message)}</div>
                     </div>
                     <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
@@ -100,7 +100,7 @@
     /**
      * Show Success Toast
      */
-    window.showSuccessToast = function (message, duration = 3000) {
+    window.showSuccessToast = function (message, duration = 300000) {
         return showToast(message, 'success', duration);
     };
 

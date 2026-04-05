@@ -260,16 +260,18 @@ namespace WebSapaFreshWayStaff.Services.Api
                     streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.AvatarFile.ContentType);
                     content.Add(streamContent, nameof(request.AvatarFile), request.AvatarFile.FileName);
 
-                    var response = await SendWithAutoRefreshAsync(c => c.PutAsync($"{GetApiBaseUrl()}/users/{request.UserId}", content));
+                    var response = await SendWithAutoRefreshAsync(c => c.PutAsync($"{GetApiBaseUrl()}/users/{request.UserId}/with-file", content));
                     return response.IsSuccessStatusCode;
                 }
                 else
                 {
+
                     // No file upload, use JSON
                     var json = JsonSerializer.Serialize(request);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                     var response = await SendWithAutoRefreshAsync(c => c.PutAsync($"{GetApiBaseUrl()}/users/{request.UserId}", content));
+                    var responseString = await response.Content.ReadAsStringAsync();
                     return response.IsSuccessStatusCode;
                 }
             }
