@@ -89,7 +89,7 @@ function submitDeactivate() {
     const reason = document.getElementById('deactivateReason').value;
 
     if (!userId) {
-        toastr.error('Invalid user ID');
+        showErrorToast('Invalid user ID');
         return;
     }
 
@@ -112,14 +112,15 @@ function submitDeactivate() {
         }),
         success: function (response) {
             if (response.success) {
-                toastr.success(response.message || 'User deactivated successfully');
+                //toastr.success(response.message || 'User deactivated successfully');
+                showSuccessToast(response.message || 'Ngừng hoạt động tài khoản thành công');
                 $('#deactivateModal').modal('hide');
                 // Reload page after short delay
                 setTimeout(function() {
                     window.location.reload();
                 }, 1000);
             } else {
-                toastr.error(response.message || 'Failed to deactivate user');
+                showErrorToast(response.message || 'Failed to deactivate user');
                 submitBtn.prop('disabled', false).html(originalText);
             }
         },
@@ -129,7 +130,8 @@ function submitDeactivate() {
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMessage = xhr.responseJSON.message;
             }
-            toastr.error(errorMessage);
+            //toastr.error(errorMessage);
+            showErrorToast(errorMessage);
             submitBtn.prop('disabled', false).html(originalText);
         }
     });
@@ -146,7 +148,7 @@ function changeStatus(userId, status) {
         message: `Bạn có chắc muốn ${statusText} người dùng này?`,
         confirmText: 'Xác nhận',
         onConfirm: function () {
-            toastr.info('Đang xử lý...');
+            showInfoToast('Đang xử lý...');
             $.ajax({
                 url: '/AdminUserManagement/Deactivate',
                 type: 'POST',
@@ -156,26 +158,68 @@ function changeStatus(userId, status) {
                 },
                 data: JSON.stringify({
                     userId: userId,
-                    reason: status === 0 ? 'Activated by admin' : 'Deactivated by admin'
+                    reason: status === 0 ? 'kích hoạt' : 'ngưng hoạt động'
                 }),
                 success: function (response) {
                     if (response.success) {
-                        toastr.success(`Đã ${statusText} người dùng`);
+                        showSuccessToast(`Đã ${statusText} người dùng`);
                         setTimeout(function() {
                             window.location.reload();
                         }, 800);
                     } else {
-                        toastr.error(response.message || `Không thể ${statusText} người dùng`);
+                        showErrorToast(response.message || `Không thể ${statusText} người dùng`);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error(`Error ${statusText}:`, error);
-                    toastr.error(`Lỗi khi ${statusText} người dùng`);
+                    showErrorToast(`Lỗi khi ${statusText} người dùng`);
                 }
             });
         }
     });
 }
+
+
+
+function ÂctiveUser(userId, status) {
+    const statusText = status === 0 ? 'kích hoạt' : 'ngừng hoạt động';
+
+    showConfirmModal({
+        title: 'Xác nhận',
+        message: `Bạn có chắc muốn ${statusText} người dùng này?`,
+        confirmText: 'Xác nhận',
+        onConfirm: function () {
+            showInfoToast('Đang xử lý...');
+            $.ajax({
+                url: '/AdminUserManagement/Activate',
+                type: 'POST',
+                contentType: 'application/json',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                data: JSON.stringify({
+                    userId: userId,
+                    reason: status === 0 ? 'kích hoạt' : 'ngưng hoạt động'
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        showSuccessToast(`Đã ${statusText} người dùng`);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 800);
+                    } else {
+                        showErrorToast(response.message || `Không thể ${statusText} người dùng`);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(`Error ${statusText}:`, error);
+                    showErrorToast(`Lỗi khi ${statusText} người dùng`);
+                }
+            });
+        }
+    });
+}
+
 
 /**
  * Open delete modal
@@ -198,7 +242,7 @@ function submitDelete() {
     const reason = document.getElementById('deleteReason').value;
 
     if (!userId) {
-        toastr.error('Invalid user ID');
+        showErrorToast('Invalid user ID');
         return;
     }
 
@@ -216,24 +260,24 @@ function submitDelete() {
         },
         success: function (response) {
             if (response.success) {
-                toastr.success(response.message || 'User deleted successfully');
+                showSuccessToast(response.message || 'Xóa thành công');
                 $('#deleteModal').modal('hide');
                 // Reload page after short delay
                 setTimeout(function() {
                     window.location.reload();
                 }, 1000);
             } else {
-                toastr.error(response.message || 'Failed to delete user');
+                showErrorToast(response.message || 'Xóa thất bại');
                 submitBtn.prop('disabled', false).html(originalText);
             }
         },
         error: function (xhr, status, error) {
             console.error('Error deleting user:', error);
-            let errorMessage = 'An error occurred while deleting user';
+            let errorMessage = 'Có lỗi xảy ra';
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMessage = xhr.responseJSON.message;
             }
-            toastr.error(errorMessage);
+            showErrorToast(errorMessage);
             submitBtn.prop('disabled', false).html(originalText);
         }
     });
@@ -247,7 +291,7 @@ function executeBulkAction() {
     const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
 
     if (!bulkAction || checkedBoxes.length === 0) {
-        toastr.warning('Please select users and choose an action');
+        showWarningToast('Please select users and choose an action');
         return;
     }
 
@@ -255,7 +299,7 @@ function executeBulkAction() {
     const userIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
 
     if (!action) {
-        toastr.warning('Please select an action');
+        showWarningToast('Please select an action');
         return;
     }
 
@@ -270,7 +314,7 @@ function executeBulkAction() {
             bulkDelete(userIds);
             break;
         default:
-            toastr.error('Unknown action');
+            showErrorToast('Unknown action');
     }
 }
 
@@ -285,7 +329,7 @@ function bulkChangeStatus(userIds, status) {
         message: `Bạn có chắc muốn ${statusText} ${userIds.length} người dùng đã chọn?`,
         confirmText: 'Xác nhận',
         onConfirm: function () {
-            toastr.info(`Đang xử lý ${userIds.length} người dùng...`);
+            showInfoToast(`Đang xử lý ${userIds.length} người dùng...`);
 
             let completed = 0;
             let failed = 0;
@@ -307,9 +351,9 @@ function bulkChangeStatus(userIds, status) {
                             completed++;
                             if (completed + failed === userIds.length) {
                                 if (failed === 0) {
-                                    toastr.success(`Đã ${statusText} ${completed} người dùng`);
+                                    showSuccessToast(`Đã ${statusText} ${completed} người dùng`);
                                 } else {
-                                    toastr.warning(`Đã ${statusText} ${completed} người dùng, ${failed} thất bại`);
+                                    showWarningToast(`Đã ${statusText} ${completed} người dùng, ${failed} thất bại`);
                                 }
                                 setTimeout(() => window.location.reload(), 800);
                             }
@@ -318,9 +362,9 @@ function bulkChangeStatus(userIds, status) {
                             failed++;
                             if (completed + failed === userIds.length) {
                                 if (failed === userIds.length) {
-                                    toastr.error(`Không thể ${statusText} người dùng`);
+                                    showErrorToast(`Không thể ${statusText} người dùng`);
                                 } else {
-                                    toastr.warning(`Đã ${statusText} ${completed} người dùng, ${failed} thất bại`);
+                                    showWarningToast(`Đã ${statusText} ${completed} người dùng, ${failed} thất bại`);
                                 }
                                 setTimeout(() => window.location.reload(), 800);
                             }
@@ -341,7 +385,7 @@ function bulkDelete(userIds) {
         message: `Bạn có chắc muốn xóa ${userIds.length} người dùng đã chọn? Thao tác này không thể hoàn tác!`,
         confirmText: 'Xóa',
         onConfirm: function () {
-            toastr.info(`Đang xử lý ${userIds.length} người dùng...`);
+            showInfoToast(`Đang xử lý ${userIds.length} người dùng...`);
 
             let completed = 0;
             let failed = 0;
@@ -358,9 +402,9 @@ function bulkDelete(userIds) {
                             completed++;
                             if (completed + failed === userIds.length) {
                                 if (failed === 0) {
-                                    toastr.success(`Đã xóa ${completed} người dùng`);
+                                    showSuccessToast(`Đã xóa ${completed} người dùng`);
                                 } else {
-                                    toastr.warning(`Đã xóa ${completed} người dùng, ${failed} thất bại`);
+                                    showWarningToast(`Đã xóa ${completed} người dùng, ${failed} thất bại`);
                                 }
                                 setTimeout(() => window.location.reload(), 800);
                             }
@@ -369,9 +413,9 @@ function bulkDelete(userIds) {
                             failed++;
                             if (completed + failed === userIds.length) {
                                 if (failed === userIds.length) {
-                                    toastr.error('Không thể xóa người dùng');
+                                    showErrorToast('Không thể xóa người dùng');
                                 } else {
-                                    toastr.warning(`Đã xóa ${completed} người dùng, ${failed} thất bại`);
+                                    showWarningToast(`Đã xóa ${completed} người dùng, ${failed} thất bại`);
                                 }
                                 setTimeout(() => window.location.reload(), 800);
                             }

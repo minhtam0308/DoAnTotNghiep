@@ -148,7 +148,7 @@ namespace WebSapaFreshWayStaff.Services.Api
                 {
                     SearchTerm = request.SearchTerm,
                     RoleId = request.RoleId,
-                    Status = request.Status ?? 0,
+                    Status = request.Status,
                     Page = request.Page > 0 ? request.Page : 1,
                     PageSize = request.PageSize > 0 ? request.PageSize : 10,
                     SortBy = string.IsNullOrWhiteSpace(request.SortBy) ? "FullName" : request.SortBy!,

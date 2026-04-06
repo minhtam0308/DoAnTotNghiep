@@ -38,7 +38,7 @@ namespace WebSapaFreshWayStaff.Controllers
                 {
                     SearchTerm = searchRequest?.SearchTerm,
                     RoleId = searchRequest?.RoleId,
-                    Status = searchRequest?.Status ?? 0, // default to active
+                    Status = searchRequest?.Status, // default to active
                     Page = searchRequest?.Page > 0 ? searchRequest.Page : 1,
                     PageSize = searchRequest?.PageSize > 0 ? searchRequest.PageSize : 10,
                     SortBy = string.IsNullOrWhiteSpace(searchRequest?.SortBy) ? "FullName" : searchRequest.SortBy!,
@@ -343,7 +343,7 @@ namespace WebSapaFreshWayStaff.Controllers
             {
                 if (request == null || request.UserId <= 0)
                 {
-                    return BadRequest(new { success = false, message = "Invalid request data." });
+                    return BadRequest(new { success = false, message = "Tài khoản không tồn tại." });
                 }
 
                 // Change status to 1 (Inactive) - 0 = Active, 1 = Inactive
@@ -351,19 +351,56 @@ namespace WebSapaFreshWayStaff.Controllers
 
                 if (success)
                 {
-                    return Ok(new { success = true, message = "User deactivated successfully." });
+                    return Ok(new { success = true, message = "Ngừng hoạt động thành công." });
                 }
                 else
                 {
-                    return BadRequest(new { success = false, message = "Failed to deactivate user." });
+                    return BadRequest(new { success = false, message = "Ngừng hoạt động thất bại." });
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deactivating user {UserId}", request?.UserId);
-                return StatusCode(500, new { success = false, message = "An error occurred while deactivating user." });
+                return StatusCode(500, new { success = false, message = "Có lỗi xảy ra." });
             }
         }
+
+
+        /// <summary>
+        /// POST: /AdminUserManagement/Deactivate
+        /// Deactivates a user (called via AJAX from modal)
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activate([FromBody] DeactivateUserRequest request)
+        {
+            try
+            {
+                if (request == null || request.UserId <= 0)
+                {
+                    return BadRequest(new { success = false, message = "Tài khoản không tồn tại." });
+                }
+
+                // Change status to 1 (Inactive) - 0 = Active, 1 = Inactive
+                var success = await _userApiService.ChangeUserStatusAsync(request.UserId, 0);
+
+                if (success)
+                {
+                    return Ok(new { success = true, message = "Kích hoạt thành công." });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = "Kích hoạt thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deactivating user {UserId}", request?.UserId);
+                return StatusCode(500, new { success = false, message = "Có lỗi xảy ra." });
+            }
+        }
+
+
 
         /// <summary>
         /// POST: /AdminUserManagement/Delete/{id}

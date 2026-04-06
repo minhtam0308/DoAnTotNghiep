@@ -1,6 +1,7 @@
 ﻿using BusinessAccessLayer.Mapping;
 using BusinessAccessLayer.Services;
 using BusinessAccessLayer.Services.Interfaces;
+using CloudinaryDotNet;
 using DataAccessLayer.Dbcontext;
 using DataAccessLayer.Repositories;
 using DataAccessLayer.Repositories.Interfaces;
@@ -126,6 +127,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IVerificationService, VerificationService>();
 
 // Đăng ký dịch vụ chạy ngầm của chúng ta
 builder.Services.AddHostedService<OrderStatusUpdaterService>();

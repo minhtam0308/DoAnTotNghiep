@@ -142,7 +142,7 @@
                         <select name="sortBy" class="form-select form-select-sm text-dark">
                             <option value="FullName" selected="@(search.SortBy == "FullName")">Tên</option>
                             <option value="Email" selected="@(search.SortBy == "Email")">Email</option>
-                            <option value="RoleName" selected="@(search.SortBy == "RoleName")">Vai trò</option>
+                            <option value="RoleId" selected="@(search.SortBy == "RoleId")">Vai trò</option>
                             <option value="CreatedAt" selected="@(search.SortBy == "CreatedAt")">Ngày tạo</option>
                         </select>
                     </div>
@@ -397,7 +397,7 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Kích hoạt người dùng</h5>
-                <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -438,12 +438,12 @@
 </div>
 @{
     var successMessage = TempData["SuccessMessage"] as string;
-    var errorMessage = TempData.Peek("ErrorMessage") as string;
-    var warningMessage = TempData.Peek("WarningMessage") as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+    var warningMessage = TempData["WarningMessage"] as string;
 }
 
 @section Scripts {
-    <script src="~/js/admin-user-management.js"></script>
+    <script src="~/js/admin-user-management.js" asp-append-version="true"></script>
     <script>
         // Initialize on page load
             
@@ -455,20 +455,20 @@
         @if (!string.IsNullOrEmpty(successMessage))
         {
             <text>
-                // toastr.success('@successMessage');
                     showSuccessToast('@successMessage');
             </text>
         }
-        @if (errorMessage != null)
+        @if (!string.IsNullOrEmpty(errorMessage))
         {
             <text>
-                toastr.error('@errorMessage');
+                    showErrorToast('@errorMessage');
+
             </text>
         }
-        @if (warningMessage != null)
+        @if (!string.IsNullOrEmpty(warningMessage))
         {
             <text>
-                toastr.warning('@warningMessage');
+                   showWarningToast('@warningMessage');
             </text>
         }
 
@@ -481,7 +481,7 @@
 
         function submitActivate() {
             const userId = document.getElementById('activateUserId').value;
-            changeStatus(userId, 0);
+            ÂctiveUser(userId, 0);
             $('#activateModal').modal('hide');
         }
     </script>

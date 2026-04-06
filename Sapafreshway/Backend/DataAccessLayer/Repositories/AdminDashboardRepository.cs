@@ -23,7 +23,7 @@ namespace DataAccessLayer.Repositories
         // ========== USER STATISTICS ==========
         public async Task<int> GetTotalUsersAsync()
         {
-            return await _context.Users.CountAsync();
+            return await _context.Users.CountAsync(x => x.IsDeleted == false);
         }
 
         public async Task<int> GetActiveUsersAsync()

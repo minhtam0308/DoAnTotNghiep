@@ -20,26 +20,18 @@ namespace BusinessAccessLayer.Services
         private readonly IMapper _mapper;
         private readonly IRoleRepository _roleRepository;
         private readonly IEmailService _emailService;
-        //private readonly ICloudinaryService? _cloudinaryService;
+        private readonly ICloudinaryService? _cloudinaryService;
         private static readonly HashSet<int> RestrictedCreationRoleIds = new() { 2, 5 };
 
-        //public UserService(IUnitOfWork unitOfWork, IMapper mapper, IRoleRepository roleRepository, IEmailService emailService, ICloudinaryService? cloudinaryService = null)
-        //{
-        //    _unitOfWork = unitOfWork;
-        //    _mapper = mapper;
-        //    _roleRepository = roleRepository;
-        //    _emailService = emailService;
-        //    _cloudinaryService = cloudinaryService;
-        //}
-
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IRoleRepository roleRepository, IEmailService emailService)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IRoleRepository roleRepository, IEmailService emailService, ICloudinaryService? cloudinaryService = null)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _roleRepository = roleRepository;
             _emailService = emailService;
-
+            _cloudinaryService = cloudinaryService;
         }
+
 
         public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken ct = default)
         {
@@ -284,41 +276,41 @@ namespace BusinessAccessLayer.Services
         public async Task UpdateAsync(int id, UserUpdateRequest request, CancellationToken ct = default)
         {
                 var user = await _unitOfWork.Users.GetByIdAsync(id);
-            //if (user == null || user.IsDeleted == true)
-            //{
-            //    throw new InvalidOperationException("User not found");
-            //}
+            if (user == null || user.IsDeleted == true)
+            {
+                throw new InvalidOperationException("User not found");
+            }
 
-            //// Check if email is being changed and if new email already exists
-            //if (user.Email != request.Email && await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
-            //{
-            //    throw new InvalidOperationException("Email already exists");
-            //}
+            // Check if email is being changed and if new email already exists
+            if (user.Email != request.Email && await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
+            {
+                throw new InvalidOperationException("Email already exists");
+            }
 
-            //// Update user properties
-            //// NOTE: RoleId cannot be changed when editing user - preserve original role
-            //user.FullName = request.FullName;
-            //user.Email = request.Email;
-            //user.Phone = request.Phone;
-            //// user.RoleId = request.RoleId; // DO NOT UPDATE ROLE - Role cannot be changed when editing
-            //user.Status = request.Status;
+            // Update user properties
+            // NOTE: RoleId cannot be changed when editing user - preserve original role
+            user.FullName = request.FullName;
+            user.Email = request.Email;
+            user.Phone = request.Phone;
+            // user.RoleId = request.RoleId; // DO NOT UPDATE ROLE - Role cannot be changed when editing
+            user.Status = request.Status;
 
-            //// Handle avatar upload - ưu tiên upload file lên Cloudinary nếu có
-            //if (request.AvatarFile != null && request.AvatarFile.Length > 0 && _cloudinaryService != null)
-            //{
-            //    var uploadedUrl = await _cloudinaryService.UploadImageAsync(request.AvatarFile, "avatars");
-            //    if (!string.IsNullOrWhiteSpace(uploadedUrl))
-            //    {
-            //        user.AvatarUrl = uploadedUrl;
-            //    }
-            //}
-            //else if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
-            //{
-            //    // Fallback: sử dụng URL nếu không có file upload
-            //    user.AvatarUrl = request.AvatarUrl.Trim();
-            //}
+            // Handle avatar upload - ưu tiên upload file lên Cloudinary nếu có
+            if (request.AvatarFile != null && request.AvatarFile.Length > 0 && _cloudinaryService != null)
+            {
+                var uploadedUrl = await _cloudinaryService.UploadImageAsync(request.AvatarFile, "avatars");
+                if (!string.IsNullOrWhiteSpace(uploadedUrl))
+                {
+                    user.AvatarUrl = uploadedUrl;
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
+            {
+                // Fallback: sử dụng URL nếu không có file upload
+                user.AvatarUrl = request.AvatarUrl.Trim();
+            }
 
-            //user.ModifiedAt = DateTime.UtcNow;
+            user.ModifiedAt = DateTime.UtcNow;
 
             await _unitOfWork.Users.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
@@ -327,41 +319,41 @@ namespace BusinessAccessLayer.Services
         public async Task<UserDto> UpdateProfileAsync(int id, UserProfileUpdateRequest request, CancellationToken ct = default)
         {
                 var user = await _unitOfWork.Users.GetByIdAsync(id);
-            //    if (user == null || user.IsDeleted == true)
-            //    {
-            //        throw new InvalidOperationException("User not found");
-            //    }
+            if (user == null || user.IsDeleted == true)
+            {
+                throw new InvalidOperationException("User not found");
+            }
 
-            //    // Only update profile fields (FullName, Phone, AvatarUrl if supported)
-            //    user.FullName = request.FullName;
-            //    if (!string.IsNullOrWhiteSpace(request.Phone))
-            //    {
-            //        user.Phone = request.Phone;
-            //    }
+            // Only update profile fields (FullName, Phone, AvatarUrl if supported)
+            user.FullName = request.FullName;
+            if (!string.IsNullOrWhiteSpace(request.Phone))
+            {
+                user.Phone = request.Phone;
+            }
 
-            //    // Ưu tiên upload file lên Cloudinary nếu có
-            //    if (request.AvatarFile != null && request.AvatarFile.Length > 0 && _cloudinaryService != null)
-            //    {
-            //        var uploadedUrl = await _cloudinaryService.UploadImageAsync(request.AvatarFile, "avatars");
-            //        if (!string.IsNullOrWhiteSpace(uploadedUrl))
-            //        {
-            //            user.AvatarUrl = uploadedUrl;
-            //        }
-            //    }
-            //    else if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
-            //    {
-            //        user.AvatarUrl = request.AvatarUrl.Trim();
-            //    }
+            // Ưu tiên upload file lên Cloudinary nếu có
+            if (request.AvatarFile != null && request.AvatarFile.Length > 0 && _cloudinaryService != null)
+            {
+                var uploadedUrl = await _cloudinaryService.UploadImageAsync(request.AvatarFile, "avatars");
+                if (!string.IsNullOrWhiteSpace(uploadedUrl))
+                {
+                    user.AvatarUrl = uploadedUrl;
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(request.AvatarUrl))
+            {
+                user.AvatarUrl = request.AvatarUrl.Trim();
+            }
 
-            //    user.ModifiedAt = DateTime.UtcNow;
+            user.ModifiedAt = DateTime.UtcNow;
 
-            //    await _unitOfWork.Users.UpdateAsync(user);
-            //    await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
 
-            //    // Return updated user DTO
-                var userDto = _mapper.Map<UserDto>(user);
-            //    var role = await _roleRepository.GetByIdAsync(user.RoleId);
-            //    userDto.RoleName = role?.RoleName ?? "Unknown";
+            // Return updated user DTO
+            var userDto = _mapper.Map<UserDto>(user);
+            var role = await _roleRepository.GetByIdAsync(user.RoleId);
+            userDto.RoleName = role?.RoleName ?? "Unknown";
 
             return userDto;
         }
@@ -414,40 +406,40 @@ namespace BusinessAccessLayer.Services
                 ? request.NewPassword.Trim()
                 : PasswordGenerator.Generate();
 
-            //            if (newPassword.Length < 6)
-            //            {
-            //                throw new InvalidOperationException("Mật khẩu phải có ít nhất 6 ký tự");
-            //            }
+            if (newPassword.Length < 6)
+            {
+                throw new InvalidOperationException("Mật khẩu phải có ít nhất 6 ký tự");
+            }
 
-            //            user.PasswordHash = HashPassword(newPassword);
-            //            user.ModifiedAt = DateTime.UtcNow;
+            user.PasswordHash = HashPassword(newPassword);
+            user.ModifiedAt = DateTime.UtcNow;
 
-            //            await _unitOfWork.Users.UpdateAsync(user);
-            //            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
 
-            //            if (request.SendEmailNotification)
-            //            {
-            //                try
-            //                {
-            //                    var subject = "Mật khẩu của bạn đã được đặt lại";
-            //                    var body = $@"
-            //<div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
-            //  <p>Chào {user.FullName},</p>
-            //  <p>Mật khẩu của bạn đã được đặt lại bởi quản trị viên.</p>
-            //  <p><strong>Mật khẩu mới:</strong> {newPassword}</p>
-            //  <p>Vui lòng đăng nhập và đổi mật khẩu ngay để đảm bảo an toàn.</p>
-            //  <p>Trân trọng,</p>
-            //  <p>SapaFoRest RMS</p>
-            //  <hr />
-            //  <small>Đây là email tự động, vui lòng không trả lời.</small>
-            //</div>";
-            //                    await _emailService.SendAsync(user.Email, subject, body);
-            //                }
-            //                catch
-            //                {
-            //                    // Không chặn flow nếu gửi email lỗi
-            //                }
-            //            }
+            if (request.SendEmailNotification)
+            {
+                try
+                {
+                    var subject = "Mật khẩu của bạn đã được đặt lại";
+                    var body = $@"
+            <div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
+              <p>Chào {user.FullName},</p>
+              <p>Mật khẩu của bạn đã được đặt lại bởi quản trị viên.</p>
+              <p><strong>Mật khẩu mới:</strong> {newPassword}</p>
+              <p>Vui lòng đăng nhập và đổi mật khẩu ngay để đảm bảo an toàn.</p>
+              <p>Trân trọng,</p>
+              <p>SapaFoRest RMS</p>
+              <hr />
+              <small>Đây là email tự động, vui lòng không trả lời.</small>
+            </div>";
+                    await _emailService.SendAsync(user.Email, subject, body);
+                }
+                catch
+                {
+                    // Không chặn flow nếu gửi email lỗi
+                }
+            }
 
             return newPassword;
         }
