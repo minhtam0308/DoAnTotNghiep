@@ -53,22 +53,22 @@ namespace BusinessAccessLayer.Services
             List<string>? positions = null;
             List<int>? positionIds = null;
 
-            //if (string.Equals(roleName, "Staff", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    var staff = await _dbContext.Staffs
-            //        //.Include(s => s.Positions)
-            //        .FirstOrDefaultAsync(s => s.UserId == user.UserId);
+            if (string.Equals(roleName, "Staff", StringComparison.OrdinalIgnoreCase))
+            {
+                var staff = await _dbContext.Staffs
+                    //.Include(s => s.Positions)
+                    .FirstOrDefaultAsync(s => s.UserId == user.UserId);
 
-            //    //if (staff == null || staff.Positions == null || staff.Positions.Count == 0)
-            //    if (staff == null)
-            //        {
-            //        throw new UnauthorizedAccessException("Tài khoản nhân viên chưa được phân công vị trí. Vui lòng liên hệ quản trị viên.");
-            //    }
+                //if (staff == null || staff.Positions == null || staff.Positions.Count == 0)
+                if (staff == null)
+                {
+                    throw new UnauthorizedAccessException("Tài khoản nhân viên chưa được phân công vị trí. Vui lòng liên hệ quản trị viên.");
+                }
 
-            //    // Get position names & ids
-            //    //positions = staff.Positions.Select(p => p.PositionName).ToList();
-            //    //positionIds = staff.Positions.Select(p => p.PositionId).ToList();
-            //}
+                //Get position names & ids
+                positions = staff.Positions.Select(p => p.PositionName).ToList();
+                positionIds = staff.Positions.Select(p => p.PositionId).ToList();
+            }
 
             return new LoginResponse
             {
@@ -76,6 +76,7 @@ namespace BusinessAccessLayer.Services
                 FullName = user.FullName ?? "",
                 Email = user.Email,
                 Phone = user.Phone,
+                AvatarUrl = user.AvatarUrl,
                 RoleId = user.RoleId,
                 RoleName = user.Role?.RoleName ?? string.Empty,
                 Token = GenerateJwtToken(user, positionIds, positions),

@@ -154,7 +154,7 @@ namespace WebSapaForestForStaff.Controllers
                         new Claim(ClaimTypes.MobilePhone, authResponse.Phone ?? ""),
                         new Claim("Token", authResponse.Token ?? "")
                     };
-
+                    claims.Add(new Claim("AvatarUrl", authResponse.AvatarUrl ?? ""));
                     // Lưu position ids & names vào claims nếu có
                     if (authResponse.PositionIds != null && authResponse.PositionIds.Any())
                     {
