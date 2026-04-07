@@ -62,9 +62,9 @@ namespace DataAccessLayer.UnitOfWork
 
         //public IStaffProfileRepository StaffProfiles => _staffProfiles ??= new StaffProfileRepository(_context);
 
-        //private IPositionRepository _positions;
+        private IPositionRepository _positions;
 
-        //public IPositionRepository Positions => _positions ??= new PositionRepository(_context);
+        public IPositionRepository Positions => _positions ??= new PositionRepository(_context);
 
         private IPaymentRepository _payments;
 
@@ -110,9 +110,9 @@ namespace DataAccessLayer.UnitOfWork
 
         //public ICustomerManagementRepository CustomerManagement => _customerManagement ??= new CustomerManagementRepository(_context);
 
-        //private IStaffManagementRepository _staffManagement;
+        private IStaffManagementRepository _staffManagement;
 
-        //public IStaffManagementRepository StaffManagement => _staffManagement ??= new StaffManagementRepository(_context);
+        public IStaffManagementRepository StaffManagement => _staffManagement ??= new StaffManagementRepository(_context);
 
         public UnitOfWork(SapaBackendContext context)
         {

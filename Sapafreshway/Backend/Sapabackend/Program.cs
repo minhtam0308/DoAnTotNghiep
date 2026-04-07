@@ -130,6 +130,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IVerificationService, VerificationService>();
+builder.Services.AddScoped<IStaffManagementService, StaffManagementService>();
+builder.Services.AddScoped<IStaffManagementRepository, StaffManagementRepository>();
 
 // Đăng ký dịch vụ chạy ngầm của chúng ta
 builder.Services.AddHostedService<OrderStatusUpdaterService>();
@@ -145,7 +147,7 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Roles.Admin, p => p.RequireRole(Roles.Admin));
-    options.AddPolicy(Roles.Manager, p => p.RequireRole(Roles.Manager));
+    options.AddPolicy(Roles.Manager, p => p.RequireRole(Roles.Manager, Roles.Owner));
     options.AddPolicy(Roles.Staff, p => p.RequireRole(Roles.Staff));
     options.AddPolicy(Roles.Customer, p => p.RequireRole(Roles.Customer));
     options.AddPolicy(Roles.Owner, p => p.RequireRole(Roles.Owner));
@@ -245,7 +247,7 @@ app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 
 //app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -35,6 +35,7 @@ builder.Services.AddHttpClient<IOwnerDashboardApiService, OwnerDashboardApiServi
 builder.Services.AddHttpClient<IAdminDashboardApiService, AdminDashboardApiService>();
 builder.Services.AddHttpClient<IOwnerRevenueApiService, OwnerRevenueApiService>();
 builder.Services.AddHttpClient<IOwnerWarehouseAlertApiService, OwnerWarehouseAlertApiService>();
+builder.Services.AddHttpClient<IStaffManagementApiService, StaffManagementApiService>();
 
 
 
@@ -132,7 +133,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+//app.UseAuthorization();
+app.UseAuthentication();
 
 app.Use(async (context, next) =>
 {
