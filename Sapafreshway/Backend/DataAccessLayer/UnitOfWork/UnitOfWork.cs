@@ -106,9 +106,9 @@ namespace DataAccessLayer.UnitOfWork
 
         //public IReservationRepository Reservations => _reservations ??= new ReservationRepository(_context);
 
-        //private ICustomerManagementRepository _customerManagement;
+        private ICustomerManagementRepository _customerManagement;
 
-        //public ICustomerManagementRepository CustomerManagement => _customerManagement ??= new CustomerManagementRepository(_context);
+        public ICustomerManagementRepository CustomerManagement => _customerManagement ??= new CustomerManagementRepository(_context);
 
         private IStaffManagementRepository _staffManagement;
 

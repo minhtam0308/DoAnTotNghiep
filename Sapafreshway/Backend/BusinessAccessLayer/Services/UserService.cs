@@ -1,16 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using BusinessAccessLayer.DTOs.Users;
 using BusinessAccessLayer.Services.Interfaces;
 using DataAccessLayer.Repositories.Interfaces;
 using DataAccessLayer.UnitOfWork.Interfaces;
 using DomainAccessLayer.Common;
+using DomainAccessLayer.Enums;
 using DomainAccessLayer.Models;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BusinessAccessLayer.Services
 {
@@ -197,7 +199,7 @@ namespace BusinessAccessLayer.Services
             // Business validation
             if (await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
             {
-                throw new InvalidOperationException("Email already exists");
+                throw new InvalidOperationException("Email đã tồn tại.");
             }
 
             if (RestrictedCreationRoleIds.Contains(request.RoleId))
@@ -212,9 +214,9 @@ namespace BusinessAccessLayer.Services
                     ? request.TemporaryPassword.Trim()
                     : PasswordGenerator.Generate();
 
-            if (effectivePassword.Length < 6)
+            if (effectivePassword.Length < 8)
             {
-                throw new InvalidOperationException("Mật khẩu phải có ít nhất 6 ký tự");
+                throw new InvalidOperationException("Mật khẩu phải có ít nhất 8 ký tự");
             }
 
             //            // Hash password
@@ -233,7 +235,26 @@ namespace BusinessAccessLayer.Services
                 IsDeleted = false
             };
 
-            await _unitOfWork.Users.AddAsync(user);
+            // Create Staff entity
+            if(request.RoleId == 4)
+            {
+                var staff = new Staff
+                {
+                    User = user,
+                    DepartmentId = null, // Department is not used anymore
+                    HireDate = DateOnly.FromDateTime(DateTime.Now),
+                    SalaryBase = 0,
+                    Status = 0 // Active (0 = Active, 1 = Inactive)
+                };
+
+                var createdStaff = await _unitOfWork.StaffManagement.CreateStaffAsync(staff, ct);
+            }
+            else
+            {
+                await _unitOfWork.Users.AddAsync(user);
+
+            }
+
             await _unitOfWork.SaveChangesAsync();
 
             if (request.SendEmailNotification)

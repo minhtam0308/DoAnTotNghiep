@@ -13,18 +13,14 @@ namespace SapaBackend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        //private readonly IUserManagementService _userManagementService;
-        //private readonly IExternalAuthService _externalAuthService;
-        //private readonly IPhoneAuthService _phoneAuthService;
-        //private readonly IPasswordService _passwordService;
+        private readonly IUserManagementService _userManagementService;
+        private readonly IPasswordService _passwordService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService,IUserManagementService userManagementService,IPasswordService passwordService)
         {
             _authService = authService;
-            //_userManagementService = userManagementService;
-            //_externalAuthService = externalAuthService;
-            //_phoneAuthService = phoneAuthService;
-            //_passwordService = passwordService;
+            _userManagementService = userManagementService;
+            _passwordService = passwordService;
         }
 
         [HttpPost("login")]
@@ -46,30 +42,30 @@ namespace SapaBackend.Controllers
             }
         }
 
-        //public class RefreshTokenRequest { public string RefreshToken { get; set; } = string.Empty; }
+        public class RefreshTokenRequest { public string RefreshToken { get; set; } = string.Empty; }
 
-        //[HttpPost("refresh-token")]
-        //[AllowAnonymous]
-        //public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequest req, CancellationToken ct)
-        //{
-        //    if (string.IsNullOrWhiteSpace(req.RefreshToken))
-        //    {
-        //        return BadRequest(new { message = "Refresh token là bắt buộc" });
-        //    }
-        //    try
-        //    {
-        //        var resp = await _authService.RefreshTokenAsync(req.RefreshToken);
-        //        return Ok(resp);
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        return Unauthorized(new { message = ex.Message });
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(500, new { message = "Đã xảy ra lỗi khi làm mới token" });
-        //    }
-        //}
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequest req, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(req.RefreshToken))
+            {
+                return BadRequest(new { message = "Refresh token là bắt buộc" });
+            }
+            try
+            {
+                var resp = await _authService.RefreshTokenAsync(req.RefreshToken);
+                return Ok(resp);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi khi làm mới token" });
+            }
+        }
 
         //[HttpPost("google-login")]
         //[AllowAnonymous]
@@ -185,59 +181,59 @@ namespace SapaBackend.Controllers
 
         /// <summary>
         /// Yêu cầu đặt lại mật khẩu - Gửi mã xác nhận qua email
-        ///// </summary>
-        //[HttpPost("forgot-password")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> ForgotPassword([FromBody] RequestPasswordResetDto request, CancellationToken ct)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        /// </summary>
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] RequestPasswordResetDto request, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    try
-        //    {
-        //        await _passwordService.RequestResetAsync(request, ct);
-        //        // Always return success to prevent email enumeration
-        //        return Ok(new { message = "Nếu email tồn tại, mã xác nhận đã được gửi đến email của bạn." });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log error but return success to prevent email enumeration
-        //        return Ok(new { message = "Nếu email tồn tại, mã xác nhận đã được gửi đến email của bạn." });
-        //    }
-        //}
+            try
+            {
+                await _passwordService.RequestResetAsync(request, ct);
+                // Always return success to prevent email enumeration
+                return Ok(new { message = "Nếu email tồn tại, mã xác nhận đã được gửi đến email của bạn." });
+            }
+            catch (Exception ex)
+            {
+                // Log error but return success to prevent email enumeration
+                return Ok(new { message = "Nếu email tồn tại, mã xác nhận đã được gửi đến email của bạn." });
+            }
+        }
 
         /// <summary>
         /// Đặt lại mật khẩu với mã xác nhận và mật khẩu mới
         /// </summary>
-        //[HttpPost("reset-password")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request, CancellationToken ct)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    try
-        //    {
-        //        await _passwordService.ResetPasswordAsync(request, ct);
-        //        return Ok(new { message = "Mật khẩu đã được đặt lại thành công." });
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        return Unauthorized(new { message = ex.Message });
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { message = "Đã xảy ra lỗi khi đặt lại mật khẩu. Vui lòng thử lại." });
-        //    }
-        //}
+            try
+            {
+                await _passwordService.ResetPasswordAsync(request, ct);
+                return Ok(new { message = "Mật khẩu đã được đặt lại thành công." });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi khi đặt lại mật khẩu. Vui lòng thử lại." });
+            }
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-namespace WebSapaFreshWayCustomer.Models
+namespace WebSapaFreshWay.Models
 {
     public class ErrorViewModel
     {

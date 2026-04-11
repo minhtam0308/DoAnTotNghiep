@@ -7,6 +7,7 @@ namespace BusinessAccessLayer.Services.Interfaces
     {
         Task<string> GenerateAndSendCodeAsync(int userId, string email, string purpose, int ttlMinutes, CancellationToken ct = default);
         Task<bool> VerifyCodeAsync(int userId, string purpose, string code, CancellationToken ct = default);
+        Task<bool> VerifyCodeEmailAsync(string email, string purpose, string code, CancellationToken ct = default);
         Task InvalidateCodesAsync(int userId, string purpose, CancellationToken ct = default);
     }
 }

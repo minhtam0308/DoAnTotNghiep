@@ -191,7 +191,7 @@
                 if (file) {
                     // Validate file size (5MB)
                     if (file.size > 5 * 1024 * 1024) {
-                        toastr.error('Kích thước ảnh không được vượt quá 5MB');
+                        showErrorToast('Kích thước ảnh không được vượt quá 5MB');
                         $(this).val('');
                         return;
                     }
@@ -199,7 +199,7 @@
                     // Validate file type
                     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                     if (!validTypes.includes(file.type)) {
-                        toastr.error('Vui lòng chọn file ảnh JPG, PNG hoặc GIF');
+                        showErrorToast('Vui lòng chọn file ảnh JPG, PNG hoặc GIF');
                         $(this).val('');
                         return;
                     }
@@ -211,8 +211,8 @@
                         $('#avatarPreviewContainer').show();
                     };
                     reader.readAsDataURL(file);
-                    
-                    toastr.success('Đã chọn ảnh thành công');
+
+                    showSuccessToast('Đã chọn ảnh thành công');
                 }
             });
             
@@ -225,7 +225,7 @@
                 } else {
                     $('#avatarPreview').attr('src', '').hide();
                 }
-                toastr.info('Đã hủy thay đổi ảnh');
+                showInfoToast('Đã hủy thay đổi ảnh');
             });
             
             // ========== SALARY CALCULATION ==========
@@ -259,7 +259,7 @@
                 
                 if (!positionId || positionId <= 0) {
                     e.preventDefault();
-                    toastr.error('Vui lòng chọn chức vụ!');
+                    showErrorToast('Vui lòng chọn chức vụ!');
                     $('#positionSelect').addClass('is-invalid');
                     return false;
                 }
@@ -267,7 +267,7 @@
                 const baseSalary = parseFloat($('#hiddenBaseSalary').val());
                 if (baseSalary <= 0) {
                     e.preventDefault();
-                    toastr.error('Lương cơ bản phải lớn hơn 0!');
+                    showErrorToast('Lương cơ bản phải lớn hơn 0!');
                     return false;
                 }
                 

@@ -1,0 +1,238 @@
+using Microsoft.AspNetCore.Mvc;
+using WebSapaFreshWay.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Newtonsoft.Json;
+using System.Text;
+using Microsoft.Extensions.Logging;
+using WebSapaFreshWay.DTOs;
+using Microsoft.AspNetCore.Http;
+
+namespace WebSapaFreshWay.Controllers
+{
+    public class AuthController : Controller
+    {
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(ILogger<AuthController> logger)
+        {
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:5013/")
+            };
+            _logger = logger;
+        }
+
+        [HttpGet]
+        public IActionResult Login(string returnUrl = null)
+        {
+            // If already authenticated via cookie, redirect to home
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(new OtpRequestDto());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RequestOtp(OtpRequestDto model, string returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Login", model);
+            }
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(model.Email);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/Customer/send-otp-login", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Mã OTP đã được gửi đến email của bạn.";
+                    TempData["Phone"] = model.Email;
+                    return View("VerifyOtp", new VerifyOtpDto { Email = model.Email });
+                }
+
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var errorMessage = "Không thể gửi mã OTP. Vui lòng thử lại.";
+                try
+                {
+                    var errorObj = JsonConvert.DeserializeObject<dynamic>(errorContent);
+                    if (errorObj?.message != null)
+                    {
+                        errorMessage = errorObj.message.ToString();
+                    }
+                }
+                catch
+                {
+                    // ignore parse errors, keep default message
+                }
+
+                ModelState.AddModelError(string.Empty, errorMessage);
+                return View("Login", model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during OTP request");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra. Vui lòng thử lại.");
+                return View("Login", model);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyOtp(VerifyOtpDto model, string returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var verifyDto = new
+                {
+                    Email = model.Email,
+                    Code = model.Code
+                };
+
+                var json = JsonConvert.SerializeObject(verifyDto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/Customer/verify-otp-login", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var authResponse = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
+
+                    // Store token in Session for downstream API calls (ApiService prefers Session token)
+                    HttpContext.Session.SetString("Token", authResponse.Token);
+
+                    // Fetch profile to get AvatarUrl for UI (layout dropdown)
+                    string? avatarUrl = null;
+                    try
+                    {
+                        using var profileClient = new HttpClient { BaseAddress = _httpClient.BaseAddress };
+                        profileClient.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authResponse.Token);
+
+                        var profileResp = await profileClient.GetAsync("api/Customer/profile");
+                        if (profileResp.IsSuccessStatusCode)
+                        {
+                            var profileJson = await profileResp.Content.ReadAsStringAsync();
+                            var profile = JsonConvert.DeserializeObject<CustomerProfile>(profileJson);
+                            avatarUrl = profile?.AvatarUrl;
+                            if (!string.IsNullOrWhiteSpace(avatarUrl))
+                            {
+                                HttpContext.Session.SetString("AvatarUrl", avatarUrl);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Non-critical: avatar can fallback to default icon/image
+                    }
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, authResponse.UserId.ToString()),
+                        new Claim(ClaimTypes.Name, authResponse.FullName),
+                        new Claim(ClaimTypes.Email, authResponse.Email),
+                        new Claim(ClaimTypes.Role, "Customer"),
+                        new Claim("Token", authResponse.Token)
+                    };
+                    if (!string.IsNullOrWhiteSpace(avatarUrl))
+                    {
+                        claims.Add(new Claim("AvatarUrl", avatarUrl));
+                    }
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24) // Longer session for customers
+                    };
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+
+                    _logger.LogInformation("Customer {Phone} logged in successfully", model.Email);
+
+                    return LocalRedirect(returnUrl ?? Url.Action("Index", "Home"));
+                }
+
+                // ✅ FIX: Đọc error message từ API response
+                var errorContent = await response.Content.ReadAsStringAsync();
+                string errorMessage = "Mã OTP không đúng hoặc đã hết hạn. Vui lòng thử lại.";
+                
+                try
+                {
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(errorContent);
+                    if (errorResponse?.message != null)
+                    {
+                        errorMessage = errorResponse.message.ToString();
+                    }
+                }
+                catch
+                {
+                    // Nếu không parse được JSON, dùng message mặc định
+                }
+
+                ModelState.AddModelError(string.Empty, errorMessage);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during OTP verification");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra. Vui lòng thử lại.");
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult ResendOtp(string phone)
+        {
+            if (string.IsNullOrEmpty(phone))
+            {
+                return RedirectToAction("Login");
+            }
+
+            return View("VerifyOtp", new VerifyOtpDto { Email = phone });
+        }
+    }
+
+    public class LoginResponse
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Token { get; set; } = null!;
+        public int RoleId { get; set; }
+    }
+
+    public class VerifyOtpDto
+    {
+        public string Email { get; set; } = null!;
+        public string Code { get; set; } = null!;
+    }
+}

@@ -1,0 +1,284 @@
+﻿@model WebSapaFreshWay.DTOs.OrderTable.MenuPageViewModel
+@using WebSapaFreshWay.DTOs
+
+@{
+    ViewData["Title"] = "Thực đơn";
+    int tableId = ViewBag.TableId;
+    string apiBaseUrl = ViewBag.ApiBaseUrl;
+    var orderedItems = ViewBag.OrderedItems as List<WebSapaFreshWay.DTOs.OrderTable.OrderDetailStatusViewModel> ?? new List<WebSapaFreshWay.DTOs.OrderTable.OrderDetailStatusViewModel>();
+
+    string tableNumber = ViewBag.TableNumber ?? tableId.ToString();
+    string areaName = ViewBag.AreaName ?? "Không rõ";
+    string floor = ViewBag.Floor == null ? "N/A" : (ViewBag.Floor == 0 ? "G" : ViewBag.Floor.ToString());
+
+    var categories = ViewBag.Categories as List<WebSapaFreshWay.DTOs.OrderTable.MenuCategoryViewModel>
+                       ?? new List<WebSapaFreshWay.DTOs.OrderTable.MenuCategoryViewModel>();
+
+    var currentSearchString = ViewBag.CurrentSearchString as string;
+
+    // Lấy 'currentCategoryId' trực tiếp từ ViewBag (Controller đã gửi)
+    int? currentCategoryId = ViewBag.CurrentCategoryId as int?;
+    Layout = null;
+
+    var statusMap = new Dictionary<string, (string cssClass, string displayText)>
+    {
+        { "Pending", ("status-sent", "Đã gửi") },
+        { "Cooking", ("status-processing", "Đang chế biến") },
+        { "Ready", ("status-processing", "Đang chế biến") },
+        { "Done", ("status-served", "Đã xong") },
+        { "Served", ("status-served", "Đã xong") },
+        { "Cancelled", ("status-cancelled", "Đã hủy") } 
+
+    };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - Bàn @tableNumber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.7/signalr.min.js"></script>
+
+    <link rel="stylesheet" href="~/css/menu-order.css" />
+    <link rel="stylesheet" href="~/css/OrderGuest.css" />
+    <script>
+        var initialOrderedItems = @Json.Serialize(orderedItems);
+    </script>   
+</head>
+<body>
+    <input type="hidden" id="tableId" value="@tableId" />
+    <input type="hidden" id="apiBaseUrl" value="@apiBaseUrl" />
+
+    <header class="header">
+        <img src="https://res.cloudinary.com/dqj3v1x35/image/upload/v1766150517/menu_items/rhmtih7b6ghbxcylnalr.jpg"
+             alt="Dola Restaurant Logo" class="header-logo" />
+        <div class="call-staff-container">
+            <div class="call-staff-btn" id="call-staff-btn">
+                <i class="fas fa-bell"></i>
+                <span>Gọi Nhân Viên</span>
+            </div>
+        </div>
+    </header>
+
+
+
+    <div class="info-bar">
+
+        <h5>Bàn @tableNumber - @areaName </h5>
+        <div class="info-bar-icons">
+            <div class="search-icon" id="search-icon-btn">
+                <i class="fas fa-search"></i>
+            </div>
+
+        </div>
+
+
+        <!-- Modal Gọi Nhân Viên -->
+        <div class="modal fade" id="callStaffModal" tabindex="-1" aria-labelledby="callStaffModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title" id="callStaffModalLabel">Gọi Nhân Viên hỗ trợ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="staffNote" style="color:red" class="form-label">Ghi chú (nếu có):</label>
+                        <textarea class="form-control" id="staffNote" rows="3" placeholder="Ví dụ: Xin thêm đũa, vỡ ly..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="sendStaffRequest">Gửi yêu cầu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+    <div id="search-bar" class="page-hidden">
+        <div class="input-group">
+            <input type="text" id="search-input" class="form-control"
+                   placeholder="Tìm tên món..." value="@currentSearchString" />
+        </div>
+    </div>
+
+    <div id="menu-page" class="page-container">
+        <h2 style="text-align:center">Thực đơn nhà hàng</h2>
+        <div class="category-nav-container">
+
+            <a href="#"
+               class="category-tab @(currentCategoryId == 0 || currentCategoryId == null ? "active" : "")"
+               data-id="0">Tất cả</a>
+            @if (categories != null)
+            {
+                @foreach (var item in categories)
+                {
+                    <a href="#" class="category-tab @(currentCategoryId == item.CategoryId ? "active" : "")"
+                       data-id="@item.CategoryId">
+                        @item.CategoryName
+                    </a>
+                }
+            }
+        </div>
+
+        <div id="menu-list-container">
+            <p class="text-center text-muted mt-4">Đang tải thực đơn...</p>
+        </div>
+
+    </div>
+
+    <div id="status-page" class="page-container page-hidden">
+        <h3 class="category-title" style="margin-top: 0;">Trạng thái món ăn</h3>
+        <h6 style="color: #ff8c00;font-weight: 500;font-size: 14px;background-color: #fff8e1;padding: 8px 12px;       border-left: 4px solid #ff8c00;  border-radius: 4px;       margin-bottom: 10px;  ">
+            ⚠️ Lưu ý: Quý khách có thể hủy món khi chưa có trạng thái đang chết biến đặt món!
+        </h6>
+        @{
+            // Tính tổng tiền
+            decimal totalOrderedPrice = 0;
+
+            if (ViewBag.OrderedItems != null)
+            {
+                foreach (var oi in ViewBag.OrderedItems)
+                {
+                    if (oi.Price > 0 && oi.Quantity > 0)
+                    {
+                        totalOrderedPrice += oi.Price * oi.Quantity;
+                    }
+                }
+            }
+        }
+
+        <div style="
+    background: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-top: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+">
+            <span style="color:#666;font-size:14px;">Tổng tiền món đã gọi:</span>
+            <strong style="color:#d9534f;font-size:16px;">
+                @totalOrderedPrice.ToString("N0") đ
+            </strong>
+        </div>
+
+        @if (orderedItems.Any())
+        {
+            <div class="order-status-container mt-3">
+                @foreach (var item in orderedItems.OrderBy(i => i.CreatedAt))
+                {
+                    string statusClass = "status-unknown";
+                    string statusText = item.Status;
+
+                    if (statusMap.ContainsKey(item.Status))
+                    {
+                        statusClass = statusMap[item.Status].cssClass;
+                        statusText = statusMap[item.Status].displayText;
+                    }
+
+                    <div class="order-status-item shadow-sm" data-orderdetailid="@item.OrderDetailId">
+                        <div class="order-info">
+                            <div class="order-name">
+                                <strong>@item.ItemName</strong> <span class="quantity">x @item.Quantity</span>
+                            </div>
+                            <div class="order-meta">
+                                <small class="time">🕒Thời gian gọi: @item.CreatedAt.ToString("HH:mm")</small>
+                                @if (!string.IsNullOrEmpty(item.Notes))
+                                {
+                                    <small class="notes">💬 Ghi chú: @item.Notes</small>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="order-status">
+                            <span class="status-badge @statusClass">@statusText</span>
+                            @if (item.Status == "Pending")
+                            {
+                                <button class="btn btn-outline-danger btn-sm btn-cancel-item ms-2"
+                                        data-item-id="@item.OrderDetailId">
+                                    Hủy
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-muted mt-4">Bạn chưa gọi món nào.</p>
+        }
+    </div>
+
+    <div id="cart-page" class="page-container page-hidden">
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="#" id="nav-menu" class="nav-item active">
+            <i class="fas fa-utensils"></i>
+            <span>Menu</span>
+        </a>
+        <a href="#" id="nav-status" class="nav-item">
+            <i class="fas fa-receipt"></i>
+            <span id="status-count-badge" class="nav-badge page-hidden">0</span>
+            <span>Món đã gọi</span>
+        </a>
+        <a href="#" id="nav-cart" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count-badge" class="nav-badge page-hidden">0</span>
+            <span>Giỏ hàng</span>
+        </a>
+    </nav>
+
+    <!-- Toast container kiểu mobile -->
+    <div id="mobileToast" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; display: none;">
+        <div id="mobileToastMessage"
+             style="padding: 12px 20px; border-radius: 25px; color: white; min-width: 200px; max-width: 80vw; text-align: center; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+            Nội dung thông báo
+        </div>
+    </div>
+
+    <div class="modal fade" id="comboDetailModal" tabindex="-1" aria-labelledby="comboDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header" style="border-bottom: none;">
+                    <h5 class="modal-title" id="comboDetailModalLabel">Đang tải...</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+
+                <div class="modal-body" style="padding-top: 0;">
+
+                    <div id="combo-modal-image-container" class="mb-3" style="text-align: center;">
+                    </div>
+
+                    <div id="combo-modal-items" class="mb-3">
+                        <p class="text-center text-muted">Đang tải chi tiết...</p>
+                    </div>
+
+                    <h6><i class="fas fa-dollar-sign me-2"></i>Chi tiết giá:</h6>
+                    <div id="combo-modal-pricing">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer" id="combo-modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/js/menu-order.js" asp-append-version="true"></script>
+
+   
+</body>
+</html>

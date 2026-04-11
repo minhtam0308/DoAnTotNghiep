@@ -154,7 +154,7 @@ namespace WebSapaFreshWayStaff.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Lỗi khi tạo người dùng");
+                    ModelState.AddModelError("", "Bạn không thể tạo người dùng này");
                     var roles = await _userApiService.GetRolesAsync();
                     viewModel.AvailableRoles = roles ?? new List<Role>();
                     return View(viewModel);

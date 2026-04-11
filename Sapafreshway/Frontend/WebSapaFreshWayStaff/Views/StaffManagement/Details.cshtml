@@ -191,24 +191,24 @@ else
                 </div>
                 <div class="card-body">
                     <div class="btn-group" role="group">
-                        <a asp-action="Edit" asp-route-id="@Model.StaffId" class="btn btn-warning">
+                        <a asp-action="Edit" asp-route-id="@Model.StaffId" class="btn btn-warning mx-2">
                             <i class="fas fa-edit"></i> Chỉnh sửa thông tin
                         </a>
                         @if (Model.Status == 0)
                         {
-                            <button type="button" class="btn btn-danger" onclick="confirmDeactivate(@Model.StaffId, '@Model.FullName')">
+                            <button type="button" class="btn btn-danger mx-2" onclick="confirmDeactivate(@Model.StaffId, '@Model.FullName')">
                                 <i class="fas fa-ban"></i> Ngừng hoạt động
                             </button>
                         }
                         else
                         {
-                            <button type="button" class="btn btn-success" onclick="confirmActivate(@Model.StaffId, '@Model.FullName')">
+                            <button type="button" class="btn btn-success mx-2" onclick="confirmActivate(@Model.StaffId, '@Model.FullName')">
                                 <i class="fas fa-check-circle"></i> Kích hoạt lại
                             </button>
                         }
-                        <button type="button" class="btn btn-primary" onclick="confirmResetPassword(@Model.StaffId, '@Model.FullName')">
+                        @* <button type="button" class="btn btn-primary" onclick="confirmResetPassword(@Model.StaffId, '@Model.FullName')">
                             <i class="fas fa-key"></i> Reset mật khẩu
-                        </button>
+                        </button> *@
                     </div>
                 </div>
             </div>
@@ -250,13 +250,13 @@ else
                 });
 
                 if (response.success) {
-                    toastr.success(response.message || 'Ngừng hoạt động thành công');
+                    showSuccessToast(response.message || 'Ngừng hoạt động thành công');
                     setTimeout(() => location.reload(), 1500);
                 } else {
-                    toastr.error(response.message || 'Lỗi khi ngừng hoạt động');
+                    showErrorToast(response.message || 'Lỗi khi ngừng hoạt động');
                 }
             } catch (error) {
-                toastr.error('Đã xảy ra lỗi');
+                showErrorToast('Đã xảy ra lỗi');
             }
         }
 
@@ -273,13 +273,13 @@ else
                 });
 
                 if (response.success) {
-                    toastr.success(response.message || 'Kích hoạt thành công');
+                    showSuccessToast(response.message || 'Kích hoạt thành công');
                     setTimeout(() => location.reload(), 1500);
                 } else {
-                    toastr.error(response.message || 'Lỗi khi kích hoạt');
+                    showErrorToast(response.message || 'Lỗi khi kích hoạt');
                 }
             } catch (error) {
-                toastr.error('Đã xảy ra lỗi');
+                showErrorToast('Đã xảy ra lỗi');
             }
         }
 
@@ -296,12 +296,12 @@ else
                 });
 
                 if (response.success) {
-                    toastr.success(response.message || 'Reset mật khẩu thành công');
+                    showSuccessToast(response.message || 'Reset mật khẩu thành công');
                 } else {
-                    toastr.error(response.message || 'Lỗi khi reset mật khẩu');
+                    showErrorToast(response.message || 'Lỗi khi reset mật khẩu');
                 }
             } catch (error) {
-                toastr.error('Đã xảy ra lỗi');
+                showErrorToast('Đã xảy ra lỗi');
             }
         }
 
@@ -309,13 +309,13 @@ else
         @if (TempData["SuccessMessage"] != null)
         {
             <text>
-            toastr.success('@Html.Raw(TempData["SuccessMessage"])');
+                showSuccessToast('@Html.Raw(TempData["SuccessMessage"])');
             </text>
         }
         @if (TempData["ErrorMessage"] != null)
         {
             <text>
-            toastr.error('@Html.Raw(TempData["ErrorMessage"])');
+                showSuccessToast('@Html.Raw(TempData["ErrorMessage"])');
             </text>
         }
     </script>
