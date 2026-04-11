@@ -452,7 +452,7 @@ namespace WebSapaFreshWayStaff.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestStaff request)
         {
             try
             {
@@ -546,7 +546,7 @@ namespace WebSapaFreshWayStaff.Controllers
     /// <summary>
     /// DTO for reset password request
     /// </summary>
-    public class ResetPasswordRequest
+    public class ResetPasswordRequestStaff
     {
         public int StaffId { get; set; }
     }

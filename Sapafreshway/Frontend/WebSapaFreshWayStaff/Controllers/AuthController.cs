@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebSapaFreshWayStaff.DTOs.Auth;
 using WebSapaFreshWayStaff.Services;
 
-namespace WebSapaForestForStaff.Controllers
+namespace WebSapaFreshWayStaff.Controllers
 {
     public class AuthController : Controller
     {
