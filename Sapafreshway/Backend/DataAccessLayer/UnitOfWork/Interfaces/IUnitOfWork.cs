@@ -11,33 +11,33 @@ namespace DataAccessLayer.UnitOfWork.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        //IManagerMenuRepository MenuItem { get; }
-        //IManagerCategoryRepository MenuCategory { get; }
+        IManagerMenuRepository MenuItem { get; }
+        IManagerCategoryRepository MenuCategory { get; }
         IInventoryIngredientRepository InventoryIngredient { get; }
 
-        //IPurchaseOrderDetailRepository PurchaseOrderDetail { get; }
-        //IPurchaseOrderRepository PurchaseOrder { get; }
-        //IStockTransactionRepository StockTransaction { get; }
-        //IManagerSupplierRepository Supplier { get; }
-        //ISupplierRepository SupplierManager { get; }
-        //IAuditRepository AuditRepository { get; }
-        //IUnitRepository UnitRepository { get; }
-        //IWarehouseRepository Warehouse { get; }
-        //IManagerComboRepository Combo { get; }
+        IPurchaseOrderDetailRepository PurchaseOrderDetail { get; }
+        IPurchaseOrderRepository PurchaseOrder { get; }
+        IStockTransactionRepository StockTransaction { get; }
+        IManagerSupplierRepository Supplier { get; }
+        ISupplierRepository SupplierManager { get; }
+        IAuditRepository AuditRepository { get; }
+        IUnitRepository UnitRepository { get; }
+        IWarehouseRepository Warehouse { get; }
+        IManagerComboRepository Combo { get; }
         IUserRepository Users { get; }
-        //IStaffProfileRepository StaffProfiles { get; }
+        IStaffProfileRepository StaffProfiles { get; }
         IPositionRepository Positions { get; }
         IPaymentRepository Payments { get; }
-        //IAuditLogRepository AuditLogs { get; }
-        //IOrderLockRepository OrderLocks { get; }
+        IAuditLogRepository AuditLogs { get; }
+        IOrderLockRepository OrderLocks { get; }
         IOrderRepository Orders { get; }
         IOrderDetailRepository OrderDetails { get; }
-        //IOrderComboItemRepository OrderComboItems { get; }
-        //ITableRepository Tables { get; }
-        //IShiftRepository Shifts { get; }
+        IOrderComboItemRepository OrderComboItems { get; }
+        ITableRepository Tables { get; }
+        IShiftRepository Shifts { get; }
 
-        //IShiftCounterRepository ShiftCounters { get; }
-        //IReservationRepository Reservations { get; }
+        IShiftCounterRepository ShiftCounters { get; }
+        IReservationRepository Reservations { get; }
 
         ICustomerManagementRepository CustomerManagement { get; }
 

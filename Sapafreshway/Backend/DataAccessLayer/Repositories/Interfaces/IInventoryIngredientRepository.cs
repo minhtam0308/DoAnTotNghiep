@@ -27,5 +27,6 @@ namespace DataAccessLayer.Repositories.Interfaces
         Task<List<InventoryBatch>> GetAvailableBatchesByIngredientAsync(int ingredientId);
         Task<List<InventoryBatch>> GetAllBatchesByIngredientAsync(int ingredientId); // Lấy tất cả batches (kể cả available <= 0)
         Task<List<InventoryBatch>> GetReservedBatchesByIngredientAsync(int ingredientId);
+        Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches(int BatchesId, DateTime? startDate, DateTime? endDate);
     }
 }

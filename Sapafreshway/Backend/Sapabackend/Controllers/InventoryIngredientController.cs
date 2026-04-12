@@ -1,0 +1,438 @@
+﻿using BusinessAccessLayer.DTOs.Filter;
+using BusinessAccessLayer.DTOs.Inventory;
+using BusinessAccessLayer.DTOs.Manager;
+using BusinessAccessLayer.Services.Interfaces;
+using DomainAccessLayer.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
+
+namespace SapaFoRestRMSAPI.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class InventoryIngredientController : Controller
+    {
+
+        private readonly IInventoryIngredientService _inventoryIngredientService;
+        private readonly IWarehouseService _warehouseService;
+        private readonly IStockTransactionService _stockTransactionService;
+        private readonly ICloudinaryService _cloudinaryService;
+
+        public InventoryIngredientController(IInventoryIngredientService inventoryIngredientService, IWarehouseService warehouseService, ICloudinaryService cloudinaryService, IStockTransactionService stockTransactionService)
+        {
+            _inventoryIngredientService = inventoryIngredientService;
+            _warehouseService = warehouseService;
+            _stockTransactionService = stockTransactionService;
+            _cloudinaryService = cloudinaryService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<InventoryIngredientDTO>>> DisplayIngredents()
+        {
+            try
+            {
+                var ingredients = await _inventoryIngredientService.GetAllIngredient();
+
+                foreach (var ingredient in ingredients)
+                {
+                    decimal TE = 0;
+                    decimal TI = 0;
+                    decimal TFirst = 0;
+                    foreach (var b in ingredient.Batches)
+                    {
+                        var totalIE = await _inventoryIngredientService.GetImportExportBatchesId(
+                            b.BatchId, DateTime.Now.AddDays(-7), DateTime.Now
+                        );
+                        TE += totalIE.TExport;
+                        TI += totalIE.TImport;
+                        TFirst = totalIE.totalFirst;
+
+                    }
+                    ingredient.TotalImport = TI;
+                    ingredient.TotalExport = TE;
+                    ingredient.OriginalQuantity = TFirst;
+                }
+
+                //if (!ingredients.Any())
+                //    return NotFound("No ingredient found");
+
+                return Ok(ingredients);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("filter")]
+        public async Task<ActionResult<IEnumerable<InventoryIngredientDTO>>> FilterIngredents([FromBody] IngredientFilterRequest? request)
+        {
+            try
+            {
+                var fromDate = request?.FromDate ?? DateTime.Now.AddDays(-7);
+                var toDate = request?.ToDate ?? DateTime.Now;
+                var search = request?.SearchIngredent;
+                IEnumerable<InventoryIngredientDTO> ingredients;
+                if (string.IsNullOrEmpty(search))
+                {
+                    ingredients = await _inventoryIngredientService.GetAllIngredient();
+                }
+                else
+                {
+                    ingredients = await _inventoryIngredientService.GetAllIngredientSearch(search);
+                }
+
+
+                foreach (var ingredient in ingredients)
+                {
+                    decimal TE = 0;
+                    decimal TI = 0;
+                    decimal TFirst = 0;
+                    foreach (var b in ingredient.Batches)
+                    {
+                        var totalIE = await _inventoryIngredientService.GetImportExportBatchesId(
+                            b.BatchId, fromDate, toDate
+                        );
+                        TE += totalIE.TExport;
+                        TI += totalIE.TImport;
+                        TFirst = totalIE.totalFirst;
+
+                    }
+                    ingredient.TotalImport = TI;
+                    ingredient.TotalExport = TE;
+                    ingredient.OriginalQuantity = TFirst;
+                }
+
+                if (!ingredients.Any())
+                    return NotFound("No ingredient found");
+
+                return Ok(ingredients);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+        [HttpGet("BatchIngredient/{id}")]
+        public async Task<ActionResult<List<BatchIngredientDTO>>> GetBatchIngredient(int id)
+        {
+            try
+            {
+                var batches = await _inventoryIngredientService.GetBatchesAsync(id);
+
+                var result = batches.ToList();
+
+                if (result == null || result.Count == 0)
+                {
+                    return Ok(new List<BatchIngredientDTO>());
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Có lỗi xảy ra khi lấy dữ liệu",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("UpdateBatchWarehouse")]
+        public async Task<IActionResult> UpdateBatchWarehouse([FromBody] UpdateBatchWarehouseRequest request)
+        {
+            try
+            {
+                // _logger.LogInformation($"Nhận request cập nhật kho: BatchId={request.BatchId}, WarehouseId={request.WarehouseId}");
+
+                // Validate request
+                if (request.BatchId <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "BatchId không hợp lệ"
+                    });
+                }
+
+                if (request.WarehouseId <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "WarehouseId không hợp lệ"
+                    });
+                }
+
+                // Kiểm tra warehouse có tồn tại và active không
+                var warehouseExists = await _warehouseService.GetWarehouseById(request.WarehouseId);
+                if (warehouseExists == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = $"Không tìm thấy kho #{request.WarehouseId}"
+                    });
+                }
+
+                // Cập nhật warehouse cho batch
+                var result = await _inventoryIngredientService.UpdateBatchWarehouse(request.BatchId, request.WarehouseId, request.IsActive);
+
+                if (result)
+                {
+                    // _logger.LogInformation($"Cập nhật kho thành công: BatchId={request.BatchId}, WarehouseId={request.WarehouseId}");
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Cập nhật kho thành công",
+                        data = new
+                        {
+                            batchId = request.BatchId,
+                            warehouseId = request.WarehouseId
+                        }
+                    });
+                }
+                else
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Không thể cập nhật kho"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError(ex, $"Lỗi khi cập nhật kho cho batch {request.BatchId}");
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Có lỗi xảy ra khi cập nhật kho",
+                    error = ex.Message
+                });
+            }
+        }
+
+        public class UpdateBatchWarehouseRequest
+        {
+            public int BatchId { get; set; }
+            public int WarehouseId { get; set; }
+
+            public bool IsActive { get; set; }
+        }
+
+        [HttpPut("UpdateIngredient")]
+        public async Task<IActionResult> UpdateIngredient([FromBody] UpdateIngredientRequest request)
+        {
+            try
+            {
+                // Validate request
+                if (request.IngredientId <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "IngredientId không hợp lệ"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Name))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Tên nguyên liệu không được để trống"
+                    });
+                }
+
+                // Gọi service để cập nhật
+                var (success, message) = await _inventoryIngredientService.UpdateIngredient(
+                    request.IngredientId,
+                    request.Name.Trim(),
+                    request.UnitId
+                );
+
+                if (success)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        message = message,
+                        data = new
+                        {
+                            ingredientId = request.IngredientId,
+                            name = request.Name.Trim(),
+                            unit = request.UnitId
+                        }
+                    });
+                }
+                else
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = message
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Có lỗi xảy ra khi cập nhật nguyên liệu",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("ExportTransactions")]
+        public async Task<ActionResult<IEnumerable<object>>> GetExportTransactions()
+        {
+            try
+            {
+                var transactions = await _stockTransactionService.GetExportTransactionsAsync();
+
+                var result = transactions.Select(t => new
+                {
+                    id = t.TransactionId,
+                    ingredientId = t.IngredientId,
+                    ingredientName = t.IngredientName ?? "N/A",
+                    type = t.Type,
+                    quantity = t.Quantity,
+                    date = t.TransactionDate?.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    note = t.Note ?? "",
+                    batchId = t.BatchId,
+                    batchName = t.BatchName ?? $"Lô {t.BatchId}"
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Có lỗi xảy ra khi lấy dữ liệu xuất kho",
+                    error = ex.Message
+                });
+            }
+
+
+        }
+
+
+        // API riêng để kiểm tra TRƯỚC
+        //[HttpGet]
+        //[Route("api/Audit/CheckStatus/{batchId}")]
+        //public async Task<IActionResult> CheckAuditStatus(int batchId)
+        //{
+        //    var auditId = await _auditService.CheckExitsAuditStatus(batchId);
+
+        //    return Ok(new
+        //    {
+        //        success = true,
+        //        hasUnprocessedAudit = !string.IsNullOrEmpty(auditId),
+        //        auditId = auditId
+        //    });
+        //}
+
+
+        //[HttpPost("Audit/Create")]
+        //public async Task<IActionResult> Create([FromForm] AuditInventoryRequestDTO model)
+        //{
+        //    try
+        //    {
+        //        //  1. VALIDATE INPUT CƠ BẢN
+        //        if (string.IsNullOrWhiteSpace(model.PurchaseOrderId))
+        //            return BadRequest(new { success = false, message = "Thiếu mã lô (PO)" });
+
+        //        if (string.IsNullOrWhiteSpace(model.IngredientCode))
+        //            return BadRequest(new { success = false, message = "Thiếu mã nguyên liệu" });
+
+        //        if (model.CreatorId <= 0)
+        //            return BadRequest(new { success = false, message = "Thiếu thông tin người tạo đơn" });
+
+        //        if (string.IsNullOrWhiteSpace(model.Reason))
+        //            return BadRequest(new { success = false, message = "Vui lòng nhập lý do kiểm kê" });
+
+        //        if (model.AdjustmentQuantity < 0)
+        //            return BadRequest(new { success = false, message = "Số lượng điều chỉnh phải lớn hơn 0" });
+
+        //        if (string.IsNullOrWhiteSpace(model.CreatorName) ||
+        //            string.IsNullOrWhiteSpace(model.CreatorPosition) ||
+        //            string.IsNullOrWhiteSpace(model.CreatorPhone))
+        //            return BadRequest(new { success = false, message = "Thông tin người tạo đơn không đầy đủ" });
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new
+        //        {
+        //            success = false,
+        //            message = "Đã xảy ra lỗi trong quá trình xử lý đơn kiểm kê.",
+        //            error = ex.Message
+        //        });
+        //    }
+        //}
+
+        /// <summary>
+        /// GET: api/InventoryIngredient/kitchen-pickup?categoryName=Xào
+        /// Lấy danh sách nguyên liệu cần lấy từ lô hàng cho các món đang nấu, filter theo category
+        /// </summary>
+        [HttpGet("kitchen-pickup")]
+        public async Task<IActionResult> GetKitchenIngredientPickup([FromQuery] string? categoryName = null)
+        {
+            try
+            {
+                var pickupList = await _inventoryIngredientService.GetIngredientPickupListAsync(categoryName);
+                return Ok(new { success = true, data = pickupList });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// GET: api/InventoryIngredient/shortage
+        /// Lấy danh sách nguyên liệu thiếu cho các món đang nấu (hiển thị ở màn hình KDS cho bếp phó)
+        /// </summary>
+        [HttpGet("shortage")]
+        public async Task<IActionResult> GetIngredientShortage()
+        {
+            try
+            {
+                var shortageList = await _inventoryIngredientService.GetIngredientShortageListAsync();
+                return Ok(new { success = true, data = shortageList });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        //private async Task<string> GenerateAuditId()
+        //{
+        //    // Format: AUD-YYYYMMDD-XXXX
+        //    //var today = DateTime.Now.ToString("yyyyMMdd");
+        //    //var prefix = $"AUD-{today}-";
+
+        //    // Đếm số đơn trong ngày
+        //    //var count = await _auditService.CountAuditAsync(string.Format(prefix, today));
+
+        //    //var sequence = (count + 1).ToString().PadLeft(4, '0');
+
+        //    return $"No";
+        //    // Ví dụ: AUD-20241123-0001
+        //}
+    }
+}

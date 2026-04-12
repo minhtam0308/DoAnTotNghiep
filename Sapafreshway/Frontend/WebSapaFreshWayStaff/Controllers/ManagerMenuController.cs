@@ -18,7 +18,7 @@ namespace WebSapaFreshWayStaff.Controllers
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://localhost:5013/")
+                BaseAddress = new Uri("http://localhost:5013/")
             };
         }
 

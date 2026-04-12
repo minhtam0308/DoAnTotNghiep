@@ -24,11 +24,11 @@ namespace SapaFoRestRMSAPI.Controllers
             {
                 // Get list category
                 var category = await _managerCategoryManager.GetAllCategory();
-                if (!category.Any())
-                {
-                    //Can't find category
-                    return NotFound("No category found");
-                }
+                //if (!category.Any())
+                //{
+                //    //Can't find category
+                //    return NotFound("No category found");
+                //}
                 // Find list category
                 return Ok(category);
             }

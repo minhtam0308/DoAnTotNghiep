@@ -1,6 +1,9 @@
 ﻿using BusinessAccessLayer.Mapping;
 using BusinessAccessLayer.Services;
 using BusinessAccessLayer.Services.Interfaces;
+using BusinessAccessLayer.Services.Inventory;
+using BusinessLogicLayer.Services;
+using BusinessLogicLayer.Services.Interfaces;
 using CloudinaryDotNet;
 using DataAccessLayer.Dbcontext;
 using DataAccessLayer.Repositories;
@@ -103,41 +106,188 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 });
 
 
+//builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+//builder.Services.AddAutoMapper(typeof(CounterStaffMappingProfile));
 
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserManagementService, UserManagementService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
-builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
-builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
-builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<ITableRepository, TableRepository>();
-builder.Services.AddScoped<ITableService, TableService>();
-builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-builder.Services.AddScoped<IOwnerRevenueService, OwnerRevenueService>();
-builder.Services.AddScoped<IInventoryIngredientRepository, InventoryIngredientRepository>();
-builder.Services.AddScoped<IOwnerWarehouseAlertService, OwnerWarehouseAlertService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Add Repositories
+builder.Services.AddScoped<ISystemLogoRepository, SystemLogoRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IPositionRepository, PositionRepository>();
+builder.Services.AddScoped<IOrderTableRepository, OrderTableRepository>();
+// Role Management
 builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-builder.Services.AddScoped<IPasswordService, PasswordService>();
-builder.Services.AddScoped<IVerificationService, VerificationService>();
-builder.Services.AddScoped<IStaffManagementService, StaffManagementService>();
-builder.Services.AddScoped<IStaffManagementRepository, StaffManagementRepository>();
-builder.Services.AddScoped<ICustomerManagementService, CustomerManagementService>();
 
+// Position Management
+builder.Services.AddScoped<IPositionService, PositionService>();
+
+// Các dịch vụ khác
+builder.Services.AddScoped<IOrderTableService, OrderTableService>();
+
+// Add Services
+builder.Services.AddScoped<ISystemLogoService, SystemLogoService>();
+
+builder.Services.AddScoped<IBrandBannerRepository, BrandBannerRepository>();
+builder.Services.AddScoped<IBrandBannerService, BrandBannerService>();
 
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 
+builder.Services.AddScoped<IComboRepository, ComboRepository>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
+
+builder.Services.AddScoped<IManagerMenuService, ManagerMenuService>();
+builder.Services.AddScoped<IManagerComboService, ManagerComboService>();
+
+builder.Services.AddScoped<IRestaurantIntroRepository, RestaurantIntroRepository>();
+builder.Services.AddScoped<IRestaurantIntroService, RestaurantIntroService>();
+
+builder.Services.AddScoped<IManagerCategoryService, ManagerCategoryService>();
+builder.Services.AddScoped<IInventoryIngredientService, InventoryIngredientService>();
+builder.Services.AddScoped<IManagerSupplierService, ManagerSupplierService>();
+builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+builder.Services.AddScoped<IStockTransactionService, StockTransactionService>();
+builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddScoped<IInventoryAnalyticsService, InventoryAnalyticsService>();
+builder.Services.AddHostedService<ReorderLevelBackgroundJob>();
+
+builder.Services.AddScoped<IPurchaseOrderDetailService, PurchaseOrderDetailService>();
+
+
+
+
+builder.Services.AddScoped<IMarketingCampaignRepository, MarketingCampaignRepository>();
+builder.Services.AddScoped<IMarketingCampaignService, MarketingCampaignService>();
+builder.Services.AddScoped<IKitchenDisplayService, KitchenDisplayService>();
+builder.Services.AddScoped<IWaiterOrderTrackingService, WaiterOrderTrackingService>();
+
+//UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IReservationDepositRepository, ReservationDepositRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+builder.Services.AddScoped<ReservationDepositService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+// Unit of Work and User Repository mapping
+builder.Services.AddScoped<IUserRepository>(sp => sp.GetRequiredService<IUnitOfWork>().Users);
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Auth and User Management services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IVerificationService, VerificationService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
+builder.Services.AddScoped<BusinessAccessLayer.Services.OtpService>();
+builder.Services.AddScoped<BusinessAccessLayer.Services.Interfaces.IPhoneAuthService, BusinessAccessLayer.Services.PhoneAuthService>();
+//Table Service/Repository
+builder.Services.AddScoped<ITableRepository, TableRepository>();
+builder.Services.AddScoped<ITableService, TableService>();
+// Area Repository
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<IAreaService, AreaService>();
+// Auth and User Management services
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IVerificationService, VerificationService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
+//Table Service/Repository
+builder.Services.AddScoped<ITableRepository, TableRepository>();
+builder.Services.AddScoped<ITableService, TableService>();
+// Area Repository
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<IAreaService, AreaService>();
+
+builder.Services.AddScoped<IManagerComboRepository, ManagerComboRepository>();
+builder.Services.AddScoped<IManagerComboService, ManagerComboService>();
+
+//voucher
+builder.Services.AddScoped<IVoucherRepository, VoucherRepository>();
+builder.Services.AddScoped<IVoucherService, VoucherService>();
+
+//Payrool
+builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
+builder.Services.AddScoped<IPayrollService, PayrollService>();
+
+builder.Services.AddScoped<ICounterStaffRepository, CounterStaffRepository>();
+builder.Services.AddScoped<ICounterStaffService, CounterStaffService>();
+
+
+// Area Repository
+builder.Services.AddScoped<IOrderTableRepository, OrderTableRepository>();
+builder.Services.AddScoped<IOrderTableService, OrderTableService>();
+
+//DashBoardTable
+builder.Services.AddScoped<IDashboardTableRepository, DashboardTableRepository>();
+builder.Services.AddScoped<IDashboardTableService, DashboardTableService>();
+builder.Services.AddScoped<ISupplierManagerService, SupplierManagerService>();
+// capacityStatistic
+builder.Services.AddScoped<ICapacityStatisticsRepository, CapacityStatisticsRepository>();
+builder.Services.AddScoped<ICapacityStatisticsService, CapacityStatisticsService>();
+
+//
+builder.Services.Configure<MomoOptions>(builder.Configuration.GetSection("Momo"));
+builder.Services.AddSingleton<IMomoService, MomoService>();
+
+//payos
+builder.Services.AddHttpClient<IPayosService, PayosService>();
+builder.Services.AddScoped<IStaffProfileService, StaffProfileService>();
+//daytype
+builder.Services.AddScoped<IDayTypeRepository, DayTypeRepository>();
+builder.Services.AddScoped<IDayTypeService, DayTypeService>();
+//shifttemplate
+builder.Services.AddScoped<IShiftTemplateRepository, ShiftTemplateRepository>();
+builder.Services.AddScoped<IShiftTemplateService, ShiftTemplateService>();
+//department
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+//shift 
+builder.Services.AddScoped<IShiftRepository, ShiftRepository>();
+builder.Services.AddScoped<IShiftService, ShiftService>();
+//shiftassignment
+builder.Services.AddScoped<IShiftAssignmentRepository, ShiftAssignmentRepository>();
+builder.Services.AddScoped<IShiftAssignmentService, ShiftAssignmentService>();
+// Payment Service/Repository
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ICustomerVipService, CustomerVipService>();
+
+
+builder.Services.AddScoped<IShiftManagementService, ShiftManagementService>();
+
+// Customer Management Service
+builder.Services.AddScoped<ICustomerManagementService, CustomerManagementService>();
+
+// Staff Management Service
+builder.Services.AddScoped<IStaffManagementService, StaffManagementService>();
+
+// Owner Dashboard Services
+builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
+builder.Services.AddScoped<IOwnerRevenueService, OwnerRevenueService>();
+builder.Services.AddScoped<IOwnerWarehouseAlertService, OwnerWarehouseAlertService>();
+
+// Counter Staff Dashboard Services
+builder.Services.AddScoped<ICounterStaffDashboardRepository, CounterStaffDashboardRepository>();
+builder.Services.AddScoped<ICounterStaffDashboardService, CounterStaffDashboardService>();
+builder.Services.AddScoped<ICounterStaffOrderRepository, CounterStaffOrderRepository>();
+builder.Services.AddScoped<ICounterStaffOrderService, CounterStaffOrderService>();
+builder.Services.AddScoped<ICounterTransactionRepository, CounterTransactionRepository>();
+builder.Services.AddScoped<ICounterTransactionService, CounterTransactionService>();
+
+// Admin Dashboard Services
+builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 // Đăng ký dịch vụ chạy ngầm của chúng ta
 builder.Services.AddHostedService<OrderStatusUpdaterService>();
@@ -154,9 +304,9 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Roles.Admin, p => p.RequireRole(Roles.Admin));
     options.AddPolicy(Roles.Manager, p => p.RequireRole(Roles.Manager, Roles.Owner, Roles.Admin));
-    options.AddPolicy(Roles.Staff, p => p.RequireRole(Roles.Staff));
+    options.AddPolicy(Roles.Staff, p => p.RequireRole(Roles.Staff, Roles.Manager, Roles.Owner, Roles.Admin));
     options.AddPolicy(Roles.Customer, p => p.RequireRole(Roles.Customer));
-    options.AddPolicy(Roles.Owner, p => p.RequireRole(Roles.Owner));
+    options.AddPolicy(Roles.Owner, p => p.RequireRole(Roles.Owner,Roles.Admin));
     options.AddPolicy("AdminOrManager", p => p.RequireRole(Roles.Admin, Roles.Manager));
     options.AddPolicy("StaffOrManager", p => p.RequireRole(Roles.Staff, Roles.Manager));
 

@@ -15,7 +15,7 @@ namespace WebSapaFreshWayStaff.DTOs.Inventory
 
         public bool IsActive { get; set; }
 
-        //public List<StockTransactionDTO> StockTransactions { get; set; } = new();
+        public List<StockTransactionDTO> StockTransactions { get; set; } = new();
 
     }
 }

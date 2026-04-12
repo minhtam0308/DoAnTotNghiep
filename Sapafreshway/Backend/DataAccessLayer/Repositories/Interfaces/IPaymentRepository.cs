@@ -38,12 +38,12 @@ public interface IPaymentRepository : IRepository<Order>
     /// <summary>
     /// Lưu giao dịch thanh toán
     /// </summary>
-    //Task<Transaction> SaveTransactionAsync(Transaction transaction);
+    Task<Transaction> SaveTransactionAsync(Transaction transaction);
 
     /// <summary>
     /// Lấy giao dịch theo sessionId
     /// </summary>
-    //Task<Transaction?> GetTransactionBySessionIdAsync(string sessionId);
+    Task<Transaction?> GetTransactionBySessionIdAsync(string sessionId);
 
     /// <summary>
     /// Cập nhật trạng thái đơn hàng
@@ -53,27 +53,27 @@ public interface IPaymentRepository : IRepository<Order>
     /// <summary>
     /// Lấy transaction theo ID
     /// </summary>
-    //Task<Transaction?> GetTransactionByIdAsync(int transactionId);
+    Task<Transaction?> GetTransactionByIdAsync(int transactionId);
 
     /// <summary>
     /// Lấy danh sách transactions theo OrderId
     /// </summary>
-    //Task<IEnumerable<Transaction>> GetTransactionsByOrderIdAsync(int orderId);
+    Task<IEnumerable<Transaction>> GetTransactionsByOrderIdAsync(int orderId);
 
     /// <summary>
     /// Lấy danh sách transactions theo ReservationId
     /// </summary>
-    //Task<IEnumerable<Transaction>> GetTransactionsByReservationIdAsync(int reservationId);
+    Task<IEnumerable<Transaction>> GetTransactionsByReservationIdAsync(int reservationId);
 
     /// <summary>
     /// Cập nhật transaction
     /// </summary>
-    //Task UpdateTransactionAsync(Transaction transaction);
+    Task UpdateTransactionAsync(Transaction transaction);
 
     /// <summary>
     /// Lấy transaction theo TransactionCode
     /// </summary>
-    //Task<Transaction?> GetTransactionByCodeAsync(string transactionCode);
+    Task<Transaction?> GetTransactionByCodeAsync(string transactionCode);
 
     Task AddOrderHistoryAsync(OrderHistory history);
     

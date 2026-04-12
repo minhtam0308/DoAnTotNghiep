@@ -39,49 +39,49 @@ namespace DataAccessLayer.Repositories
         }
 
 
-        //public async Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches( int BatchesId, DateTime? startDate, DateTime? endDate)
-        //{
-        //    if (endDate == null)
-        //    {
-        //        endDate = DateTime.Now; 
-        //    }
+        public async Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches(int BatchesId, DateTime? startDate, DateTime? endDate)
+        {
+            if (endDate == null)
+            {
+                endDate = DateTime.Now;
+            }
 
-        //    if (startDate == null)
-        //    {
-        //        startDate = endDate.Value.AddDays(-7);
-        //    }
+            if (startDate == null)
+            {
+                startDate = endDate.Value.AddDays(-7);
+            }
 
-        //    var transactions = await _context.StockTransactions
-        //        .Where(t => t.BatchId == BatchesId
-        //                    && t.TransactionDate >= startDate
-        //                    && t.TransactionDate <= endDate)
-        //        .ToListAsync();
+            var transactions = await _context.StockTransactions
+                .Where(t => t.BatchId == BatchesId
+                            && t.TransactionDate >= startDate
+                            && t.TransactionDate <= endDate)
+                .ToListAsync();
 
-        //    decimal totalImport = transactions
-        //        .Where(t => t.Type == "Import")
-        //        .Sum(t => t.Quantity);
+            decimal totalImport = transactions
+                .Where(t => t.Type == "Import")
+                .Sum(t => t.Quantity);
 
-        //    decimal totalExport = transactions
-        //        .Where(t => t.Type == "Export")
-        //        .Sum(t => t.Quantity);
+            decimal totalExport = transactions
+                .Where(t => t.Type == "Export")
+                .Sum(t => t.Quantity);
 
-        //    var transactionExist = await _context.StockTransactions
-        //        .Where(t => t.BatchId == BatchesId
-        //                    && t.TransactionDate <= startDate)
-        //        .ToListAsync();
+            var transactionExist = await _context.StockTransactions
+                .Where(t => t.BatchId == BatchesId
+                            && t.TransactionDate <= startDate)
+                .ToListAsync();
 
-        //    decimal totalImportE = transactionExist
-        //        .Where(t => t.Type == "Import")
-        //        .Sum(t => t.Quantity);
+            decimal totalImportE = transactionExist
+                .Where(t => t.Type == "Import")
+                .Sum(t => t.Quantity);
 
-        //    decimal totalExportE = transactionExist
-        //        .Where(t => t.Type == "Export")
-        //        .Sum(t => t.Quantity);
+            decimal totalExportE = transactionExist
+                .Where(t => t.Type == "Export")
+                .Sum(t => t.Quantity);
 
-        //    decimal totalFirst = totalImportE - totalExportE;
+            decimal totalFirst = totalImportE - totalExportE;
 
-        //    return (totalImport, totalExport, totalFirst);
-        //}
+            return (totalImport, totalExport, totalFirst);
+        }
 
 
         public Task<Ingredient?> GetByIdAsync(int id)
