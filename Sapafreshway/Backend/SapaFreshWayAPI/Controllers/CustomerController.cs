@@ -5,6 +5,7 @@ using BusinessAccessLayer.Services.Interfaces;
 using DataAccessLayer.Dbcontext;
 using DataAccessLayer.Repositories;
 using DataAccessLayer.Repositories.Interfaces;
+using DataAccessLayer.UnitOfWork.Interfaces;
 using DomainAccessLayer.Models;
 using Google.Apis.Drive.v3.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +26,7 @@ namespace SapaFreshWayAPI.Controllers
     [Authorize(Roles = "Customer, Admin")] 
     public class CustomerController : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly SapaFreshContext _context;
         private readonly IConfiguration _configuration;
         private readonly ICustomerManagementService _customerManagementService;
@@ -36,6 +38,7 @@ namespace SapaFreshWayAPI.Controllers
         private static Dictionary<string, ContactOtpInfo> _contactOtpCache = new();
 
         public CustomerController(
+            IUnitOfWork unitOfWork,
             SapaFreshContext context,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
             ICustomerManagementService customerManagementService,
@@ -48,6 +51,7 @@ namespace SapaFreshWayAPI.Controllers
             _otpService = otpService;
             userRepository = new UserRepository(context);
             _verificationService = verificationService;
+            _unitOfWork = unitOfWork;
             _customerRepository = new CustomerRepository(_context);
         }
 
@@ -81,7 +85,7 @@ namespace SapaFreshWayAPI.Controllers
                 var checkEmail = await userRepository.GetByEmailAsync(email);
                 if (checkEmail == null)
                 {
-                    await userRepository.AddAsync(new DomainAccessLayer.Models.User() { Email = email, Status = 0, RoleId = 5 });
+                    await userRepository.CreateAsync(new DomainAccessLayer.Models.User() { Email = email, Status = 0, RoleId = 5, PasswordHash = "User"});
                 }
                 checkEmail = await userRepository.GetByEmailAsync(email);
                 var checkUser = await _customerRepository.GetByUserIdAsync(checkEmail!.UserId);

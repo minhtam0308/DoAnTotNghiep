@@ -311,11 +311,11 @@ namespace BusinessAccessLayer.Services
             //});
 
             // Thêm "Combos"
-            categoryDtos.Add(new MenuCategoryDto
-            {
-                CategoryId = -1, // <-- ID ảo đặc biệt
-                CategoryName = "Combos"
-            });
+            //categoryDtos.Add(new MenuCategoryDto
+            //{
+            //    CategoryId = -1, // <-- ID ảo đặc biệt
+            //    CategoryName = "Combos"
+            //});
 
             return categoryDtos;
         }

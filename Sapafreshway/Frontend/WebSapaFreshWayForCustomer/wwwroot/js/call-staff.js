@@ -63,7 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const res = await fetch(apiBaseUrl + '/OrderTable/RequestAssistance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json-patch+json' },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify(requestData),
+                credentials: 'include'
             });
 
             const data = await res.json();

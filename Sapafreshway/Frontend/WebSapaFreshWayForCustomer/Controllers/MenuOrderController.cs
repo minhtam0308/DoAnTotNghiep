@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Text;
 // Thêm các DTOs của bạn ở đây
 using WebSapaFreshWayForCustomer.DTOs.OrderTable;
 using WebSapaFreshWayForCustomer.Models; // (Nếu bạn có ErrorViewModel)
-
+using WebSapaFreshWayForCustomer.Services;
 public class MenuOrderController : Controller
 {
     private readonly IHttpClientFactory _httpClientFactory;
@@ -16,7 +17,7 @@ public class MenuOrderController : Controller
         _httpClientFactory = httpClientFactory;
         _configuration = configuration;
         // Đảm bảo "ApiSettings:BaseUrl" trong appsettings.json là đúng
-        _apiBaseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl");
+        _apiBaseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl") + "/api";
     }
 
     [HttpGet]
@@ -25,7 +26,12 @@ public class MenuOrderController : Controller
         int? categoryId, // Giờ sẽ nhận cả 0, -1
         string? searchString)
     {
-        var httpClient = _httpClientFactory.CreateClient("API");
+        //var httpClient = _httpClientFactory.CreateClient("API");
+        var httpClient = new HttpClient
+        {
+            //BaseAddress = new Uri("https://localhost:7096/")
+            BaseAddress = new Uri($"{_configuration.GetValue<string>("ApiSettings:BaseUrl")}")
+        };
 
         // 1. Build query string (ĐÃ SỬA)
         var queryBuilder = new StringBuilder();

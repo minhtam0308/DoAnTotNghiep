@@ -673,11 +673,11 @@ namespace BusinessAccessLayer.Services
             }).ToList();
 
             // Thêm "Combos"
-            categoriesDto.Add(new CategoryDto
-            {
-                CategoryId = -1, // <-- ID ảo đặc biệt
-                CategoryName = "Combos"
-            });
+            //categoriesDto.Add(new CategoryDto
+            //{
+            //    CategoryId = -1, // <-- ID ảo đặc biệt
+            //    CategoryName = "Combos"
+            //});
 
             return categoriesDto;
         }
