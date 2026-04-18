@@ -1,0 +1,1224 @@
+﻿@{
+    ViewData["Title"] = "Kitchen Display System - Bếp Phó";
+    Layout = "~/Views/Shared/_LayoutKitchen.cshtml";
+}
+@section Styles {
+    <style>
+        /* KDS Specific Styles */
+        .kds-container {
+            background: radial-gradient(circle at top left, #f5f7fa 0, #e9edf5 40%, #dde3f0 100%);
+            min-height: 100vh;
+            padding: 24px 28px 24px 28px;
+        }
+
+        /* SignalR Connection Status Banner */
+        .signalr-status-banner {
+            background: #ff9800;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        @@keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .kds-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f7fbff 60%, #eef5ff 100%);
+            padding: 18px 22px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+        }
+
+        .kds-header h2 {
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #111827;
+        }
+
+        .kds-header p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .kds-header .btn {
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 8px 16px;
+        }
+
+        .kds-header #btnShowRecentlyFulfilled {
+            background-color: #0ea5e9; /* cyan-500 */
+            border-color: #0ea5e9;
+            color: #ffffff;
+        }
+
+        .kds-header #btnShowRecentlyFulfilled:hover {
+            background-color: #0284c7;
+            border-color: #0284c7;
+        }
+
+        .kds-header .btn-outline-primary {
+            border-width: 1.5px;
+            color: #1d4ed8;
+            background-color: #e0edff;
+        }
+
+        .kds-header .btn-outline-primary:hover {
+            background-color: #1d4ed8;
+            color: #ffffff;
+        }
+
+        /* Ingredient Shortage Alert Panel */
+        .shortage-alert-panel {
+            background: #fff3cd;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        .shortage-alert-header {
+            background: #ffe0e0;
+            padding: 12px 20px;
+            border-bottom: 2px solid #dc3545;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shortage-alert-body {
+            padding: 15px 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .shortage-alert-body.collapsed {
+            display: none;
+        }
+
+        .shortage-item {
+            background: white;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shortage-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .shortage-item.urgent {
+            background: #ffe0e0;
+            border-width: 2px;
+        }
+
+        .shortage-item-info {
+            flex: 1;
+        }
+
+        .shortage-item-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .shortage-item-details {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .shortage-item-quantity {
+            text-align: right;
+            margin-left: 15px;
+        }
+
+        .shortage-quantity-badge {
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .urgent-badge-shortage {
+            background: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .kds-main-layout {
+            display: flex;
+            gap: 22px;
+            min-height: calc(100vh - 210px);
+        }
+
+        .completed-orders-column {
+            width: 360px;
+            background: #f9fffb;
+            border-radius: 14px;
+            padding: 16px 14px 18px 14px;
+            overflow: visible;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            box-shadow: 0 16px 35px rgba(16, 185, 129, 0.18);
+        }
+
+        .completed-orders-column.hidden {
+            display: none;
+        }
+
+        .completed-orders-header {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 18px rgba(34, 197, 94, 0.35);
+        }
+
+        .completed-orders-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .completed-order-card {
+            background: #ecfdf3;
+            border: 1px solid rgba(22, 163, 74, 0.4);
+            border-radius: 12px;
+            padding: 13px 13px 11px 13px;
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.20);
+        }
+
+        .completed-order-card .order-header {
+            background: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .completed-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid #c3e6cb;
+            gap: 10px;
+        }
+
+        .completed-item:last-child {
+            border-bottom: none;
+        }
+
+        .completed-item-check {
+            color: #28a745;
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .active-orders-column {
+            flex: 1;
+            overflow: visible;
+            min-width: 0; /* Cho phép flex item co lại */
+        }
+
+        .orders-grid {
+            position: relative;
+            width: 100%;
+            padding: 2px !important;
+        }
+        
+        /* Masonry container */
+        .orders-grid.masonry {
+            display: block;
+        }
+        
+        /* Đảm bảo order-card không bị stretch */
+        .orders-grid .order-card {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 20px;
+            break-inside: avoid;
+        }
+        
+        /* Masonry columns wrapper */
+        .masonry-columns {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .masonry-column {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* Table group container cho mode "theo-ban" */
+        .table-group-container {
+            grid-column: 1 / -1; /* Chiếm toàn bộ chiều rộng của grid */
+        }
+        
+        .table-orders-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        /* Toastr Custom Styles */
+        #toast-container {
+            position: fixed !important;
+            top: 80px !important;
+            right: 20px !important;
+            z-index: 999999 !important;
+        }
+
+        #toast-container > .toast {
+            border-radius: 8px !important;
+            opacity: 0.95 !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            padding: 15px 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            min-width: 300px !important;
+            max-width: 500px !important;
+        }
+
+        /* Toast icon spacing */
+        #toast-container > .toast > .toast-icon {
+            flex-shrink: 0 !important;
+            margin-right: 0 !important;
+            font-size: 20px !important;
+            line-height: 1 !important;
+        }
+
+        /* Toast message spacing */
+        #toast-container > .toast > .toast-message {
+            flex: 1 !important;
+            color: inherit !important;
+            font-weight: 500 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.4 !important;
+        }
+
+        /* Toast title spacing */
+        #toast-container > .toast > .toast-title {
+            flex: 1 !important;
+            color: inherit !important;
+            font-weight: 600 !important;
+            margin: 0 0 4px 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Toast close button */
+        #toast-container > .toast > .toast-close-button {
+            flex-shrink: 0 !important;
+            margin-left: auto !important;
+            margin-right: 0 !important;
+            opacity: 0.8 !important;
+            font-size: 18px !important;
+            line-height: 1 !important;
+        }
+
+        #toast-container > .toast > .toast-close-button:hover {
+            opacity: 1 !important;
+        }
+
+        #toast-container > .toast-success {
+            background-color: #28a745 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+        }
+
+        #toast-container > .toast-error {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
+        }
+
+        #toast-container > .toast-info {
+            background-color: #17a2b8 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3) !important;
+        }
+
+        #toast-container > .toast-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3) !important;
+        }
+
+        #toast-container > div {
+            opacity: 1 !important;
+        }
+
+        /* Order Card */
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .order-card.has-urgent {
+            border: 2px solid #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .order-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Timer Badges - Màu theo thời gian */
+        .timer-badge {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        /* 1-10 phút: Màu trắng/xanh nhạt */
+        .timer-normal { 
+            background: #f0f4f8; 
+            color: #2c3e50;
+            border: 2px solid #d1dce5;
+        }
+
+        /* 10-15 phút: Màu vàng */
+        .timer-warning { 
+            background: #fff3cd; 
+            color: #856404;
+            border: 2px solid #ffc107;
+            animation: pulse-warning 2s infinite;
+        }
+
+        /* >15 phút: Màu đỏ */
+        .timer-critical { 
+            background: #f8d7da; 
+            color: #721c24;
+            border: 2px solid #dc3545;
+            animation: pulse-critical 1.5s infinite;
+        }
+
+        /* Animation cho cảnh báo */
+        @@keyframes pulse-warning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @@keyframes pulse-critical {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+            50% { 
+                transform: scale(1.08); 
+                box-shadow: 0 0 0 8px rgba(220, 53, 69, 0);
+            }
+        }
+
+        /* Item List */
+        .item-list {
+            margin: 15px 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+
+        .item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .item-quantity {
+            margin-right: 15px;
+            color: #666;
+        }
+
+        .item-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #e3f2fd; color: #1976d2; }
+        .status-cooking { background: #fff3e0; color: #f57c00; }
+        .status-late { background: #ffebee; color: #c62828; }
+        .status-ready { background: #e8f5e9; color: #2e7d32; }
+        .status-done { background: #c8e6c9; color: #1b5e20; font-weight: 700; } /* ✅ Màu xanh đậm cho Hoàn thành */
+
+        /* Special Instructions */
+        .special-instructions {
+            color: #d32f2f;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Complete Button */
+        .btn-complete {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: #4caf50;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-complete:hover {
+            background: #388e3c;
+            transform: scale(1.02);
+        }
+
+        .btn-complete:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        /* Styles for "Theo từng món" view */
+        .items-horizontal-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .items-section {
+            width: 100%;
+            display: block;
+        }
+
+        .items-grid-section {
+            position: relative;
+            width: 100%;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .items-grid-section.masonry {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: 280px;
+            max-width: 320px;
+            break-inside: avoid;
+        }
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .item-image-container {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-image-placeholder {
+            font-size: 48px;
+            color: #ccc;
+        }
+
+        .item-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .item-name-large {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            line-height: 1.4;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .item-name-text {
+            white-space: nowrap;
+        }
+
+        .item-quantity-inline {
+            color: #f97316;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .item-status-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-badge.status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fbbf24;
+        }
+
+        .status-badge.status-cooking {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #3b82f6;
+        }
+
+        .status-badge.status-ready {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .status-badge.status-done {
+            background-color: #e5e7eb;
+            color: #374151;
+            border: 2px solid #9ca3af;
+        }
+
+        .item-details-list {
+            margin-top: 15px;
+        }
+
+        .item-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            background: #f8f9fa;
+            font-size: 14px;
+        }
+
+        .item-detail-order {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .item-detail-quantity {
+            margin: 0 10px;
+            color: #666;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tabs .btn {
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 999px;
+            padding: 6px 14px;
+            color: #1f2933;
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+
+        .filter-tabs .btn:hover {
+            background-color: #e5edff;
+            border-color: #93c5fd;
+            color: #111827;
+        }
+
+        .filter-tabs .btn.active {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Override cho grouped items view - không dùng grid */
+        #ordersGrid:not(.orders-grid) {
+            display: block !important;
+        }
+
+        /* Order Card Clickable */
+        .order-card {
+            cursor: pointer;
+        }
+
+        /* Modal Popup Styles */
+        .order-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .order-modal-overlay.show {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Ensure modal is visible when shown */
+        #orderModalOverlay.show {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Force modal to be on top */
+        #orderModalOverlay {
+            position: fixed !important;
+            z-index: 99999 !important;
+        }
+
+        .order-modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .order-modal-header {
+            padding: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .order-modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .order-modal-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .order-modal-time {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .order-modal-header-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-rush, .btn-print {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-rush {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-rush:hover {
+            background: #f57c00;
+        }
+
+        .btn-rush.active {
+            background: #f57c00;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-print {
+            background: #757575;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #616161;
+        }
+
+        .order-modal-body {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+        }
+
+        .order-modal-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .order-modal-item {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-modal-item:hover {
+            background: #f5f5f5;
+        }
+
+        .order-modal-item.selected {
+            background: #e3f2fd;
+            border: 2px solid #1976d2;
+        }
+
+        .order-modal-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .order-modal-item-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .order-modal-footer {
+            padding: 15px 20px;
+            border-top: 2px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .btn-modal {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+            max-width: 200px;
+            white-space: nowrap;
+            text-align: center;
+        }
+        
+        /* Nút Hủy - màu xám */
+        .btn-modal-cancel {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #757575;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Nút Chọn tất cả - màu xám */
+        .btn-modal-select-all {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .btn-modal-select-all:hover {
+            background: #757575;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Nút Bắt đầu nấu - màu xanh nổi bật */
+        .btn-modal-fire {
+            background: #2196f3;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-modal-fire:hover {
+            background: #1976d2;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.4);
+        }
+        
+        .btn-modal-unfulfill {
+            background: #64b5f6;
+            color: white;
+        }
+
+        .btn-modal-unfulfill:hover {
+            background: #42a5f5;
+        }
+
+        .btn-modal:disabled {
+            background: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        /* Custom Confirm Popup */
+        .confirm-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+            animation: fadeIn 0.2s;
+        }
+
+        .confirm-popup {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s;
+            overflow: hidden;
+        }
+
+        .confirm-popup-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff3cd;
+        }
+
+        .confirm-popup-icon {
+            font-size: 28px;
+            color: #ffc107;
+        }
+
+        .confirm-popup-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            color: #333;
+        }
+
+        .confirm-popup-body {
+            padding: 24px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .confirm-popup-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .confirm-popup-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .confirm-popup-btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .confirm-popup-btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .confirm-popup-btn-confirm {
+            background: #007bff;
+            color: white;
+        }
+
+        .confirm-popup-btn-confirm:hover {
+            background: #0056b3;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @@keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+}
+
+<div class="kds-container">
+    <!-- Header -->
+    <!-- SignalR Connection Status Banner -->
+    <div class="signalr-status-banner" id="signalrStatusBanner" style="display: none;">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="mdi mdi-wifi-off" style="font-size: 20px; margin-right: 10px;"></i>
+                <span><strong>Mất kết nối real-time</strong> - Hệ thống đang tự động làm mới mỗi 15 giây</span>
+            </div>
+            <button class="btn btn-sm btn-outline-light" onclick="retrySignalRConnection()">
+                <i class="mdi mdi-refresh"></i> Thử lại
+            </button>
+        </div>
+    </div>
+
+    <div class="kds-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1">Tiến độ món ăn</h2>
+                <p class="text-muted mb-0">Kitchen Display System - Bếp Phó</p>
+            </div>
+            <div>
+                <span class="badge bg-primary" id="orderCount">0 đơn</span>
+                <button class="btn btn-outline-info ms-2" id="btnShowRecentlyFulfilled" onclick="toggleRecentlyFulfilled()">
+                    <i class="mdi mdi-history"></i> Hiển thị đơn vừa hoàn thành
+                </button>
+                <button class="btn btn-outline-primary ms-2" onclick="refreshOrders()">
+                    <i class="mdi mdi-refresh"></i> Làm mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingredient Shortage Alert Panel -->
+    <div class="shortage-alert-panel" id="shortageAlertPanel" style="display: none;">
+        <div class="shortage-alert-header">
+            <div class="d-flex align-items-center">
+                <i class="mdi mdi-alert-circle" style="font-size: 24px; color: #dc3545; margin-right: 10px;"></i>
+                <div>
+                    <h5 class="mb-0" style="color: #dc3545; font-weight: bold;">Tổng quan nguyên liệu thiếu</h5>
+                    <small style="color: #856404; font-size: 12px;">Theo dõi và kiểm soát nguyên liệu thiếu cho tất cả món</small>
+                </div>
+                <span class="badge bg-danger ms-3" id="shortageCount" style="font-size: 16px; padding: 6px 12px;">0</span>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="toggleShortagePanel()">
+                <i class="mdi mdi-chevron-up" id="shortageToggleIcon"></i>
+            </button>
+        </div>
+        <div class="shortage-alert-body" id="shortageAlertBody">
+            <div class="text-center text-muted py-3">
+                <i class="mdi mdi-loading mdi-spin" style="font-size: 24px;"></i>
+                <p class="mt-2 mb-0">Đang tải...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <div class="d-flex align-items-center gap-3">
+            <div class="view-mode-filters">
+                <button class="btn btn-sm btn-outline-secondary active" id="filter-theo-ban" onclick="filterByViewMode('theo-ban')">
+                    Theo bàn
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" id="filter-theo-tung-mon" onclick="filterByViewMode('theo-tung-mon')">
+                    Tổng từng món
+                </button>
+            </div>
+            <div class="status-filters ms-3">
+                <span class="text-muted me-2">Lọc theo trạng thái:</span>
+                <button class="btn btn-sm btn-outline-primary" id="filter-status-all" onclick="filterByItemStatus('all')">
+                    Tất cả
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" id="filter-status-pending" onclick="filterByItemStatus('Pending')">
+                    Chờ
+                </button>
+                <button class="btn btn-sm btn-outline-info" id="filter-status-cooking" onclick="filterByItemStatus('Cooking')">
+                    Đang nấu
+                </button>
+                <button class="btn btn-sm btn-outline-warning" id="filter-status-late" onclick="filterByItemStatus('Late')">
+                    Trễ
+                </button>
+                <button class="btn btn-sm btn-outline-success" id="filter-status-ready" onclick="filterByItemStatus('Ready')">
+                    Sẵn sàng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout: Completed Orders (Left) + Active Orders (Right) -->
+    <div class="kds-main-layout">
+        <!-- Cột bên trái: Đơn vừa hoàn thành -->
+        <div class="completed-orders-column hidden" id="completedOrdersColumn">
+            <div class="completed-orders-header">
+                <span><i class="mdi mdi-check-circle"></i> Đơn vừa hoàn thành</span>
+                <span class="badge bg-light text-dark" id="completedOrdersCount">0</span>
+            </div>
+            <div class="completed-orders-grid" id="completedOrdersGrid">
+                <div class="text-center text-muted py-5">
+                    <i class="mdi mdi-loading mdi-spin" style="font-size: 32px;"></i>
+                    <p class="mt-3">Đang tải...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột bên phải: Đơn đang xử lý -->
+        <div class="active-orders-column">
+            <div class="orders-grid" id="ordersGrid">
+                <!-- Orders will be dynamically loaded here -->
+                <div class="empty-state">
+                    <i class="mdi mdi-food-off" style="font-size: 48px;"></i>
+                    <p class="mt-3">Đang tải đơn hàng...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // Inject API base URL from server configuration
+        window.API_BASE_URL = '@ViewBag.ApiBaseUrl' || 'https://localhost:7096/api';
+        window.SIGNALR_HUB_URL = '@ViewBag.SignalRHubUrl' || 'https://localhost:7096/kitchenHub';
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="~/js/kitchenDisplay.js" asp-append-version="true"></script>
+    <script>
+        // Ensure kitchenDisplay initializes even if other scripts have errors
+        window.addEventListener('error', function(e) {
+            // Don't block execution on datepicker errors
+            if (e.message && e.message.includes('datepicker')) {
+                e.preventDefault();
+            }
+        }, true);
+    </script>
+}

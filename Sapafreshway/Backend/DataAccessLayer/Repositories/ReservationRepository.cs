@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ReservationRepository : IReservationRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ReservationRepository(SapaBackendContext context)
+        public ReservationRepository(SapaFreshContext context)
         {
             _context = context;
         }
@@ -40,53 +40,58 @@ namespace DataAccessLayer.Repositories
             await _context.SaveChangesAsync();
         }
         public async Task<(List<Reservation> Data, int TotalCount)> GetPendingAndConfirmedReservationsAsync(
-            string? status = null, DateTime? date = null, string? customerName = null, string? phone = null,
-            string? timeSlot = null, int page = 1, int pageSize = 10)
-        {
-            var query = _context.Reservations
-            .Include(r => r.Customer)
-                .ThenInclude(c => c.User)
-            .Include(r => r.ReservationTables)
-            .Include(r => r.ReservationDeposits) // ✅ Include deposits để tính doanh thu
-            .AsQueryable();
+    string? status = null,
+    DateTime? date = null,
+    string? customerName = null,
+    string? phone = null,
+    string? timeSlot = null,
+    int page = 1,
+    int pageSize = 10)
+{
+    var query = _context.Reservations
+        .Include(r => r.Customer)
+            .ThenInclude(c => c.User)
+        .Include(r => r.ReservationTables)
+        .Include(r => r.ReservationDeposits) // ✅ Include deposits để tính doanh thu
+        .AsQueryable();
 
-            // Lọc trạng thái
-            if (!string.IsNullOrEmpty(status))
-                query = query.Where(r => r.Status == status);
-            else
-                query = query.Where(r => r.Status == "Pending" || r.Status == "Confirmed" || r.Status == "Cancelled");
+    // Lọc trạng thái
+    if (!string.IsNullOrEmpty(status))
+        query = query.Where(r => r.Status == status);
+    else
+        query = query.Where(r => r.Status == "Pending" || r.Status == "Confirmed" || r.Status == "Cancelled");
 
-            // Lọc theo ngày
-            if (date.HasValue)
-                query = query.Where(r => r.ReservationDate.Date == date.Value.Date);
+    // Lọc theo ngày
+    if (date.HasValue)
+        query = query.Where(r => r.ReservationDate.Date == date.Value.Date);
 
-            // Lọc theo ca (TimeSlot)
-            if (!string.IsNullOrEmpty(timeSlot))
-                query = query.Where(r => r.TimeSlot == timeSlot);
+    // Lọc theo ca (TimeSlot)
+    if (!string.IsNullOrEmpty(timeSlot))
+        query = query.Where(r => r.TimeSlot == timeSlot);
 
-            // Lọc theo tên khách hàng
-            if (!string.IsNullOrEmpty(customerName))
-                query = query.Where(r => r.CustomerNameReservation.Contains(customerName));
+    // Lọc theo tên khách hàng
+    if (!string.IsNullOrEmpty(customerName))
+        query = query.Where(r => r.CustomerNameReservation.Contains(customerName));
 
-            // Lọc theo số điện thoại khách hàng
-            if (!string.IsNullOrEmpty(phone))
-                query = query.Where(r => r.Customer.User.Phone.Contains(phone));
+    // Lọc theo số điện thoại khách hàng
+    if (!string.IsNullOrEmpty(phone))
+        query = query.Where(r => r.Customer.User.Phone.Contains(phone));
 
-            // Tổng số bản ghi
-            var totalCount = await query.CountAsync();
+    // Tổng số bản ghi
+    var totalCount = await query.CountAsync();
 
-            // Phân trang
-            var data = await query
-                .OrderByDescending(r => r.ReservationDate)
-                .ThenBy(r => r.ReservationTime)
-                .ThenByDescending(r => r.Customer.IsVip)
-                .ThenByDescending(r => r.Customer.LoyaltyPoints ?? 0)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+    // Phân trang
+    var data = await query
+        .OrderByDescending(r => r.ReservationDate)
+        .ThenBy(r => r.ReservationTime)
+        .ThenByDescending(r => r.Customer.IsVip)
+        .ThenByDescending(r => r.Customer.LoyaltyPoints ?? 0)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
 
-            return (data, totalCount);
-        }
+    return (data, totalCount);
+}
         public async Task<object?> GetReservationDetailAsync(int reservationId)
         {
             var reservation = await _context.Reservations

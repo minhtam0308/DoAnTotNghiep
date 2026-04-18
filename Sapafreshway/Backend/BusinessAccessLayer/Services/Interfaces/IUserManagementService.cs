@@ -8,7 +8,7 @@ namespace BusinessAccessLayer.Services.Interfaces
     {
         Task<(int userId, string tempPassword)> CreateManagerAsync(CreateManagerRequest request, int adminUserId, CancellationToken ct = default);
         Task SendStaffVerificationCodeAsync(CreateStaffVerificationRequest request, int managerUserId, CancellationToken ct = default);
-        //Task<(int userId, int staffId, string tempPassword)> CreateStaffAsync(CreateStaffRequest request, int managerUserId, CancellationToken ct = default);
+        Task<(int userId, int staffId, string tempPassword)> CreateStaffAsync(CreateStaffRequest request, int managerUserId, CancellationToken ct = default);
     }
 }
 

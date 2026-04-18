@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class DepartmentRepository : IDepartmentRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public DepartmentRepository(SapaBackendContext context)
+        public DepartmentRepository(SapaFreshContext context)
         {
             _context = context;
         }

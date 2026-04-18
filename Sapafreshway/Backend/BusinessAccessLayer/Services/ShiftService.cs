@@ -15,9 +15,9 @@ namespace BusinessAccessLayer.Services
     public class ShiftService : IShiftService
     {
         private readonly IShiftRepository _shiftRepo;
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ShiftService(IShiftRepository shiftRepo, SapaBackendContext context)
+        public ShiftService(IShiftRepository shiftRepo, SapaFreshContext context)
         {
             _shiftRepo = shiftRepo;
             _context = context;

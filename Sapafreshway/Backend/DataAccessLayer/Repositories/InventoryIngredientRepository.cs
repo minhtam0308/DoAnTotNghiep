@@ -13,9 +13,9 @@ namespace DataAccessLayer.Repositories
 {
     public class InventoryIngredientRepository : IInventoryIngredientRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public InventoryIngredientRepository(SapaBackendContext context)
+        public InventoryIngredientRepository(SapaFreshContext context)
         {
             _context = context;
         }
@@ -35,15 +35,16 @@ namespace DataAccessLayer.Repositories
             return await _context.Ingredients
                 .Include(i => i.Unit)
                 .Include(i => i.InventoryBatches)
+                .Include(i => i.StockTransactions)
                 .ToListAsync();
         }
 
 
-        public async Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches(int BatchesId, DateTime? startDate, DateTime? endDate)
+        public async Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches( int BatchesId, DateTime? startDate, DateTime? endDate)
         {
             if (endDate == null)
             {
-                endDate = DateTime.Now;
+                endDate = DateTime.Now; 
             }
 
             if (startDate == null)
@@ -131,7 +132,7 @@ namespace DataAccessLayer.Repositories
         {
             return await _context.Ingredients.Where(x => x.IngredientCode.Contains(search) || x.Name.Contains(search)).Include(i => i.Unit)
                 .Include(i => i.InventoryBatches)
-                    //.ThenInclude(b => b.StockTransactions)
+                    .ThenInclude(b => b.StockTransactions)
                 .ToListAsync();
         }
 

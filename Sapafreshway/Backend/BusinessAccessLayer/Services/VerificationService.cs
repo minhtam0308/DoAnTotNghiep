@@ -1,4 +1,4 @@
-﻿using BusinessAccessLayer.Services.Interfaces;
+using BusinessAccessLayer.Services.Interfaces;
 using DataAccessLayer.Dbcontext;
 using DataAccessLayer.Repositories;
 using DomainAccessLayer.Models;
@@ -12,10 +12,11 @@ namespace BusinessAccessLayer.Services
 {
     public class VerificationService : IVerificationService
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
         private readonly IEmailService _emailService;
         private readonly UserRepository userRepository;
-        public VerificationService(SapaBackendContext context, IEmailService emailService)
+
+        public VerificationService(SapaFreshContext context, IEmailService emailService)
         {
             _context = context;
             _emailService = emailService;
@@ -36,7 +37,7 @@ namespace BusinessAccessLayer.Services
             await _context.VerificationCodes.AddAsync(entity, ct);
             await _context.SaveChangesAsync(ct);
 
-            await _emailService.SendAsync(email, $"OTP sử dụng để {purpose} SapaFreshWay", $"Mã OTP của bạn là: {code}");
+            await _emailService.SendAsync(email, $"Verification code for {purpose}", $"Your verification code is: {code}");
             return code;
         }
 
@@ -54,7 +55,6 @@ namespace BusinessAccessLayer.Services
             await _context.SaveChangesAsync(ct);
             return true;
         }
-
 
         public async Task<bool> VerifyCodeEmailAsync(string email, string purpose, string code, CancellationToken ct = default)
         {

@@ -14,9 +14,9 @@ namespace DataAccessLayer.Repositories
     /// </summary>
     public class CustomerManagementRepository : ICustomerManagementRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public CustomerManagementRepository(SapaBackendContext context)
+        public CustomerManagementRepository(SapaFreshContext context)
         {
             _context = context;
         }

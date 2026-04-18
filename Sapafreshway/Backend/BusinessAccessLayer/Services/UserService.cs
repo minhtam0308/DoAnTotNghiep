@@ -1,18 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using BusinessAccessLayer.DTOs.Users;
 using BusinessAccessLayer.Services.Interfaces;
 using DataAccessLayer.Repositories.Interfaces;
 using DataAccessLayer.UnitOfWork.Interfaces;
 using DomainAccessLayer.Common;
-using DomainAccessLayer.Enums;
 using DomainAccessLayer.Models;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BusinessAccessLayer.Services
 {
@@ -33,7 +31,6 @@ namespace BusinessAccessLayer.Services
             _emailService = emailService;
             _cloudinaryService = cloudinaryService;
         }
-
 
         public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken ct = default)
         {
@@ -199,7 +196,7 @@ namespace BusinessAccessLayer.Services
             // Business validation
             if (await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
             {
-                throw new InvalidOperationException("Email đã tồn tại.");
+                throw new InvalidOperationException("Email already exists");
             }
 
             if (RestrictedCreationRoleIds.Contains(request.RoleId))
@@ -214,15 +211,15 @@ namespace BusinessAccessLayer.Services
                     ? request.TemporaryPassword.Trim()
                     : PasswordGenerator.Generate();
 
-            if (effectivePassword.Length < 8)
+            if (effectivePassword.Length < 6)
             {
-                throw new InvalidOperationException("Mật khẩu phải có ít nhất 8 ký tự");
+                throw new InvalidOperationException("Mật khẩu phải có ít nhất 6 ký tự");
             }
 
-            //            // Hash password
+            // Hash password
             var passwordHash = HashPassword(effectivePassword);
 
-            //            // Map request to User entity
+            // Map request to User entity
             var user = new User
             {
                 FullName = request.FullName,
@@ -235,8 +232,7 @@ namespace BusinessAccessLayer.Services
                 IsDeleted = false
             };
 
-            // Create Staff entity
-            if(request.RoleId == 4)
+            if (request.RoleId == 4)
             {
                 var staff = new Staff
                 {
@@ -254,7 +250,6 @@ namespace BusinessAccessLayer.Services
                 await _unitOfWork.Users.AddAsync(user);
 
             }
-
             await _unitOfWork.SaveChangesAsync();
 
             if (request.SendEmailNotification)
@@ -262,22 +257,22 @@ namespace BusinessAccessLayer.Services
                 // Send credentials to user's email (best-effort)
                 try
                 {
-                    var subject = "Tài khoản SapaFreshWay đã được tạo";
+                    var subject = "Tài khoản SapaFoRestRMS đã được tạo";
                     var body = $@"
-            <div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
-              <p>Chào {request.FullName},</p>
-              <p>Tài khoản của bạn đã được tạo trên hệ thống SapaFoReshWay.</p>
-              <p><strong>Thông tin đăng nhập:</strong></p>
-              <ul>
-                <li>Email: <strong>{request.Email}</strong></li>
-                <li>Mật khẩu tạm thời: <strong>{effectivePassword}</strong></li>
-              </ul>
-              <p>Vui lòng đăng nhập và đổi mật khẩu sau lần đăng nhập đầu tiên để đảm bảo an toàn.</p>
-              <p>Trân trọng,</p>
-              <p>Sapa Fresh Way RMS</p>
-              <hr />
-              <small>Đây là email tự động, vui lòng không trả lời.</small>
-            </div>";
+<div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
+  <p>Chào {request.FullName},</p>
+  <p>Tài khoản của bạn đã được tạo trên hệ thống SapaFoRest RMS.</p>
+  <p><strong>Thông tin đăng nhập:</strong></p>
+  <ul>
+    <li>Email: <strong>{request.Email}</strong></li>
+    <li>Mật khẩu tạm thời: <strong>{effectivePassword}</strong></li>
+  </ul>
+  <p>Vui lòng đăng nhập và đổi mật khẩu sau lần đăng nhập đầu tiên để đảm bảo an toàn.</p>
+  <p>Trân trọng,</p>
+  <p>SapaFoRest RMS</p>
+  <hr />
+  <small>Đây là email tự động, vui lòng không trả lời.</small>
+</div>";
                     await _emailService.SendAsync(request.Email, subject, body);
                 }
                 catch
@@ -296,7 +291,7 @@ namespace BusinessAccessLayer.Services
 
         public async Task UpdateAsync(int id, UserUpdateRequest request, CancellationToken ct = default)
         {
-                var user = await _unitOfWork.Users.GetByIdAsync(id);
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null || user.IsDeleted == true)
             {
                 throw new InvalidOperationException("User not found");
@@ -339,7 +334,7 @@ namespace BusinessAccessLayer.Services
 
         public async Task<UserDto> UpdateProfileAsync(int id, UserProfileUpdateRequest request, CancellationToken ct = default)
         {
-                var user = await _unitOfWork.Users.GetByIdAsync(id);
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null || user.IsDeleted == true)
             {
                 throw new InvalidOperationException("User not found");
@@ -444,16 +439,16 @@ namespace BusinessAccessLayer.Services
                 {
                     var subject = "Mật khẩu của bạn đã được đặt lại";
                     var body = $@"
-            <div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
-              <p>Chào {user.FullName},</p>
-              <p>Mật khẩu của bạn đã được đặt lại bởi quản trị viên.</p>
-              <p><strong>Mật khẩu mới:</strong> {newPassword}</p>
-              <p>Vui lòng đăng nhập và đổi mật khẩu ngay để đảm bảo an toàn.</p>
-              <p>Trân trọng,</p>
-              <p>SapaFoRest RMS</p>
-              <hr />
-              <small>Đây là email tự động, vui lòng không trả lời.</small>
-            </div>";
+<div style='font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;'>
+  <p>Chào {user.FullName},</p>
+  <p>Mật khẩu của bạn đã được đặt lại bởi quản trị viên.</p>
+  <p><strong>Mật khẩu mới:</strong> {newPassword}</p>
+  <p>Vui lòng đăng nhập và đổi mật khẩu ngay để đảm bảo an toàn.</p>
+  <p>Trân trọng,</p>
+  <p>SapaFoRest RMS</p>
+  <hr />
+  <small>Đây là email tự động, vui lòng không trả lời.</small>
+</div>";
                     await _emailService.SendAsync(user.Email, subject, body);
                 }
                 catch

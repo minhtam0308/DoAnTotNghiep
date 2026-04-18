@@ -14,9 +14,9 @@ namespace DataAccessLayer.Repositories
     /// </summary>
     public class CounterTransactionRepository : ICounterTransactionRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public CounterTransactionRepository(SapaBackendContext context)
+        public CounterTransactionRepository(SapaFreshContext context)
         {
             _context = context;
         }

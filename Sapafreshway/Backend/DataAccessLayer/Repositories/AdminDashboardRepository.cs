@@ -13,9 +13,9 @@ namespace DataAccessLayer.Repositories
     /// </summary>
     public class AdminDashboardRepository : IAdminDashboardRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public AdminDashboardRepository(SapaBackendContext context)
+        public AdminDashboardRepository(SapaFreshContext context)
         {
             _context = context;
         }
@@ -23,7 +23,7 @@ namespace DataAccessLayer.Repositories
         // ========== USER STATISTICS ==========
         public async Task<int> GetTotalUsersAsync()
         {
-            return await _context.Users.CountAsync(x => x.IsDeleted == false);
+            return await _context.Users.CountAsync();
         }
 
         public async Task<int> GetActiveUsersAsync()
@@ -141,6 +141,8 @@ namespace DataAccessLayer.Repositories
             // Doanh thu từ Transactions (loại bỏ Split Bill parent và child transactions)
             var transactionRevenue = await _context.Transactions
                 .Where(t => t.Status == "Paid" && t.CompletedAt.HasValue)
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .Where(t => t.CompletedAt.Value.Date >= todayStart && t.CompletedAt.Value.Date <= todayEnd)
                 .SumAsync(t => (decimal?)t.Amount) ?? 0m;
 
@@ -166,6 +168,8 @@ namespace DataAccessLayer.Repositories
 
             var transactions = await _context.Transactions
                 .Where(t => t.Status == "Paid" && t.CompletedAt.HasValue)
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .Where(t => t.CompletedAt.Value.Date >= startDate.Date && t.CompletedAt.Value.Date <= endDate.Date)
                 .Select(t => new
                 {
@@ -204,6 +208,8 @@ namespace DataAccessLayer.Repositories
 
             return await _context.Transactions
                 .Where(t => t.Status == "Paid" && t.CompletedAt.HasValue)
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .Where(t => t.CompletedAt.Value.Date >= firstDayOfMonth.Date && t.CompletedAt.Value.Date <= lastDayOfMonth.Date)
                 .SumAsync(t => (decimal?)t.Amount) ?? 0m;
         }
@@ -316,40 +322,40 @@ namespace DataAccessLayer.Repositories
         }
 
         // ========== TOP ANALYTICS ==========
-        //public async Task<List<(int UserId, string Username, string FullName, int LoginCount)>> GetTop5ActiveUsersAsync()
-        //{
-        //    // Track login activity from AuditLogs where EventType contains "login"
-        //    var topUsers = await _context.AuditLogs
-        //        .Where(a => a.UserId.HasValue && 
-        //                    a.EventType != null && 
-        //                    (a.EventType.ToLower().Contains("login") || a.EventType.ToLower().Contains("auth")))
-        //        .Include(a => a.User)
-        //        .GroupBy(a => new 
-        //        { 
-        //            UserId = a.UserId.Value,
-        //            Username = a.User != null ? a.User.Email : "Unknown",
-        //            FullName = a.User != null ? a.User.FullName : "N/A"
-        //        })
-        //        .Select(g => new
-        //        {
-        //            UserId = g.Key.UserId,
-        //            Username = g.Key.Username,
-        //            FullName = g.Key.FullName,
-        //            LoginCount = g.Count()
-        //        })
-        //        .OrderByDescending(x => x.LoginCount)
-        //        .Take(5)
-        //        .ToListAsync();
+        public async Task<List<(int UserId, string Username, string FullName, int LoginCount)>> GetTop5ActiveUsersAsync()
+        {
+            // Track login activity from AuditLogs where EventType contains "login"
+            var topUsers = await _context.AuditLogs
+                .Where(a => a.UserId.HasValue && 
+                            a.EventType != null && 
+                            (a.EventType.ToLower().Contains("login") || a.EventType.ToLower().Contains("auth")))
+                .Include(a => a.User)
+                .GroupBy(a => new 
+                { 
+                    UserId = a.UserId.Value,
+                    Username = a.User != null ? a.User.Email : "Unknown",
+                    FullName = a.User != null ? a.User.FullName : "N/A"
+                })
+                .Select(g => new
+                {
+                    UserId = g.Key.UserId,
+                    Username = g.Key.Username,
+                    FullName = g.Key.FullName,
+                    LoginCount = g.Count()
+                })
+                .OrderByDescending(x => x.LoginCount)
+                .Take(5)
+                .ToListAsync();
 
-        //    var result = topUsers.Select(tu => (
-        //        UserId: tu.UserId,
-        //        Username: tu.Username,
-        //        FullName: tu.FullName,
-        //        LoginCount: tu.LoginCount
-        //    )).ToList();
+            var result = topUsers.Select(tu => (
+                UserId: tu.UserId,
+                Username: tu.Username,
+                FullName: tu.FullName,
+                LoginCount: tu.LoginCount
+            )).ToList();
 
-        //    return result;
-        //}
+            return result;
+        }
 
         /// <summary>
         /// Lấy top 5 danh mục bán chạy nhất - Áp dụng logic từ OwnerRevenueService
@@ -376,22 +382,22 @@ namespace DataAccessLayer.Repositories
         }
 
         // ========== SYSTEM LOGS ==========
-        //public async Task<List<(DateTime Time, string Username, string Action)>> GetRecentSystemLogsAsync()
-        //{
-        //    var logs = await _context.AuditLogs
-        //        .Include(a => a.User)
-        //        .OrderByDescending(a => a.CreatedAt)
-        //        .Take(10)
-        //        .Select(a => new
-        //        {
-        //            Time = a.CreatedAt,
-        //            Username = a.User != null ? a.User.Email : "System",
-        //            Action = a.EventType + (a.Description != null ? ": " + a.Description : "")
-        //        })
-        //        .ToListAsync();
+        public async Task<List<(DateTime Time, string Username, string Action)>> GetRecentSystemLogsAsync()
+        {
+            var logs = await _context.AuditLogs
+                .Include(a => a.User)
+                .OrderByDescending(a => a.CreatedAt)
+                .Take(10)
+                .Select(a => new
+                {
+                    Time = a.CreatedAt,
+                    Username = a.User != null ? a.User.Email : "System",
+                    Action = a.EventType + (a.Description != null ? ": " + a.Description : "")
+                })
+                .ToListAsync();
 
-        //    return logs.Select(l => (l.Time, l.Username, l.Action)).ToList();
-        //}
+            return logs.Select(l => (l.Time, l.Username, l.Action)).ToList();
+        }
     }
 }
 

@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ReservationDepositRepository : IReservationDepositRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ReservationDepositRepository(SapaBackendContext context)
+        public ReservationDepositRepository(SapaFreshContext context)
         {
             _context = context;
         }

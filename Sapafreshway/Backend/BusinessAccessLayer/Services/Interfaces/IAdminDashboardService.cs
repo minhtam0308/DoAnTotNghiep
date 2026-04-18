@@ -33,7 +33,7 @@ namespace BusinessAccessLayer.Services.Interfaces
         /// <summary>
         /// Lấy recent logs (riêng lẻ nếu cần)
         /// </summary>
-        //Task<List<SystemLogDto>> GetRecentLogsAsync(CancellationToken ct = default);
+        Task<List<SystemLogDto>> GetRecentLogsAsync(CancellationToken ct = default);
     }
 }
 

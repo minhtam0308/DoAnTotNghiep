@@ -11,9 +11,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ManagerSupplierRepository : IManagerSupplierRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ManagerSupplierRepository(SapaBackendContext context)
+        public ManagerSupplierRepository(SapaFreshContext context)
         {
             _context = context;
         }

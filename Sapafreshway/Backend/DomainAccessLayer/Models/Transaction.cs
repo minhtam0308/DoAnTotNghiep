@@ -88,9 +88,8 @@ public partial class Transaction
 
     public virtual Reservation? Reservation { get; set; }
 
-    //cancel
     public virtual Transaction? ParentTransaction { get; set; }
-    //cancel
+
     public virtual ICollection<Transaction> ChildTransactions { get; set; } = new List<Transaction>();
 
     public virtual User? ConfirmedByUser { get; set; }

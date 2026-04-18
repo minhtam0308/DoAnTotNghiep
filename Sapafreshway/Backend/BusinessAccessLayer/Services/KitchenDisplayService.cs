@@ -2208,21 +2208,21 @@ namespace BusinessAccessLayer.Services
                 try
                 {
                     // Nếu có OrderComboItemId → update status trực tiếp sang Cooking
-                    if (item.OrderComboItemId.HasValue && item.OrderComboItemId.Value > 0)
-                    {
-                        var updateResp = await UpdateItemStatusAsync(new UpdateItemStatusRequest
-                        {
-                            OrderDetailId = item.OrderDetailId,
-                            OrderComboItemId = item.OrderComboItemId,
-                            NewStatus = "Cooking",
-                            UserId = request.UserId
-                        });
+                    //if (item.OrderComboItemId.HasValue && item.OrderComboItemId.Value > 0)
+                    //{
+                    //    var updateResp = await UpdateItemStatusAsync(new UpdateItemStatusRequest
+                    //    {
+                    //        OrderDetailId = item.OrderDetailId,
+                    //        OrderComboItemId = item.OrderComboItemId,
+                    //        NewStatus = "Cooking",
+                    //        UserId = request.UserId
+                    //    });
 
-                        result.Success = updateResp.Success;
-                        result.Message = updateResp.Message;
-                    }
-                    else
-                    {
+                    //    result.Success = updateResp.Success;
+                    //    result.Message = updateResp.Message;
+                    //}
+                    //else
+                    //{
                         // Món lẻ: sử dụng luồng start-cooking-with-quantity để xử lý split nếu cần
                         var cookResp = await StartCookingWithQuantityAsync(new StartCookingWithQuantityRequest
                         {
@@ -2233,7 +2233,7 @@ namespace BusinessAccessLayer.Services
 
                         result.Success = cookResp.Success;
                         result.Message = cookResp.Message;
-                    }
+                    //}
                 }
                 catch (Exception ex)
                 {

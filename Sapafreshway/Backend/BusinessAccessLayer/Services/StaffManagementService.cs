@@ -24,16 +24,18 @@ namespace BusinessAccessLayer.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        //private readonly IAuditLogService _auditLogService;
+        private readonly IAuditLogService _auditLogService;
         private readonly IConfiguration _configuration;
 
         public StaffManagementService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
+            IAuditLogService auditLogService,
             IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _auditLogService = auditLogService;
             _configuration = configuration;
         }
 
@@ -228,16 +230,16 @@ namespace BusinessAccessLayer.Services
                     CreatedBy = createdBy
                 });
 
-                //await _auditLogService.LogEventAsync(
-                //    eventType: "staff_created",
-                //    entityType: "Staff",
-                //    entityId: createdStaff.StaffId,
-                //    description: $"Manager {createdBy} created new staff {dto.FullName} (ID: {createdStaff.StaffId})",
-                //    metadata: metadata,
-                //    userId: createdBy,
-                //    ipAddress: ipAddress,
-                //    ct: ct
-                //);
+                await _auditLogService.LogEventAsync(
+                    eventType: "staff_created",
+                    entityType: "Staff",
+                    entityId: createdStaff.StaffId,
+                    description: $"Manager {createdBy} created new staff {dto.FullName} (ID: {createdStaff.StaffId})",
+                    metadata: metadata,
+                    userId: createdBy,
+                    ipAddress: ipAddress,
+                    ct: ct
+                );
 
                 return (true, createdStaff.StaffId, $"Staff created successfully. Password: {password}");
             }
@@ -317,16 +319,16 @@ namespace BusinessAccessLayer.Services
                     ModifiedBy = modifiedBy
                 });
 
-                //await _auditLogService.LogEventAsync(
-                //    eventType: "staff_updated",
-                //    entityType: "Staff",
-                //    entityId: dto.StaffId,
-                //    description: $"Manager {modifiedBy} updated staff {dto.FullName} (ID: {dto.StaffId})",
-                //    metadata: metadata,
-                //    userId: modifiedBy,
-                //    ipAddress: ipAddress,
-                //    ct: ct
-                //);
+                await _auditLogService.LogEventAsync(
+                    eventType: "staff_updated",
+                    entityType: "Staff",
+                    entityId: dto.StaffId,
+                    description: $"Manager {modifiedBy} updated staff {dto.FullName} (ID: {dto.StaffId})",
+                    metadata: metadata,
+                    userId: modifiedBy,
+                    ipAddress: ipAddress,
+                    ct: ct
+                );
 
                 return (true, "Cập nhật nhân viên thành công.");
             }
@@ -380,16 +382,16 @@ namespace BusinessAccessLayer.Services
                     DeletedBy = deletedBy
                 });
 
-                //await _auditLogService.LogEventAsync(
-                //    eventType: "staff_deactivated",
-                //    entityType: "Staff",
-                //    entityId: dto.StaffId,
-                //    description: $"Quản lý {deletedBy} đã ngừng hoạt động nhân viên {staff.User?.FullName} (ID: {dto.StaffId})",
-                //    metadata: metadata,
-                //    userId: deletedBy,
-                //    ipAddress: ipAddress,
-                //    ct: ct
-                //);
+                await _auditLogService.LogEventAsync(
+                    eventType: "staff_deactivated",
+                    entityType: "Staff",
+                    entityId: dto.StaffId,
+                    description: $"Quản lý {deletedBy} đã ngừng hoạt động nhân viên {staff.User?.FullName} (ID: {dto.StaffId})",
+                    metadata: metadata,
+                    userId: deletedBy,
+                    ipAddress: ipAddress,
+                    ct: ct
+                );
 
                 return (true, "Ngừng hoạt động nhân viên thành công.");
             }
@@ -437,16 +439,16 @@ namespace BusinessAccessLayer.Services
                     ModifiedBy = modifiedBy
                 });
 
-                //await _auditLogService.LogEventAsync(
-                //    eventType: "staff_status_changed",
-                //    entityType: "Staff",
-                //    entityId: staffId,
-                //    description: $"Quản lý {modifiedBy} đã {(status == 0 ? "kích hoạt" : "ngừng hoạt động")} nhân viên {staff.User?.FullName} (ID: {staffId})",
-                //    metadata: metadata,
-                //    userId: modifiedBy,
-                //    ipAddress: ipAddress,
-                //    ct: ct
-                //);
+                await _auditLogService.LogEventAsync(
+                    eventType: "staff_status_changed",
+                    entityType: "Staff",
+                    entityId: staffId,
+                    description: $"Quản lý {modifiedBy} đã {(status == 0 ? "kích hoạt" : "ngừng hoạt động")} nhân viên {staff.User?.FullName} (ID: {staffId})",
+                    metadata: metadata,
+                    userId: modifiedBy,
+                    ipAddress: ipAddress,
+                    ct: ct
+                );
 
                 return (true, status == 0 ? "Kích hoạt nhân viên thành công." : "Ngừng hoạt động nhân viên thành công.");
             }

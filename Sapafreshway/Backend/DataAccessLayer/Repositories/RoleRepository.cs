@@ -10,9 +10,9 @@ namespace DataAccessLayer.Repositories
 {
     public class RoleRepository : IRoleRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public RoleRepository(SapaBackendContext context)
+        public RoleRepository(SapaFreshContext context)
         {
             _context = context;
         }

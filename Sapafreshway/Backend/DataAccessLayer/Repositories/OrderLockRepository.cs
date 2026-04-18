@@ -14,9 +14,9 @@ namespace DataAccessLayer.Repositories;
 /// </summary>
 public class OrderLockRepository : IOrderLockRepository
 {
-    private readonly SapaBackendContext _context;
+    private readonly SapaFreshContext _context;
 
-    public OrderLockRepository(SapaBackendContext context)
+    public OrderLockRepository(SapaFreshContext context)
     {
         _context = context;
     }

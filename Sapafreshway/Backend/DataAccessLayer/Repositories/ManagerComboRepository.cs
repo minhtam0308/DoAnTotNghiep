@@ -8,9 +8,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ManagerComboRepository : IManagerComboRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ManagerComboRepository(SapaBackendContext context)
+        public ManagerComboRepository(SapaFreshContext context)
         {
             _context = context;
         }

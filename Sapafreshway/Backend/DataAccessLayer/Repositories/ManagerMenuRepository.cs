@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ManagerMenuRepository : IManagerMenuRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ManagerMenuRepository(SapaBackendContext context)
+        public ManagerMenuRepository(SapaFreshContext context)
         {
             _context = context;
         }

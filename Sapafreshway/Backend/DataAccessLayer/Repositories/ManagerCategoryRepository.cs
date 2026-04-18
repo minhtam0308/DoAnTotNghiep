@@ -13,9 +13,9 @@ namespace DataAccessLayer.Repositories
     public class ManagerCategoryRepository : IManagerCategoryRepository
     {
 
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ManagerCategoryRepository(SapaBackendContext context)
+        public ManagerCategoryRepository(SapaFreshContext context)
         {
             _context = context;
         }

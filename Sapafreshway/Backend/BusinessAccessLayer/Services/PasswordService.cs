@@ -16,9 +16,9 @@ namespace BusinessAccessLayer.Services
         private readonly IUserRepository _userRepository;
         private readonly IVerificationService _verificationService;
         private readonly IEmailService _emailService;
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public PasswordService(IUserRepository userRepository, IVerificationService verificationService, IEmailService emailService, SapaBackendContext context)
+        public PasswordService(IUserRepository userRepository, IVerificationService verificationService, IEmailService emailService, SapaFreshContext context)
         {
             _userRepository = userRepository;
             _verificationService = verificationService;
@@ -43,7 +43,7 @@ namespace BusinessAccessLayer.Services
     <div style='background-color:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);'>
 
       <div style='text-align:center;margin-bottom:30px;'>
-        <h1 style='color:#2c3e50;margin:0;font-size:24px;'>SapaFreshWay</h1>
+        <h1 style='color:#2c3e50;margin:0;font-size:24px;'>SapaFoRest RMS</h1>
         <p style='color:#7f8c8d;margin:5px 0;font-size:14px;'>Hệ thống quản lý nhà hàng</p>
       </div>
 
@@ -51,7 +51,7 @@ namespace BusinessAccessLayer.Services
 
       <p>Xin chào <strong>{user.FullName}</strong>,</p>
 
-      <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản <strong>SapaFreshWay </strong> của bạn.</p>
+      <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản <strong>SapaFoRest RMS</strong> của bạn.</p>
 
       <p>Để hoàn tất quá trình đặt lại mật khẩu, vui lòng sử dụng mã xác nhận dưới đây:</p>
 
@@ -82,14 +82,14 @@ namespace BusinessAccessLayer.Services
       <hr style='border:none;border-top:1px solid #eee;margin:30px 0;' />
 
       <div style='text-align:center;'>
-        <p style='font-size:12px;color:#999;margin:0;'>Đây là email tự động từ hệ thống SapaFreshWay</p>
+        <p style='font-size:12px;color:#999;margin:0;'>Đây là email tự động từ hệ thống SapaFoRest RMS</p>
         <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>Vui lòng không trả lời email này</p>
-        <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>© 2026 SapaFreshWay . Tất cả quyền được bảo lưu.</p>
+        <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>© 2024 SapaFoRest RMS. Tất cả quyền được bảo lưu.</p>
       </div>
     </div>
   </div>
 </div>";
-                await _emailService.SendAsync(user.Email, "Mã xác nhận đặt lại mật khẩu - SapaFreshWay", emailBody);
+                await _emailService.SendAsync(user.Email, "Mã xác nhận đặt lại mật khẩu - SapaFoRest RMS", emailBody);
             }
             catch
             {
@@ -113,7 +113,7 @@ namespace BusinessAccessLayer.Services
   <div style='max-width:600px;margin:0 auto;padding:20px;background-color:#f9f9f9;'>
     <div style='background-color:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);'>
       <div style='text-align:center;margin-bottom:30px;'>
-        <h1 style='color:#2c3e50;margin:0;font-size:24px;'>SapaFreshWay</h1>
+        <h1 style='color:#2c3e50;margin:0;font-size:24px;'>SapaFoRest RMS</h1>
         <p style='color:#7f8c8d;margin:5px 0;font-size:14px;'>Hệ thống quản lý nhà hàng</p>
       </div>
 
@@ -144,14 +144,14 @@ namespace BusinessAccessLayer.Services
       <hr style='border:none;border-top:1px solid #eee;margin:30px 0;' />
 
       <div style='text-align:center;'>
-        <p style='font-size:12px;color:#999;margin:0;'>Đây là email tự động từ hệ thống SapaFreshWay</p>
+        <p style='font-size:12px;color:#999;margin:0;'>Đây là email tự động từ hệ thống SapaFoRest RMS</p>
         <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>Vui lòng không trả lời email này</p>
-        <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>© 2026 SapaFreshWay. Tất cả quyền được bảo lưu.</p>
+        <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>© 2024 SapaFoRest RMS. Tất cả quyền được bảo lưu.</p>
       </div>
     </div>
   </div>
 </div>";
-            await _emailService.SendAsync(user.Email, "Mật khẩu mới - SapaFreshWay", newPasswordEmailBody);
+            await _emailService.SendAsync(user.Email, "Mật khẩu mới - SapaFoRest RMS", newPasswordEmailBody);
             return newPassword;
         }
 
@@ -188,7 +188,7 @@ namespace BusinessAccessLayer.Services
     <div style='background-color:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);'>
 
       <div style='text-align:center;margin-bottom:30px;'>
-        <h1 style='color:#2c3e50;margin:0;font-size:24px;'>SapaFreshWay</h1>
+        <h1 style='color:#2c3e50;margin:0;font-size:24px;'>SapaFoRest RMS</h1>
         <p style='color:#7f8c8d;margin:5px 0;font-size:14px;'>Hệ thống quản lý nhà hàng</p>
       </div>
 
@@ -201,7 +201,7 @@ namespace BusinessAccessLayer.Services
 
       <p>Xin chào <strong>{user.FullName}</strong>,</p>
 
-      <p>Chúng tôi xin thông báo rằng mật khẩu tài khoản <strong>SapaFreshWay</strong> của bạn đã được đặt lại thành công.</p>
+      <p>Chúng tôi xin thông báo rằng mật khẩu tài khoản <strong>SapaFoRest RMS</strong> của bạn đã được đặt lại thành công.</p>
 
       <div style='background-color:#d4edda;padding:20px;border-radius:8px;margin:25px 0;border-left:4px solid #28a745;'>
         <p style='margin:0;color:#155724;'><strong>✅ Hoàn tất:</strong> Mật khẩu mới đã được cập nhật vào hệ thống</p>
@@ -236,14 +236,14 @@ namespace BusinessAccessLayer.Services
       <hr style='border:none;border-top:1px solid #eee;margin:30px 0;' />
 
       <div style='text-align:center;'>
-        <p style='font-size:12px;color:#999;margin:0;'>Đây là email tự động từ hệ thống SapaFreshWay</p>
+        <p style='font-size:12px;color:#999;margin:0;'>Đây là email tự động từ hệ thống SapaFoRest RMS</p>
         <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>Vui lòng không trả lời email này</p>
-        <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>© 2024 SapaFreshWay. Tất cả quyền được bảo lưu.</p>
+        <p style='font-size:12px;color:#999;margin:5px 0 0 0;'>© 2024 SapaFoRest RMS. Tất cả quyền được bảo lưu.</p>
       </div>
     </div>
   </div>
 </div>";
-                await _emailService.SendAsync(user.Email, "Xác nhận đặt lại mật khẩu - SapaFreshWay", emailBody);
+                await _emailService.SendAsync(user.Email, "Xác nhận đặt lại mật khẩu - SapaFoRest RMS", emailBody);
             }
             catch
             {

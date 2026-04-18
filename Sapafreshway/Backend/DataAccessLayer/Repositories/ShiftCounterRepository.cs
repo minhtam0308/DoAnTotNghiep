@@ -15,9 +15,9 @@ namespace DataAccessLayer.Repositories;
 /// </summary>
 public class ShiftCounterRepository : IShiftCounterRepository
 {
-    private readonly SapaBackendContext _context;
+    private readonly SapaFreshContext _context;
 
-    public ShiftCounterRepository(SapaBackendContext context)
+    public ShiftCounterRepository(SapaFreshContext context)
     {
         _context = context;
     }

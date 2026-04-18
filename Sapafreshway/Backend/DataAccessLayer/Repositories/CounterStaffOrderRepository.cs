@@ -14,9 +14,9 @@ namespace DataAccessLayer.Repositories
     /// </summary>
     public class CounterStaffOrderRepository : ICounterStaffOrderRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public CounterStaffOrderRepository(SapaBackendContext context)
+        public CounterStaffOrderRepository(SapaFreshContext context)
         {
             _context = context;
         }

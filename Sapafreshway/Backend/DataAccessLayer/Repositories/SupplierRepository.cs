@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class SupplierRepository : ISupplierRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public SupplierRepository(SapaBackendContext context)
+        public SupplierRepository(SapaFreshContext context)
         {
             _context = context;
         }

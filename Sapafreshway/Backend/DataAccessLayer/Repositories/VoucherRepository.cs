@@ -12,7 +12,7 @@ namespace DataAccessLayer.Repositories
 {
     public class VoucherRepository : Repository<Voucher>, IVoucherRepository
     {
-        public VoucherRepository(SapaBackendContext context) : base(context)
+        public VoucherRepository(SapaFreshContext context) : base(context)
         {
         }
 

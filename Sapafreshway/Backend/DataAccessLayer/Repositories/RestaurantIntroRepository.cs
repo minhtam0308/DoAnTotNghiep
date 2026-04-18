@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class RestaurantIntroRepository : IRestaurantIntroRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public RestaurantIntroRepository(SapaBackendContext context)
+        public RestaurantIntroRepository(SapaFreshContext context)
         {
             _context = context;
         }

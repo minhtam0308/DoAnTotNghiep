@@ -10,7 +10,7 @@ namespace DataAccessLayer.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
         private static readonly string[] KitchenActiveStatuses = new[]
         {
             "Pending",
@@ -20,7 +20,7 @@ namespace DataAccessLayer.Repositories
             "Done"
         };
 
-        public OrderRepository(SapaBackendContext context)
+        public OrderRepository(SapaFreshContext context)
         {
             _context = context;
         }
@@ -64,7 +64,14 @@ namespace DataAccessLayer.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderDetails)
-                    //.ThenInclude(od => od.MenuItem)
+                    .ThenInclude(od => od.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.OrderComboItems)
+                        .ThenInclude(oci => oci.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Combo)
+                        .ThenInclude(c => c.ComboItems)
+                            .ThenInclude(ci => ci.MenuItem)
                 .Include(o => o.Customer)
                     .ThenInclude(c => c.User)
                 .Include(o => o.Reservation)
@@ -90,6 +97,13 @@ namespace DataAccessLayer.Repositories
             return await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.OrderComboItems)
+                        .ThenInclude(oci => oci.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Combo)
+                        .ThenInclude(c => c.ComboItems)
+                            .ThenInclude(ci => ci.MenuItem)
                 .Include(o => o.Customer)
                     .ThenInclude(c => c.User)
                 .Include(o => o.Reservation)
@@ -122,7 +136,7 @@ namespace DataAccessLayer.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderDetails)
-                    //.ThenInclude(od => od.MenuItem)
+                    .ThenInclude(od => od.MenuItem)
                 .Where(o => o.CustomerId == customerId)
                 .ToListAsync();
         }
@@ -134,8 +148,12 @@ namespace DataAccessLayer.Repositories
             // sẽ được xử lý ở tầng service dựa trên trạng thái từng món.
             return await _context.Orders
                 .Include(o => o.OrderDetails)
-                    //.ThenInclude(od => od.MenuItem)
-                        //.ThenInclude(mi => mi.Category)
+                    .ThenInclude(od => od.MenuItem)
+                        .ThenInclude(mi => mi.Category)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Combo)
+                        .ThenInclude(c => c.ComboItems)
+                            .ThenInclude(ci => ci.MenuItem)
                 .Include(o => o.Customer)
                     .ThenInclude(c => c.User)
                 .Include(o => o.Reservation)
@@ -159,7 +177,11 @@ namespace DataAccessLayer.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderDetails)
-                    //.ThenInclude(od => od.MenuItem)
+                    .ThenInclude(od => od.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Combo)
+                        .ThenInclude(c => c.ComboItems)
+                            .ThenInclude(ci => ci.MenuItem)
                 .Include(o => o.Customer)
                     .ThenInclude(c => c.User)
                 .Include(o => o.Reservation)
@@ -181,6 +203,13 @@ namespace DataAccessLayer.Repositories
             return await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.OrderComboItems)
+                        .ThenInclude(oci => oci.MenuItem)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Combo)
+                        .ThenInclude(c => c.ComboItems)
+                            .ThenInclude(ci => ci.MenuItem)
                 .Include(o => o.Customer)
                     .ThenInclude(c => c.User)
                 .Include(o => o.Reservation)
@@ -199,6 +228,14 @@ namespace DataAccessLayer.Repositories
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.MenuItem)
                         .ThenInclude(mi => mi.Category)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.OrderComboItems)
+                        .ThenInclude(oci => oci.MenuItem)
+                            .ThenInclude(mi => mi.Category)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Combo)
+                        .ThenInclude(c => c.ComboItems)
+                            .ThenInclude(ci => ci.MenuItem)
                 .Include(o => o.Customer)
                     .ThenInclude(c => c.User)
                 .Include(o => o.Reservation)

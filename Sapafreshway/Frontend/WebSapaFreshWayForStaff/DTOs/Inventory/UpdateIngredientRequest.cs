@@ -1,0 +1,9 @@
+﻿namespace SapaFreshWayForStaff.DTOs.Inventory
+{
+    public class UpdateIngredientRequest
+    {
+        public int IngredientId { get; set; }
+        public string Name { get; set; }
+        public int UnitId { get; set; }
+    }
+}

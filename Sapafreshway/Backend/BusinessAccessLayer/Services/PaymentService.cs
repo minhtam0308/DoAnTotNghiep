@@ -26,14 +26,16 @@ namespace BusinessAccessLayer.Services;
 public class PaymentService : IPaymentService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IServiceProvider _serviceProvider;
     private readonly IMapper _mapper;
+    private readonly IAuditLogService _auditLogService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IKitchenDisplayService _kitchenDisplayService;
 
-    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IServiceProvider serviceProvider, IKitchenDisplayService kitchenDisplayService)
+    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IAuditLogService auditLogService, IServiceProvider serviceProvider, IKitchenDisplayService kitchenDisplayService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _auditLogService = auditLogService;
         _serviceProvider = serviceProvider;
         _kitchenDisplayService = kitchenDisplayService;
     }
@@ -1569,6 +1571,16 @@ public class PaymentService : IPaymentService
                 await _unitOfWork.Payments.UpdateAsync(order);
 
                 // Log success
+                await _auditLogService.LogEventAsync(
+                    "payment_success",
+                    "Transaction",
+                    savedTransaction.TransactionId,
+                    $"Thanh toán bằng tiền cọc thành công. Trả lại tiền thừa: {depositRefundAmount:N0} VND",
+                    null,
+                    userId,
+                    null,
+                    ct
+                );
 
                 // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION
                 await ReleaseTablesAndCompleteReservationAsync(request.OrderId, userId, ct);
@@ -1594,6 +1606,16 @@ public class PaymentService : IPaymentService
         // CASE 1A: Underpaid - Block confirmation (chỉ khi totalAmount > 0)
         if (totalAmount > 0 && request.AmountReceived < totalAmount)
         {
+            await _auditLogService.LogEventAsync(
+                "attempt_underpaid",
+                "Order",
+                request.OrderId,
+                $"Số tiền nhận được ({request.AmountReceived:N0} VND) nhỏ hơn tổng tiền ({totalAmount:N0} VND)",
+                null,
+                userId,
+                null,
+                ct
+            );
 
             throw new InvalidOperationException($"⚠️ Số tiền chưa đủ. Tổng tiền: {totalAmount:N0} VND, Nhận được: {request.AmountReceived:N0} VND. Vui lòng kiểm tra lại.");
         }
@@ -1636,6 +1658,17 @@ public class PaymentService : IPaymentService
             await _unitOfWork.Payments.UpdateAsync(order);
             //await _unitOfWork.SaveChangesAsync(ct);
 
+            // Log success
+            await _auditLogService.LogEventAsync(
+                "payment_success",
+                "Transaction",
+                savedTransaction.TransactionId,
+                $"Thanh toán tiền mặt thành công. Số tiền: {totalAmount:N0} VND" + (refundAmount.HasValue ? $", Tiền thối: {refundAmount.Value:N0} VND" : ""),
+                null,
+                userId,
+                null,
+                ct
+            );
 
             // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION
             await ReleaseTablesAndCompleteReservationAsync(request.OrderId, userId, ct);
@@ -1649,7 +1682,13 @@ public class PaymentService : IPaymentService
             catch (Exception postActionEx)
             {
                 // Log lỗi nhưng không fail payment
-
+                await _auditLogService.LogEventAsync(
+                    eventType: "PostPaymentActionError",
+                    entityType: "Order",
+                    entityId: request.OrderId,
+                    description: $"Lỗi trong post-payment actions: {postActionEx.Message}",
+                    userId: userId,
+                    ct: ct);
             }
 
             // Unlock order
@@ -1762,7 +1801,16 @@ public class PaymentService : IPaymentService
             await _unitOfWork.Payments.UpdateAsync(order);
 
             // Log audit
-
+            await _auditLogService.LogEventAsync(
+                "combined_payment_success",
+                "Order",
+                request.OrderId,
+                $"Thanh toán kết hợp thành công. Cash: {request.CashAmount:N0} VND, QR: {request.QrAmount:N0} VND. Tổng: {totalAmount:N0} VND",
+                null,
+                userId,
+                null,
+                ct
+            );
 
             // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION
             await ReleaseTablesAndCompleteReservationAsync(request.OrderId, userId, ct);
@@ -1834,7 +1882,16 @@ public class PaymentService : IPaymentService
         await _unitOfWork.Payments.UpdateTransactionAsync(transaction);
 
         // Log retry
-
+        await _auditLogService.LogEventAsync(
+            "payment_retry",
+            "Transaction",
+            transaction.TransactionId,
+            $"Retry lần thứ {transaction.RetryCount}. Notes: {request.Notes}",
+            null,
+            userId,
+            null,
+            ct
+        );
 
         return _mapper.Map<TransactionDto>(transaction);
     }
@@ -1856,6 +1913,16 @@ public class PaymentService : IPaymentService
         }
 
         // Log sync
+        await _auditLogService.LogEventAsync(
+            "payment_sync",
+            "Transaction",
+            0,
+            $"Sync {syncedTransactions.Count} transactions từ offline cache",
+            System.Text.Json.JsonSerializer.Serialize(transactionIds),
+            null,
+            null,
+            ct
+        );
 
         return syncedTransactions;
     }
@@ -1880,7 +1947,16 @@ public class PaymentService : IPaymentService
 
         if (transaction == null)
         {
-
+            await _auditLogService.LogEventAsync(
+                "payment_notify_failed",
+                "Transaction",
+                0,
+                $"Không tìm thấy transaction với SessionId: {request.SessionId} hoặc TransactionCode: {request.TransactionCode}",
+                System.Text.Json.JsonSerializer.Serialize(request),
+                null,
+                null,
+                ct
+            );
             return false;
         }
 
@@ -1910,7 +1986,16 @@ public class PaymentService : IPaymentService
         await _unitOfWork.Payments.UpdateTransactionAsync(transaction);
 
         // Log notification
-
+        await _auditLogService.LogEventAsync(
+            "payment_notify",
+            "Transaction",
+            transaction.TransactionId,
+            $"Gateway callback: {request.Status}",
+            System.Text.Json.JsonSerializer.Serialize(request),
+            null,
+            null,
+            ct
+        );
 
         return true;
     }
@@ -1945,7 +2030,16 @@ public class PaymentService : IPaymentService
         //await _unitOfWork.SaveChangesAsync(ct);
 
         // Log lock
-
+        await _auditLogService.LogEventAsync(
+            "order_locked",
+            "Order",
+            request.OrderId,
+            $"Order bị lock để xử lý thanh toán. Reason: {orderLock.Reason}",
+            null,
+            userId,
+            null,
+            ct
+        );
 
         return true;
     }
@@ -1958,6 +2052,16 @@ public class PaymentService : IPaymentService
         await _unitOfWork.OrderLocks.RemoveLockAsync(orderId);
 
         // Log unlock
+        await _auditLogService.LogEventAsync(
+            "order_unlocked",
+            "Order",
+            orderId,
+            "Order được unlock sau khi hoàn tất thanh toán",
+            null,
+            null,
+            null,
+            ct
+        );
 
         return true;
     }
@@ -2068,7 +2172,17 @@ public class PaymentService : IPaymentService
             await _unitOfWork.Payments.UpdateAsync(order);
             await _unitOfWork.SaveChangesAsync();
 
-
+            // Log split bill
+            await _auditLogService.LogEventAsync(
+                "split_bill_processed",
+                "Order",
+                request.OrderId,
+                $"Split bill thành {request.Parts.Count} phần. Tổng: {totalAmount:N0} VND",
+                System.Text.Json.JsonSerializer.Serialize(request.Parts.Select(p => new { p.PaymentMethod, p.Amount })),
+                userId,
+                null,
+                ct
+            );
 
             // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION CHỈ KHI ĐÃ PAID TOÀN BỘ
             if (allPaid)
@@ -2164,7 +2278,15 @@ public class PaymentService : IPaymentService
 
             var savedTransaction = await _unitOfWork.Payments.SaveTransactionAsync(transaction);
 
-
+            // Log audit
+            await _auditLogService.LogEventAsync(
+                eventType: "PaymentStarted",
+                entityType: "Order",
+                entityId: orderId,
+                description: $"Bắt đầu thanh toán {paymentMethod} cho đơn hàng #{orderId}",
+                userId: null,
+                ct: ct
+            );
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -2188,7 +2310,14 @@ public class PaymentService : IPaymentService
     {
         // Simplified payment system: Cash and QR use manual confirmation only
         // Gateway callbacks are not needed
-
+        await _auditLogService.LogEventAsync(
+            eventType: "PaymentCallbackIgnored",
+            entityType: "Transaction",
+            entityId: 0,
+            description: $"Gateway callback received but ignored in simplified payment system. TransactionCode: {request.TransactionCode}",
+            userId: null,
+            ct: ct
+        );
         return false;
     }
 
@@ -2239,7 +2368,15 @@ public class PaymentService : IPaymentService
         // Update order status
         await _unitOfWork.Payments.UpdateOrderStatusAsync(request.OrderId, "Paid");
 
-
+        // Log audit
+        await _auditLogService.LogEventAsync(
+            eventType: "PaymentConfirmed",
+            entityType: "Order",
+            entityId: request.OrderId,
+            description: $"Xác nhận thanh toán thủ công bởi user {userId}. Transaction: {transaction.TransactionCode}",
+            userId: userId,
+            ct: ct
+        );
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -2287,7 +2424,14 @@ public class PaymentService : IPaymentService
         await _unitOfWork.Payments.UpdateTransactionAsync(transaction);
 
         // Log audit
-
+        await _auditLogService.LogEventAsync(
+            eventType: "PaymentCancelled",
+            entityType: "Order",
+            entityId: request.OrderId,
+            description: $"Hủy thanh toán. Lý do: {request.Reason ?? "Không có"}",
+            userId: userId,
+            ct: ct
+        );
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -2352,13 +2496,27 @@ public class PaymentService : IPaymentService
             await _unitOfWork.Reservations.SaveChangesAsync();
 
             // Log reservation completion
-
+            await _auditLogService.LogEventAsync(
+                eventType: "reservation_completed",
+                entityType: "Reservation",
+                entityId: reservation.ReservationId,
+                description: $"Reservation {reservation.ReservationId} được đánh dấu hoàn thành khi bắt đầu thanh toán Order {orderId}",
+                userId: userId,
+                ct: ct
+            );
         }
 
         catch (Exception ex)
         {
             // Log error but don't fail the payment - table release is secondary
-
+            await _auditLogService.LogEventAsync(
+                eventType: "table_release_failed",
+                entityType: "Order",
+                entityId: orderId,
+                description: $"Lỗi khi giải phóng bàn và cập nhật reservation cho Order {orderId}: {ex.Message}",
+                userId: userId,
+                ct: ct
+            );
         }
     }
 
@@ -2389,7 +2547,13 @@ public class PaymentService : IPaymentService
                 }
                 catch (Exception vipEx)
                 {
-
+                    await _auditLogService.LogEventAsync(
+                        eventType: "VipEvaluationError",
+                        entityType: "Customer",
+                        entityId: order.CustomerId ?? 0,
+                        description: $"Không thể cập nhật VIP sau thanh toán: {vipEx.Message}",
+                        userId: null,
+                        ct: ct);
                 }
 
                 // Step 8.1.2: Tăng LoyaltyPoints +1 cho Customer sau khi thanh toán thành công
@@ -2403,7 +2567,14 @@ public class PaymentService : IPaymentService
                     
                     if (existingLoyaltyLog != null)
                     {
-
+                        // Đã tăng điểm rồi, bỏ qua
+                        await _auditLogService.LogEventAsync(
+                            eventType: "LoyaltyPointsSkipped",
+                            entityType: "Order",
+                            entityId: orderId,
+                            description: $"Bỏ qua tăng điểm tích lũy: Order {orderId} đã được tăng điểm trước đó",
+                            userId: null,
+                            ct: ct);
                         return; // Exit early để tránh duplicate
                     }
                     
@@ -2430,23 +2601,52 @@ public class PaymentService : IPaymentService
                         
                         // Save changes để lưu LoyaltyPoints
                         await _unitOfWork.SaveChangesAsync();
-
+                        
+                        // Log việc tăng điểm (với OrderId để check duplicate sau này)
+                        await _auditLogService.LogEventAsync(
+                            eventType: "LoyaltyPointsIncreased",
+                            entityType: "Order",
+                            entityId: orderId,
+                            description: $"Tăng điểm tích lũy +1 cho Customer {customerId} sau thanh toán thành công Order {orderId}. Điểm hiện tại: {customerToUpdate.LoyaltyPoints}",
+                            userId: null,
+                            ct: ct);
                     }
                     else
                     {
-
+                        // Log warning nếu không tìm thấy customer
+                        await _auditLogService.LogEventAsync(
+                            eventType: "LoyaltyPointsSkipped",
+                            entityType: "Order",
+                            entityId: orderId,
+                            description: $"Không thể tăng điểm tích lũy: Order không có Customer (OrderId: {orderId}, CustomerId: {order.CustomerId}, ReservationId: {order.ReservationId})",
+                            userId: null,
+                            ct: ct);
                     }
                 }
                 catch (Exception loyaltyEx)
                 {
-
+                    // Log lỗi nhưng không fail payment
+                    await _auditLogService.LogEventAsync(
+                        eventType: "LoyaltyPointsError",
+                        entityType: "Customer",
+                        entityId: order.CustomerId ?? (order.Reservation?.CustomerId ?? 0),
+                        description: $"Không thể tăng điểm tích lũy sau thanh toán: {loyaltyEx.Message}",
+                        userId: null,
+                        ct: ct);
                 }
 
                 // Step 8.2: Record revenue (placeholder - implement RevenueService if needed)
                 // await _revenueService.RecordAsync(orderId, order.TotalAmount.Value, transactionId, ct);
 
                 // Log revenue recording
-
+                await _auditLogService.LogEventAsync(
+                    eventType: "RevenueRecorded",
+                    entityType: "Order",
+                    entityId: orderId,
+                    description: $"Đã ghi nhận doanh thu: {order.TotalAmount.Value:N0} VND cho order {orderId}",
+                    userId: null,
+                    ct: ct
+                );
             }
 
             // Step 8.3: Inventory deduction cho món ConsumptionBased khi paid
@@ -2473,12 +2673,41 @@ public class PaymentService : IPaymentService
                                     quantityToConsume
                                 );
                                 
-
+                                if (!consumeResult.success)
+                                {
+                                    // Log warning nhưng không fail payment
+                                    await _auditLogService.LogEventAsync(
+                                        eventType: "InventoryConsumptionWarning",
+                                        entityType: "OrderDetail",
+                                        entityId: orderDetail.OrderDetailId,
+                                        description: $"Cảnh báo: Không thể trừ kho cho món {orderDetail.MenuItem.Name}: {consumeResult.message}",
+                                        userId: null,
+                                        ct: ct
+                                    );
+                                }
+                                else
+                                {
+                                    await _auditLogService.LogEventAsync(
+                                        eventType: "InventoryConsumed",
+                                        entityType: "OrderDetail",
+                                        entityId: orderDetail.OrderDetailId,
+                                        description: $"Đã trừ kho cho món {orderDetail.MenuItem.Name} (SL: {quantityToConsume})",
+                                        userId: null,
+                                        ct: ct
+                                    );
+                                }
                             }
                             catch (Exception invEx)
                             {
                                 // Log error nhưng không fail payment
-
+                                await _auditLogService.LogEventAsync(
+                                    eventType: "InventoryConsumptionError",
+                                    entityType: "OrderDetail",
+                                    entityId: orderDetail.OrderDetailId,
+                                    description: $"Lỗi khi trừ kho: {invEx.Message}",
+                                    userId: null,
+                                    ct: ct
+                                );
                             }
                         }
                     }
@@ -2494,24 +2723,52 @@ public class PaymentService : IPaymentService
                 var receiptService = _serviceProvider.GetRequiredService<IReceiptService>();
                 var receiptUrl = await receiptService.GenerateReceiptPdfAsync(orderId, ct);
 
-
+                await _auditLogService.LogEventAsync(
+                    eventType: "ReceiptGenerated",
+                    entityType: "Order",
+                    entityId: orderId,
+                    description: $"Đã tạo hóa đơn PDF: {receiptUrl}",
+                    userId: null,
+                    ct: ct
+                );
             }
             catch (Exception receiptEx)
             {
                 // Log receipt generation error but don't fail payment
-
+                await _auditLogService.LogEventAsync(
+                    eventType: "ReceiptGenerationError",
+                    entityType: "Order",
+                    entityId: orderId,
+                    description: $"Lỗi khi tạo hóa đơn: {receiptEx.Message}",
+                    userId: null,
+                    ct: ct
+                );
             }
 
             // Step 8.6: Emit WebSocket event for real-time updates
             // await _hubContext.Clients.All.SendAsync("ORDER_PAID", new { orderId, transactionId, amount = order?.TotalAmount }, ct);
 
             // Log audit
-
+            await _auditLogService.LogEventAsync(
+                eventType: "PostPaymentActions",
+                entityType: "Order",
+                entityId: orderId,
+                description: $"Đã trigger post-payment actions cho order {orderId}",
+                userId: null,
+                ct: ct
+            );
         }
         catch (Exception ex)
         {
             // Log error but don't fail the payment
-
+            await _auditLogService.LogEventAsync(
+                eventType: "PostPaymentActionsError",
+                entityType: "Order",
+                entityId: orderId,
+                description: $"Lỗi khi trigger post-payment actions: {ex.Message}",
+                userId: null,
+                ct: ct
+            );
         }
     }
 
@@ -2568,7 +2825,17 @@ public class PaymentService : IPaymentService
 
         await _unitOfWork.SaveChangesAsync();
 
-
+        // Log audit
+        await _auditLogService.LogEventAsync(
+            "item_cancelled",
+            "OrderDetail",
+            orderDetailId,
+            $"Món đã hủy. Lý do: {reason}",
+            null,
+            staffId,
+            null,
+            ct
+        );
 
         return true;
     }
@@ -2895,7 +3162,16 @@ public class PaymentService : IPaymentService
             }
 
             // Log audit
-
+            await _auditLogService.LogEventAsync(
+                "payment_success_by_reservation",
+                "Reservation",
+                reservationId,
+                $"Thanh toán tiền mặt thành công cho Reservation {reservationId}. Tổng: {totalAmount:N0} VND. Số Orders: {reservationPayment.OrderCount}",
+                null,
+                userId,
+                null,
+                ct
+            );
 
             // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION
             // Release tables (sử dụng order đầu tiên để backward compatible)
@@ -3003,7 +3279,16 @@ public class PaymentService : IPaymentService
             }
 
             // Log audit
-
+            await _auditLogService.LogEventAsync(
+                "payment_success_by_reservation_qr",
+                "Reservation",
+                reservationId,
+                $"Thanh toán QR thành công cho Reservation {reservationId}. Tổng: {totalAmount:N0} VND. Số Orders: {reservationPayment.OrderCount}",
+                null,
+                userId,
+                null,
+                ct
+            );
 
             // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION
             // Release tables (sử dụng order đầu tiên để backward compatible)
@@ -3170,7 +3455,17 @@ public class PaymentService : IPaymentService
                 await _unitOfWork.Reservations.UpdateAsync(reservation);
             }
 
-
+            // Log audit
+            await _auditLogService.LogEventAsync(
+                "combined_payment_success_by_reservation",
+                "Reservation",
+                reservationId,
+                $"Thanh toán kết hợp thành công cho Reservation {reservationId}. Cash: {cashAmount:N0} VND, QR: {qrAmount:N0} VND. Tổng: {totalAmount:N0} VND. Số Orders: {reservationPayment.OrderCount}",
+                null,
+                userId,
+                null,
+                ct
+            );
 
             // 🔓 GIẢI PHÓNG BÀN VÀ HOÀN THÀNH RESERVATION
             await ReleaseTablesAndCompleteReservationAsync(firstOrderId, userId, ct);
@@ -3300,17 +3595,40 @@ public class PaymentService : IPaymentService
 
                     await _unitOfWork.Reservations.SaveChangesAsync();
 
-
+                    // Log reservation cancellation
+                    await _auditLogService.LogEventAsync(
+                        eventType: "reservation_cancelled",
+                        entityType: "Reservation",
+                        entityId: reservation.ReservationId,
+                        description: $"Reservation {reservation.ReservationId} bị hủy khi hủy Order {orderId}. Lý do: {reason}",
+                        userId: userId,
+                        ct: ct
+                    );
                 }
             }
             catch (Exception ex)
             {
                 // Log error but don't fail the cancellation
-
+                await _auditLogService.LogEventAsync(
+                    eventType: "table_release_failed",
+                    entityType: "Order",
+                    entityId: orderId,
+                    description: $"Lỗi khi giải phóng bàn và cập nhật reservation cho Order {orderId}: {ex.Message}",
+                    userId: userId,
+                    ct: ct
+                );
             }
         }
 
-
+        // Log order cancellation
+        await _auditLogService.LogEventAsync(
+            eventType: "order_cancelled",
+            entityType: "Order",
+            entityId: orderId,
+            description: $"Đơn hàng đã bị hủy. Lý do: {reason}",
+            userId: userId,
+            ct: ct
+        );
 
         return true;
     }

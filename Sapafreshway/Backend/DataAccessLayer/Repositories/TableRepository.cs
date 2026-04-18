@@ -10,9 +10,9 @@ namespace DataAccessLayer.Repositories
 {
     public class TableRepository : ITableRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public TableRepository(SapaBackendContext context)
+        public TableRepository(SapaFreshContext context)
         {
             _context = context;
         }

@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class AuditRepository : IAuditRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public AuditRepository(SapaBackendContext context)
+        public AuditRepository(SapaFreshContext context)
         {
             _context = context;
         }

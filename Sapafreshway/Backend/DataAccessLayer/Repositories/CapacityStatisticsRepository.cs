@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class CapacityStatisticsRepository : ICapacityStatisticsRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public CapacityStatisticsRepository(SapaBackendContext context)
+        public CapacityStatisticsRepository(SapaFreshContext context)
         {
             _context = context;
         }

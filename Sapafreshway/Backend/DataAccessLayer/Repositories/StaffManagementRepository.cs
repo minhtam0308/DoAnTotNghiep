@@ -15,9 +15,9 @@ namespace DataAccessLayer.Repositories
     /// </summary>
     public class StaffManagementRepository : IStaffManagementRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public StaffManagementRepository(SapaBackendContext context)
+        public StaffManagementRepository(SapaFreshContext context)
         {
             _context = context;
         }

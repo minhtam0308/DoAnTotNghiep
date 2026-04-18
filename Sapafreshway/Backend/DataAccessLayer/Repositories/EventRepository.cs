@@ -10,9 +10,9 @@ namespace DataAccessLayer.Repositories
 {
     public class EventRepository : IEventRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public EventRepository(SapaBackendContext context)
+        public EventRepository(SapaFreshContext context)
         {
             _context = context;
         }

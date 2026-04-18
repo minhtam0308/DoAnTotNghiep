@@ -13,9 +13,9 @@ namespace DataAccessLayer.Repositories
 {
     public class PayrollRepository : Repository<Payroll>, IPayrollRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public PayrollRepository(SapaBackendContext context) : base(context)
+        public PayrollRepository(SapaFreshContext context) : base(context)
         {
             _context = context;
         }

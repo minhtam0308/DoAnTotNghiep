@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class SystemLogoRepository : Repository<SystemLogo>, ISystemLogoRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public SystemLogoRepository(SapaBackendContext context) : base(context)
+        public SystemLogoRepository(SapaFreshContext context) : base(context)
         {
             _context = context;
         }

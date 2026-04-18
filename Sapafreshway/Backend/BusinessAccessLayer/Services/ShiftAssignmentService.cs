@@ -15,9 +15,9 @@ namespace BusinessAccessLayer.Services
     public class ShiftAssignmentService : IShiftAssignmentService
     {
         private readonly IShiftAssignmentRepository _repo;
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ShiftAssignmentService(IShiftAssignmentRepository repo, SapaBackendContext context)
+        public ShiftAssignmentService(IShiftAssignmentRepository repo, SapaFreshContext context)
         {
             _repo = repo;
             _context = context;

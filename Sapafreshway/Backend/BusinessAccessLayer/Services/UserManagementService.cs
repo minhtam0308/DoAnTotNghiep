@@ -17,14 +17,14 @@ namespace BusinessAccessLayer.Services
     public class UserManagementService : IUserManagementService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly SapaBackendContext _context;
-        //private readonly IVerificationService _verificationService;
+        private readonly SapaFreshContext _context;
+        private readonly IVerificationService _verificationService;
 
-        public UserManagementService(IUnitOfWork unitOfWork, SapaBackendContext context)
+        public UserManagementService(IUnitOfWork unitOfWork, SapaFreshContext context, IVerificationService verificationService)
         {
             _unitOfWork = unitOfWork;
             _context = context;
-            //_verificationService = verificationService;
+            _verificationService = verificationService;
         }
 
         private static string BuildStaffVerificationPurpose(string email)
@@ -103,104 +103,104 @@ namespace BusinessAccessLayer.Services
             var purpose = BuildStaffVerificationPurpose(request.Email);
 
             // Invalidate previous codes for the same email
-            //await _verificationService.InvalidateCodesAsync(managerUserId, purpose, ct);
-            //await _verificationService.GenerateAndSendCodeAsync(managerUserId, request.Email, purpose, 10, ct);
+            await _verificationService.InvalidateCodesAsync(managerUserId, purpose, ct);
+            await _verificationService.GenerateAndSendCodeAsync(managerUserId, request.Email, purpose, 10, ct);
         }
 
-        //public async Task<(int userId, int staffId, string tempPassword)> CreateStaffAsync(CreateStaffRequest request, int managerUserId, CancellationToken ct = default)
-        //{
-        //    // Role check: managerUserId must be Manager
-        //    var manager = await _unitOfWork.Users.GetByIdAsync(managerUserId);
-        //    if (manager == null)
-        //        throw new UnauthorizedAccessException("Chỉ quản lý mới có thể tạo tài khoản nhân viên");
+        public async Task<(int userId, int staffId, string tempPassword)> CreateStaffAsync(CreateStaffRequest request, int managerUserId, CancellationToken ct = default)
+        {
+            // Role check: managerUserId must be Manager
+            var manager = await _unitOfWork.Users.GetByIdAsync(managerUserId);
+            if (manager == null)
+                throw new UnauthorizedAccessException("Chỉ quản lý mới có thể tạo tài khoản nhân viên");
 
-        //    var managerRoleName = await _context.Roles.Where(r => r.RoleId == manager.RoleId).Select(r => r.RoleName).FirstOrDefaultAsync(ct);
-        //    if (!string.Equals(managerRoleName, "Manager", StringComparison.OrdinalIgnoreCase))
-        //        throw new UnauthorizedAccessException("Chỉ quản lý mới có thể tạo tài khoản nhân viên");
+            var managerRoleName = await _context.Roles.Where(r => r.RoleId == manager.RoleId).Select(r => r.RoleName).FirstOrDefaultAsync(ct);
+            if (!string.Equals(managerRoleName, "Manager", StringComparison.OrdinalIgnoreCase))
+                throw new UnauthorizedAccessException("Chỉ quản lý mới có thể tạo tài khoản nhân viên");
 
-        //    if (await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
-        //        throw new InvalidOperationException("Email đã tồn tại");
+            if (await _unitOfWork.Users.IsEmailExistsAsync(request.Email))
+                throw new InvalidOperationException("Email đã tồn tại");
 
-        //    var verificationCode = request.VerificationCode?.Trim();
-        //    if (string.IsNullOrWhiteSpace(verificationCode))
-        //        throw new InvalidOperationException("Mã xác nhận là bắt buộc");
+            var verificationCode = request.VerificationCode?.Trim();
+            if (string.IsNullOrWhiteSpace(verificationCode))
+                throw new InvalidOperationException("Mã xác nhận là bắt buộc");
 
-        //    int roleId;
-        //    if (request.RoleId.HasValue)
-        //    {
-        //        roleId = request.RoleId.Value;
-        //    }
-        //    else
-        //    {
-        //        var staffRole = await _context.Roles.Where(r => r.RoleName == "Staff").Select(r => r.RoleId).FirstOrDefaultAsync(ct);
-        //        if (staffRole == 0) throw new InvalidOperationException("Không tìm thấy vai trò nhân viên");
-        //        roleId = staffRole;
-        //    }
+            int roleId;
+            if (request.RoleId.HasValue)
+            {
+                roleId = request.RoleId.Value;
+            }
+            else
+            {
+                var staffRole = await _context.Roles.Where(r => r.RoleName == "Staff").Select(r => r.RoleId).FirstOrDefaultAsync(ct);
+                if (staffRole == 0) throw new InvalidOperationException("Không tìm thấy vai trò nhân viên");
+                roleId = staffRole;
+            }
 
-        //    var purpose = BuildStaffVerificationPurpose(request.Email);
-        //    var verified = await _verificationService.VerifyCodeAsync(managerUserId, purpose, verificationCode, ct);
-        //    if (!verified)
-        //        throw new InvalidOperationException("Mã xác nhận không hợp lệ hoặc đã hết hạn");
+            var purpose = BuildStaffVerificationPurpose(request.Email);
+            var verified = await _verificationService.VerifyCodeAsync(managerUserId, purpose, verificationCode, ct);
+            if (!verified)
+                throw new InvalidOperationException("Mã xác nhận không hợp lệ hoặc đã hết hạn");
 
-        //    // Validate positions if provided
-        //    var positions = new List<Position>();
-        //    if (request.PositionIds != null && request.PositionIds.Any())
-        //    {
-        //        positions = await _context.Positions
-        //            .Where(p => request.PositionIds.Contains(p.PositionId))
-        //            .ToListAsync(ct);
-        //        if (positions.Count != request.PositionIds.Count)
-        //            throw new InvalidOperationException("Một hoặc nhiều vị trí không tìm thấy");
-        //    }
+            // Validate positions if provided
+            var positions = new List<Position>();
+            if (request.PositionIds != null && request.PositionIds.Any())
+            {
+                positions = await _context.Positions
+                    .Where(p => request.PositionIds.Contains(p.PositionId))
+                    .ToListAsync(ct);
+                if (positions.Count != request.PositionIds.Count)
+                    throw new InvalidOperationException("Một hoặc nhiều vị trí không tìm thấy");
+            }
 
-        //    var tempPassword = PasswordGenerator.Generate();
-        //    var passwordHash = HashPassword(tempPassword);
-        //    var hireDate = request.HireDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
-        //    var salaryBase = request.SalaryBase ?? 0;
+            var tempPassword = PasswordGenerator.Generate();
+            var passwordHash = HashPassword(tempPassword);
+            var hireDate = request.HireDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
+            var salaryBase = request.SalaryBase ?? 0;
 
-        //    await using var trx = await _unitOfWork.BeginTransactionAsync();
-        //    try
-        //    {
-        //        var user = new User
-        //        {
-        //            FullName = request.FullName,
-        //            Email = request.Email,
-        //            PasswordHash = passwordHash,
-        //            RoleId = roleId,
-        //            Status = 0,
-        //            CreatedAt = DateTime.UtcNow,
-        //            CreatedBy = managerUserId,
-        //            IsDeleted = false
-        //        };
-        //        await _unitOfWork.Users.AddAsync(user);
-        //        await _unitOfWork.SaveChangesAsync();
+            await using var trx = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var user = new User
+                {
+                    FullName = request.FullName,
+                    Email = request.Email,
+                    PasswordHash = passwordHash,
+                    RoleId = roleId,
+                    Status = 0,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = managerUserId,
+                    IsDeleted = false
+                };
+                await _unitOfWork.Users.AddAsync(user);
+                await _unitOfWork.SaveChangesAsync();
 
-        //        var staff = new Staff
-        //        {
-        //            UserId = user.UserId,
-        //            HireDate = hireDate,
-        //            SalaryBase = salaryBase,
-        //            Status = 0
-        //        };
+                var staff = new Staff
+                {
+                    UserId = user.UserId,
+                    HireDate = hireDate,
+                    SalaryBase = salaryBase,
+                    Status = 0
+                };
 
-        //        // attach positions
-        //        foreach (var pos in positions)
-        //        {
-        //            staff.Positions.Add(pos);
-        //        }
+                // attach positions
+                foreach (var pos in positions)
+                {
+                    staff.Positions.Add(pos);
+                }
 
-        //        await _context.Staffs.AddAsync(staff, ct);
-        //        await _unitOfWork.SaveChangesAsync();
+                await _context.Staffs.AddAsync(staff, ct);
+                await _unitOfWork.SaveChangesAsync();
 
-        //        await _unitOfWork.CommitAsync();
-        //        return (user.UserId, staff.StaffId, tempPassword);
-        //    }
-        //    catch
-        //    {
-        //        await _unitOfWork.RollbackAsync();
-        //        throw;
-        //    }
-        //}
+                await _unitOfWork.CommitAsync();
+                return (user.UserId, staff.StaffId, tempPassword);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
 
         private static string HashPassword(string password)
         {

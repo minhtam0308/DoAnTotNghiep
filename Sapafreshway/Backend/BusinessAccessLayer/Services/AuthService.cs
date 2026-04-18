@@ -14,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-//using DomainAccessLayer.Common;
+using DomainAccessLayer.Common;
 using DataAccessLayer.Dbcontext;
 
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +25,8 @@ namespace BusinessAccessLayer.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
-        private readonly SapaBackendContext _dbContext;
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, SapaBackendContext dbContext)
+        private readonly SapaFreshContext _dbContext;
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, SapaFreshContext dbContext)
         {
             _userRepository = userRepository;
             _configuration = configuration;
@@ -40,7 +40,7 @@ namespace BusinessAccessLayer.Services
             if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
                 throw new UnauthorizedAccessException("Email hoặc mật khẩu không đúng");
 
-            //  Tài khoản đã bị xóa khỏi hệ thống đề phòng gặp phải
+            //  Tài khoản đã bị xóa khỏi hệ thống
             if (user.IsDeleted == true)
                 throw new UnauthorizedAccessException("Người dùng đã bị xóa khỏi hệ thống");
 
@@ -56,16 +56,15 @@ namespace BusinessAccessLayer.Services
             if (string.Equals(roleName, "Staff", StringComparison.OrdinalIgnoreCase))
             {
                 var staff = await _dbContext.Staffs
-                    //.Include(s => s.Positions)
+                    .Include(s => s.Positions)
                     .FirstOrDefaultAsync(s => s.UserId == user.UserId);
 
-                //if (staff == null || staff.Positions == null || staff.Positions.Count == 0)
-                if (staff == null)
+                if (staff == null || staff.Positions == null || staff.Positions.Count == 0)
                 {
                     throw new UnauthorizedAccessException("Tài khoản nhân viên chưa được phân công vị trí. Vui lòng liên hệ quản trị viên.");
                 }
 
-                //Get position names & ids
+                // Get position names & ids
                 positions = staff.Positions.Select(p => p.PositionName).ToList();
                 positionIds = staff.Positions.Select(p => p.PositionId).ToList();
             }
@@ -76,7 +75,6 @@ namespace BusinessAccessLayer.Services
                 FullName = user.FullName ?? "",
                 Email = user.Email,
                 Phone = user.Phone,
-                AvatarUrl = user.AvatarUrl,
                 RoleId = user.RoleId,
                 RoleName = user.Role?.RoleName ?? string.Empty,
                 Token = GenerateJwtToken(user, positionIds, positions),
@@ -110,18 +108,18 @@ namespace BusinessAccessLayer.Services
             List<string>? positions = null;
             List<int>? positionIds = null;
             var roleName = user.Role?.RoleName ?? string.Empty;
-            //if (string.Equals(roleName, "Staff", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    var staff = await _dbContext.Staffs
-            //        .Include(s => s.Positions)
-            //        .FirstOrDefaultAsync(s => s.UserId == user.UserId);
+            if (string.Equals(roleName, "Staff", StringComparison.OrdinalIgnoreCase))
+            {
+                var staff = await _dbContext.Staffs
+                    .Include(s => s.Positions)
+                    .FirstOrDefaultAsync(s => s.UserId == user.UserId);
 
-            //    if (staff != null && staff.Positions != null && staff.Positions.Count > 0)
-            //    {
-            //        positions = staff.Positions.Select(p => p.PositionName).ToList();
-            //        positionIds = staff.Positions.Select(p => p.PositionId).ToList();
-            //    }
-            //}
+                if (staff != null && staff.Positions != null && staff.Positions.Count > 0)
+                {
+                    positions = staff.Positions.Select(p => p.PositionName).ToList();
+                    positionIds = staff.Positions.Select(p => p.PositionId).ToList();
+                }
+            }
 
             var response = new LoginResponse
             {

@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class PurchaseOrderRepository : IPurchaseOrderRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public PurchaseOrderRepository(SapaBackendContext context)
+        public PurchaseOrderRepository(SapaFreshContext context)
         {
             _context = context;
         }

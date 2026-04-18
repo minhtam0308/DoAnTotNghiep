@@ -14,9 +14,9 @@ namespace DataAccessLayer.Repositories;
 /// </summary>
 public class PaymentRepository : IPaymentRepository
 {
-    private readonly SapaBackendContext _context;
+    private readonly SapaFreshContext _context;
 
-    public PaymentRepository(SapaBackendContext context)
+    public PaymentRepository(SapaFreshContext context)
     {
         _context = context;
     }
@@ -27,6 +27,7 @@ public class PaymentRepository : IPaymentRepository
             .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.MenuItem)
             .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Combo)
             .Include(o => o.Customer)
                 .ThenInclude(c => c!.User)
             .Include(o => o.Reservation)
@@ -78,6 +79,7 @@ public class PaymentRepository : IPaymentRepository
             .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.MenuItem)
             .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Combo)
             .Include(o => o.Customer)
                 .ThenInclude(c => c!.User)
             .Include(o => o.Reservation)
@@ -154,6 +156,7 @@ public class PaymentRepository : IPaymentRepository
             .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.MenuItem)
             .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Combo)
             .Include(o => o.Customer)
                 .ThenInclude(c => c!.User)
             .Include(o => o.Reservation)
@@ -246,6 +249,7 @@ public class PaymentRepository : IPaymentRepository
     {
         return await _context.Set<OrderDetail>()
             .Include(od => od.MenuItem)
+            .Include(od => od.Combo)
             .Include(od => od.Order)
             .FirstOrDefaultAsync(od => od.OrderDetailId == orderDetailId);
     }
@@ -273,16 +277,16 @@ public class PaymentRepository : IPaymentRepository
         // Filter by payment method if specified
         if (!string.IsNullOrEmpty(paymentMethod) && paymentMethod != "ALL")
         {
-            if (paymentMethod.ToLower() == "QR".ToLower())
+            if (paymentMethod.Equals("QR", StringComparison.OrdinalIgnoreCase))
             {
                 // QR in system is stored as "QRBankTransfer", "QR", or "VietQR"
-                query = query.Where(t => t.PaymentMethod.ToLower() == "QRBankTransfer".ToLower() ||
-                                        t.PaymentMethod.ToLower() == "QR".ToLower() ||
-                                        t.PaymentMethod.ToLower() == "VietQR".ToLower());         
-                                        }
+                query = query.Where(t => t.PaymentMethod.Equals("QRBankTransfer", StringComparison.OrdinalIgnoreCase) ||
+                                        t.PaymentMethod.Equals("QR", StringComparison.OrdinalIgnoreCase) ||
+                                        t.PaymentMethod.Equals("VietQR", StringComparison.OrdinalIgnoreCase));
+            }
             else
             {
-                query = query.Where(t => t.PaymentMethod.ToLower() == paymentMethod);
+                query = query.Where(t => t.PaymentMethod.Equals(paymentMethod, StringComparison.OrdinalIgnoreCase));
             }
         }
 

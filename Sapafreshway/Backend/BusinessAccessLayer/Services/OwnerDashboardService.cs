@@ -18,9 +18,9 @@ namespace BusinessAccessLayer.Services
     public class OwnerDashboardService : IOwnerDashboardService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public OwnerDashboardService(IUnitOfWork unitOfWork, SapaBackendContext context)
+        public OwnerDashboardService(IUnitOfWork unitOfWork, SapaFreshContext context)
         {
             _unitOfWork = unitOfWork;
             _context = context;
@@ -58,44 +58,26 @@ namespace BusinessAccessLayer.Services
 
             return new OwnerDashboardDto
             {
-                //TodayRevenue = todayRevenue,
-                //MonthlyRevenue = monthlyRevenue,
-                //TotalOrders = totalOrders,
-                //ActiveCustomers = activeCustomers,
-                //LowStockAlertsCount = lowStockCount,
-                //NearExpiryAlertsCount = nearExpiryCount,
-                //TodayRevenueChangePercent = todayChangePercent,
-                //MonthlyRevenueChangePercent = monthlyChangePercent
-                KpiCards = await kpiTask, //doanh thu ngày, tháng, tổng order, khách hàng onl tháng, số lượng sắp hết, sắp hết hạn, doanh số tăng ngày, tháng
-                //transactionTrend
-                //.Select(g => new RevenueTrendDataDto
-                //{
-                //    Date = g.Date.ToString("dd/MM"),
-                //    Revenue = g.Revenue,
-                //    OrderCount = g.OrderCount
-                //})
-                RevenueTrend = await revenueTrendTask,// doanh thu, số order trong 30 ngày
-                //topItems
-                TopSellingItems = await topSellingTask,//top 10 menuitem mua
-                //BranchName = "Sapa Fresh Way Restaurant",
-                //Revenue 
-                //OrderCount 
-                BranchComparison = await branchComparisonTask, //Tổng doanh thu, số order tháng này
-                //LowStockCount
-                //NearExpiryCount 
-                //ExpiredCount 
-                AlertsSummary = await alertsTask //cảnh báo sắp hết, sắp hết hạn, đã hết hạn
+                KpiCards = await kpiTask,
+                RevenueTrend = await revenueTrendTask,
+                TopSellingItems = await topSellingTask,
+                BranchComparison = await branchComparisonTask,
+                AlertsSummary = await alertsTask
             };
         }
 
-        private KpiCardsDto GetKpiCardsAsync(DateOnly today, DateOnly startOfMonth, DateOnly yesterday, DateOnly lastMonth,
-            List<Order> orders, List<Transaction> transactions, List<ReservationDeposit> deposits,
+        private KpiCardsDto GetKpiCardsAsync(DateOnly today, DateOnly startOfMonth, DateOnly yesterday, DateOnly lastMonth, 
+            List<Order> orders, 
+            List<Transaction> transactions,
+            List<ReservationDeposit> deposits,
             List<Ingredient> ingredients)
         {
 
             // Today Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
             var todayTransactionRevenue = transactions
                 .Where(t => t.Status == "Paid" && (t.CompletedAt.HasValue || t.CreatedAt != default))
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .Where(t => DateOnly.FromDateTime(t.CompletedAt ?? t.CreatedAt) == today)
                 .Sum(t => t.Amount);
 
@@ -110,6 +92,8 @@ namespace BusinessAccessLayer.Services
             // Yesterday Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
             var yesterdayTransactionRevenue = transactions
                 .Where(t => t.Status == "Paid" && (t.CompletedAt.HasValue || t.CreatedAt != default))
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .Where(t => DateOnly.FromDateTime(t.CompletedAt ?? t.CreatedAt) == yesterday)
                 .Sum(t => t.Amount);
 
@@ -124,6 +108,8 @@ namespace BusinessAccessLayer.Services
             // Monthly Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
             var monthlyTransactionRevenue = transactions
                 .Where(t => t.Status == "Paid" && (t.CompletedAt.HasValue || t.CreatedAt != default))
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .Where(t => DateOnly.FromDateTime(t.CompletedAt ?? t.CreatedAt) >= startOfMonth)
                 .Sum(t => t.Amount);
 
@@ -138,8 +124,9 @@ namespace BusinessAccessLayer.Services
             // Last Month Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
             var lastMonthTransactionRevenue = transactions
                 .Where(t => t.Status == "Paid" && (t.CompletedAt.HasValue || t.CreatedAt != default))
-                .Where(t =>
-                {
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
+                .Where(t => {
                     var date = DateOnly.FromDateTime(t.CompletedAt ?? t.CreatedAt);
                     return date >= lastMonth && date < startOfMonth;
                 })
@@ -147,8 +134,7 @@ namespace BusinessAccessLayer.Services
 
             // Last Month Revenue from Deposits
             var lastMonthDepositRevenue = deposits
-                .Where(d =>
-                {
+                .Where(d => {
                     var date = DateOnly.FromDateTime(d.DepositDate);
                     return date >= lastMonth && date < startOfMonth;
                 })
@@ -159,15 +145,15 @@ namespace BusinessAccessLayer.Services
 
             // Total Orders (this month)
             var totalOrders = orders
-                .Where(o => o.Status == "Paid" &&
-                       o.CreatedAt.HasValue &&
+                .Where(o => o.Status == "Paid" && 
+                       o.CreatedAt.HasValue && 
                        DateOnly.FromDateTime(o.CreatedAt.Value) >= startOfMonth)
                 .Count();
 
             // Active Customers (customers with orders this month)
             var activeCustomers = orders
-                .Where(o => o.Status == "Paid" &&
-                       o.CreatedAt.HasValue &&
+                .Where(o => o.Status == "Paid" && 
+                       o.CreatedAt.HasValue && 
                        DateOnly.FromDateTime(o.CreatedAt.Value) >= startOfMonth &&
                        o.CustomerId.HasValue)
                 .Select(o => o.CustomerId.Value)
@@ -175,25 +161,25 @@ namespace BusinessAccessLayer.Services
                 .Count();
 
             // Low Stock Alerts
-            var lowStockCount = ingredients.Count(i =>
-                i.ReorderLevel.HasValue &&
+            var lowStockCount = ingredients.Count(i => 
+                i.ReorderLevel.HasValue && 
                 i.InventoryBatches.Sum(b => b.Available) < i.ReorderLevel.Value);
 
             // Near Expiry Alerts (within 7 days)
             var nearExpiryCount = ingredients
                 .SelectMany(i => i.InventoryBatches)
-                .Count(b => b.ExpiryDate.HasValue &&
+                .Count(b => b.ExpiryDate.HasValue && 
                        b.ExpiryDate.Value <= today.AddDays(7) &&
                        b.ExpiryDate.Value > today &&
                        b.IsActive);
 
             // Calculate change percentages
-            var todayChangePercent = yesterdayRevenue > 0
-                ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100
+            var todayChangePercent = yesterdayRevenue > 0 
+                ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 
                 : 0;
 
-            var monthlyChangePercent = lastMonthRevenue > 0
-                ? ((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+            var monthlyChangePercent = lastMonthRevenue > 0 
+                ? ((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
                 : 0;
 
             return new KpiCardsDto
@@ -209,12 +195,14 @@ namespace BusinessAccessLayer.Services
             };
         }
 
-        private List<RevenueTrendDataDto> GetRevenueTrendAsync(DateOnly startDate, DateOnly endDate,
+        private List<RevenueTrendDataDto> GetRevenueTrendAsync(DateOnly startDate, DateOnly endDate, 
             List<Transaction> transactions)
         {
             // Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
             var transactionTrend = transactions
                 .Where(t => t.Status == "Paid" && t.CompletedAt.HasValue)
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
                 .GroupBy(t => DateOnly.FromDateTime(t.CompletedAt.Value))
                 .Where(g => g.Key >= startDate && g.Key <= endDate)
                 .Select(g => new
@@ -240,12 +228,13 @@ namespace BusinessAccessLayer.Services
         }
 
         private List<TopSellingItemDto> GetTopSellingItemsAsync(DateOnly startDate, DateOnly endDate,
-            List<Order> orders, List<OrderDetail> orderDetails)
+            List<Order> orders,
+            List<OrderDetail> orderDetails)
         {
 
             var paidOrderIds = orders
-                .Where(o => o.Status == "Paid" &&
-                       o.CreatedAt.HasValue &&
+                .Where(o => o.Status == "Paid" && 
+                       o.CreatedAt.HasValue && 
                        DateOnly.FromDateTime(o.CreatedAt.Value) >= startDate &&
                        DateOnly.FromDateTime(o.CreatedAt.Value) <= endDate)
                 .Select(o => o.OrderId)
@@ -275,8 +264,10 @@ namespace BusinessAccessLayer.Services
 
             // Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
             var transactionRevenue = transactions
-                .Where(t => t.Status == "Paid" &&
+                .Where(t => t.Status == "Paid" && 
                        t.CompletedAt.HasValue &&
+                       t.ParentTransactionId == null && // ✅ Loại bỏ child transactions
+                       t.PaymentMethod != "Split" && // ✅ Loại bỏ parent Split transactions
                        DateOnly.FromDateTime(t.CompletedAt.Value) >= startDate &&
                        DateOnly.FromDateTime(t.CompletedAt.Value) <= endDate)
                 .Sum(t => t.Amount);
@@ -285,8 +276,10 @@ namespace BusinessAccessLayer.Services
             // If needed, can be added separately
 
             var totalOrders = transactions
-                .Where(t => t.Status == "Paid" &&
+                .Where(t => t.Status == "Paid" && 
                        t.CompletedAt.HasValue &&
+                       t.ParentTransactionId == null && // ✅ Loại bỏ child transactions
+                       t.PaymentMethod != "Split" && // ✅ Loại bỏ parent Split transactions
                        DateOnly.FromDateTime(t.CompletedAt.Value) >= startDate &&
                        DateOnly.FromDateTime(t.CompletedAt.Value) <= endDate)
                 .Select(t => t.OrderId)
@@ -297,7 +290,7 @@ namespace BusinessAccessLayer.Services
             {
                 new BranchComparisonDto
                 {
-                    BranchName = "Sapa Fresh Way Restaurant",
+                    BranchName = "Sapa Forest Restaurant",
                     Revenue = transactionRevenue,
                     OrderCount = totalOrders
                 }
@@ -309,14 +302,14 @@ namespace BusinessAccessLayer.Services
         {
 
             // Low Stock Count
-            var lowStockCount = ingredients.Count(i =>
-                i.ReorderLevel.HasValue &&
+            var lowStockCount = ingredients.Count(i => 
+                i.ReorderLevel.HasValue && 
                 i.InventoryBatches.Sum(b => b.Available) < i.ReorderLevel.Value);
 
             // Near Expiry Count (within 7 days)
             var nearExpiryCount = ingredients
                 .SelectMany(i => i.InventoryBatches)
-                .Count(b => b.ExpiryDate.HasValue &&
+                .Count(b => b.ExpiryDate.HasValue && 
                        b.ExpiryDate.Value <= today.AddDays(7) &&
                        b.ExpiryDate.Value > today &&
                        b.IsActive);
@@ -324,7 +317,7 @@ namespace BusinessAccessLayer.Services
             // Expired Count
             var expiredCount = ingredients
                 .SelectMany(i => i.InventoryBatches)
-                .Count(b => b.ExpiryDate.HasValue &&
+                .Count(b => b.ExpiryDate.HasValue && 
                        b.ExpiryDate.Value <= today &&
                        b.IsActive);
 

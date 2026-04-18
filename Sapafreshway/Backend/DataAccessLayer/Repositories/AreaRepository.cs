@@ -10,9 +10,9 @@ namespace DataAccessLayer.Repositories
 {
     public class AreaRepository : IAreaRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public AreaRepository(SapaBackendContext context)
+        public AreaRepository(SapaFreshContext context)
         {
             _context = context;
         }

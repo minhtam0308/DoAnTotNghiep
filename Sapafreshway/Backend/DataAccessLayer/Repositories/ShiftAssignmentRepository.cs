@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ShiftAssignmentRepository : IShiftAssignmentRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ShiftAssignmentRepository(SapaBackendContext context)
+        public ShiftAssignmentRepository(SapaFreshContext context)
         {
             _context = context;
         }

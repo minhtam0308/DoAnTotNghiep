@@ -11,7 +11,7 @@ namespace DataAccessLayer.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
 
         private IManagerMenuRepository _menuRepository;
@@ -19,6 +19,7 @@ namespace DataAccessLayer.UnitOfWork
 
         private IManagerComboRepository _comboRepository;
 
+        private IInventoryIngredientRepository _inventoryRepository;
 
         private IManagerSupplierRepository _supplierRepository;
 
@@ -47,7 +48,6 @@ namespace DataAccessLayer.UnitOfWork
         public IManagerMenuRepository MenuItem => _menuRepository ??= new ManagerMenuRepository(_context);
         public IManagerCategoryRepository MenuCategory => _categoryRepository ??= new ManagerCategoryRepository(_context);
         public IManagerComboRepository Combo => _comboRepository ??= new ManagerComboRepository(_context);
-        private IInventoryIngredientRepository _inventoryRepository;
         public IInventoryIngredientRepository InventoryIngredient => _inventoryRepository ??= new InventoryIngredientRepository(_context);
 
 
@@ -97,7 +97,7 @@ namespace DataAccessLayer.UnitOfWork
         private IShiftRepository _shifts;
 
         public IShiftRepository Shifts => _shifts ??= new ShiftRepository(_context);
-        private IShiftCounterRepository _shiftCounters;
+        private IShiftCounterRepository  _shiftCounters;
 
 
         public IShiftCounterRepository ShiftCounters => _shiftCounters ??= new ShiftCounterRepository(_context);
@@ -114,7 +114,7 @@ namespace DataAccessLayer.UnitOfWork
 
         public IStaffManagementRepository StaffManagement => _staffManagement ??= new StaffManagementRepository(_context);
 
-        public UnitOfWork(SapaBackendContext context)
+        public UnitOfWork(SapaFreshContext context)
         {
             _context = context;
         }

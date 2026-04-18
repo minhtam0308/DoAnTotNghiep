@@ -7,9 +7,9 @@ namespace DataAccessLayer.Repositories
 {
     public class OrderTableRepository : Repository<Reservation>, IOrderTableRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public OrderTableRepository(SapaBackendContext context) : base(context)
+        public OrderTableRepository(SapaFreshContext context) : base(context)
         {
             _context = context;
         }

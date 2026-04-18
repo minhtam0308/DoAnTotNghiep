@@ -48,9 +48,9 @@ namespace BusinessAccessLayer.Services
             var nearExpiry = await SafeExecuteAsync(() => _dashboardRepository.GetNearExpiryIngredientsCountAsync(), 0);
 
             // Top Lists
-            //var top5ActiveUsers = await SafeExecuteAsync(() => _dashboardRepository.GetTop5ActiveUsersAsync(), new List<(int UserId, string Username, string FullName, int LoginCount)>());
+            var top5ActiveUsers = await SafeExecuteAsync(() => _dashboardRepository.GetTop5ActiveUsersAsync(), new List<(int UserId, string Username, string FullName, int LoginCount)>());
             var top5Categories = await SafeExecuteAsync(() => _dashboardRepository.GetTop5BestSellingCategoriesAsync(), new List<(string CategoryName, int ItemsSold, decimal Revenue)>());
-            //var recentLogs = await SafeExecuteAsync(() => _dashboardRepository.GetRecentSystemLogsAsync(), new List<(DateTime Time, string Username, string Action)>());
+            var recentLogs = await SafeExecuteAsync(() => _dashboardRepository.GetRecentSystemLogsAsync(), new List<(DateTime Time, string Username, string Action)>());
 
             // Build KPI Cards
             var kpiCards = new KpiCardsDto
@@ -106,13 +106,13 @@ namespace BusinessAccessLayer.Services
             };
 
             // Build Top 5 Active Users
-            //var topUsers = top5ActiveUsers.Select(u => new TopUserDto
-            //{
-            //    UserId = u.UserId,
-            //    Username = u.Username,
-            //    FullName = u.FullName,
-            //    LoginCount = u.LoginCount
-            //}).ToList();
+            var topUsers = top5ActiveUsers.Select(u => new TopUserDto
+            {
+                UserId = u.UserId,
+                Username = u.Username,
+                FullName = u.FullName,
+                LoginCount = u.LoginCount
+            }).ToList();
 
             // Build Top 5 Best Selling Categories
             var topCategories = top5Categories.Select(c => new TopCategoryDto
@@ -123,13 +123,13 @@ namespace BusinessAccessLayer.Services
             }).ToList();
 
             // Build Recent Logs
-            //var systemLogs = recentLogs.Select(l => new SystemLogDto
-            //{
-            //    Time = l.Time,
-            //    TimeFormatted = l.Time.ToString("dd/MM/yyyy HH:mm"),
-            //    Username = l.Username,
-            //    Action = l.Action
-            //}).ToList();
+            var systemLogs = recentLogs.Select(l => new SystemLogDto
+            {
+                Time = l.Time,
+                TimeFormatted = l.Time.ToString("dd/MM/yyyy HH:mm"),
+                Username = l.Username,
+                Action = l.Action
+            }).ToList();
 
             // Build final DTO
             var dashboard = new AdminDashboardDto
@@ -139,9 +139,9 @@ namespace BusinessAccessLayer.Services
                 RevenueLast7Days = revenuePoints,
                 OrdersLast7Days = orderPoints,
                 WarehouseAlerts = warehouseAlerts,
-                //Top5ActiveUsers = topUsers,
+                Top5ActiveUsers = topUsers,
                 Top5BestSellingCategories = topCategories,
-                //RecentLogs = systemLogs
+                RecentLogs = systemLogs
             };
 
             return dashboard;
@@ -183,17 +183,17 @@ namespace BusinessAccessLayer.Services
             };
         }
 
-        //public async Task<List<SystemLogDto>> GetRecentLogsAsync(CancellationToken ct = default)
-        //{
-        //    var recentLogs = await _dashboardRepository.GetRecentSystemLogsAsync();
-        //    return recentLogs.Select(l => new SystemLogDto
-        //    {
-        //        Time = l.Time,
-        //        TimeFormatted = l.Time.ToString("dd/MM/yyyy HH:mm"),
-        //        Username = l.Username,
-        //        Action = l.Action
-        //    }).ToList();
-        //}
+        public async Task<List<SystemLogDto>> GetRecentLogsAsync(CancellationToken ct = default)
+        {
+            var recentLogs = await _dashboardRepository.GetRecentSystemLogsAsync();
+            return recentLogs.Select(l => new SystemLogDto
+            {
+                Time = l.Time,
+                TimeFormatted = l.Time.ToString("dd/MM/yyyy HH:mm"),
+                Username = l.Username,
+                Action = l.Action
+            }).ToList();
+        }
 
         /// <summary>
         /// Helper method to safely execute repository methods with fallback values

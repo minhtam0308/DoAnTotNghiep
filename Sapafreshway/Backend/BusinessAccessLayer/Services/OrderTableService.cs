@@ -1,4 +1,5 @@
 ﻿using BusinessAccessLayer.DTOs;
+using BusinessAccessLayer.Hubs;
 using BusinessAccessLayer.Services.Interfaces;
 using DataAccessLayer.Dbcontext;
 using DataAccessLayer.Repositories.Interfaces;
@@ -16,18 +17,21 @@ namespace BusinessAccessLayer.Services
     {
         private readonly IOrderTableRepository _orderTableRepository;
         private readonly IConfiguration _config;
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
         private readonly IInventoryIngredientService _inventoryService;
+        private readonly IHubContext<RestaurantHub> _hubContext;
         public OrderTableService(
              IOrderTableRepository orderTableRepository,
-             IConfiguration config, SapaBackendContext context,
-             IInventoryIngredientService inventoryService)
+             IConfiguration config, SapaFreshContext context,
+             IInventoryIngredientService inventoryService,
 
+             IHubContext<RestaurantHub> hubContext)
         {
             _orderTableRepository = orderTableRepository;
             _config = config;
             _context = context;
             _inventoryService = inventoryService;
+            _hubContext = hubContext;
         }
 
         public async Task<IEnumerable<TableOrderDto>> GetTablesByReservationStatusAsync(string status)
@@ -754,7 +758,24 @@ namespace BusinessAccessLayer.Services
             var tableName = tableInfo?.TableNumber ?? requestDto.TableId.ToString();
             var areaName = tableInfo?.AreaName ?? "Không xác định";
 
-
+            // BƯỚC 5: GỬI SOCKET (Bọc try-catch để không chết app nếu lỗi mạng)
+            try
+            {
+                await _hubContext.Clients.Group("Employees").SendAsync("ReceiveNewRequest", new
+                {
+                    requestId = newRequest.RequestId,
+                    tableId = newRequest.TableId,
+                    tableName = $"Bàn {tableName}",
+                    areaName = areaName,
+                    note = newRequest.Note,
+                    time = newRequest.RequestTime.ToLocalTime().ToString("HH:mm")
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi gửi socket: {ex.Message}");
+                // Không throw exception ở đây để đảm bảo request vẫn được lưu vào DB thành công
+            }
         }
 
         public async Task<ComboDetailDto> GetComboDetailsAsync(int comboId)
@@ -869,7 +890,9 @@ namespace BusinessAccessLayer.Services
             // c. Lưu DB
             await _context.SaveChangesAsync();
 
-
+            // d. SIGNALR: Bắn sự kiện "Đã xong"
+            // -> Để xóa dòng đó khỏi màn hình của TẤT CẢ nhân viên khác ngay lập tức
+            await _hubContext.Clients.Group("Employees").SendAsync("RequestCompleted", requestId);
 
             // (Tùy chọn) Báo cho khách biết nhân viên đang tới
             // await _hubContext.Clients.Group($"Table-{request.TableId}").SendAsync("StaffArrived", "Nhân viên đã tiếp nhận!");

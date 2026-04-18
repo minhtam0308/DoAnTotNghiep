@@ -10,9 +10,9 @@ namespace DataAccessLayer.Repositories
 {
     public class OrderDetailRepository : IOrderDetailRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public OrderDetailRepository(SapaBackendContext context)
+        public OrderDetailRepository(SapaFreshContext context)
         {
             _context = context;
         }
@@ -73,7 +73,7 @@ namespace DataAccessLayer.Repositories
         public async Task<List<OrderDetail>> GetByOrderIdsAsync(List<int> orderIds)
         {
             return await _context.OrderDetails
-                //.Include(od => od.MenuItem)
+                .Include(od => od.MenuItem)
                 .Where(od => orderIds.Contains(od.OrderId))
                 .ToListAsync();
         }

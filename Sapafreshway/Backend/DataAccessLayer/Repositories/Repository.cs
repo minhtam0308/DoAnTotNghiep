@@ -8,10 +8,10 @@ namespace DataAccessLayer.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected readonly SapaBackendContext _context;
+        protected readonly SapaFreshContext _context;
         protected readonly DbSet<T> _dbSet;
 
-        public Repository(SapaBackendContext context)
+        public Repository(SapaFreshContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

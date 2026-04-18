@@ -13,11 +13,11 @@ namespace BusinessAccessLayer.Services
 {
     public class CustomerVipService : ICustomerVipService
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
         private readonly ILogger<CustomerVipService> _logger;
         private const string ManualOverrideToken = "[VIP_MANUAL_OVERRIDE]";
 
-        public CustomerVipService(SapaBackendContext context, ILogger<CustomerVipService> logger)
+        public CustomerVipService(SapaFreshContext context, ILogger<CustomerVipService> logger)
         {
             _context = context;
             _logger = logger;

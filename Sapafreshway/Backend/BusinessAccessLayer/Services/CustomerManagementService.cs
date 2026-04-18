@@ -23,6 +23,7 @@ namespace BusinessAccessLayer.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IAuditLogService _auditLogService;
         private readonly IConfiguration _configuration;
         private readonly ICloudinaryService _cloudinaryService;
 
@@ -33,11 +34,13 @@ namespace BusinessAccessLayer.Services
         public CustomerManagementService(
             IUnitOfWork unitOfWork, 
             IMapper mapper, 
+            IAuditLogService auditLogService,
             IConfiguration configuration,
             ICloudinaryService cloudinaryService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _auditLogService = auditLogService;
             _configuration = configuration;
             _cloudinaryService = cloudinaryService;
         }
@@ -334,6 +337,16 @@ namespace BusinessAccessLayer.Services
                 ManagerId = managerId
             });
 
+            await _auditLogService.LogEventAsync(
+                eventType: "vip_status_update",
+                entityType: "Customer",
+                entityId: dto.CustomerId,
+                description: $"Manager {managerId} updated VIP status from {oldVipStatus} to {dto.IsVip} for Customer {dto.CustomerId}",
+                metadata: metadata,
+                userId: managerId,
+                ipAddress: ipAddress,
+                ct: ct
+            );
 
             var action = dto.IsVip ? "upgraded to VIP" : "downgraded from VIP";
             return (true, $"Customer successfully {action}.");
@@ -455,6 +468,13 @@ namespace BusinessAccessLayer.Services
                 catch (Exception ex)
                 {
                     // Log error but don't fail the update
+                    await _auditLogService.LogEventAsync(
+                        eventType: "AvatarUploadError",
+                        entityType: "Customer",
+                        entityId: customerId,
+                        description: $"Failed to upload avatar: {ex.Message}",
+                        userId: null,
+                        ct: ct);
                 }
             }
             else if (!string.IsNullOrEmpty(request.AvatarUrl))
@@ -466,6 +486,13 @@ namespace BusinessAccessLayer.Services
             await _unitOfWork.CustomerManagement.UpdateCustomerAsync(customer, ct);
 
             // Log the profile update
+            await _auditLogService.LogEventAsync(
+                eventType: "CustomerProfileUpdated",
+                entityType: "Customer",
+                entityId: customerId,
+                description: $"Customer profile updated: {request.FullName}",
+                userId: null, // TODO: Get current user ID
+                ct: ct);
 
             // Return updated profile
             return await GetCustomerProfileAsync(customerId, ct);

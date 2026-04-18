@@ -11,9 +11,9 @@ namespace DataAccessLayer.Repositories
 {
     public class StaffProfileRepository : IStaffProfileRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public StaffProfileRepository(SapaBackendContext context)
+        public StaffProfileRepository(SapaFreshContext context)
         {
             _context = context;
         }

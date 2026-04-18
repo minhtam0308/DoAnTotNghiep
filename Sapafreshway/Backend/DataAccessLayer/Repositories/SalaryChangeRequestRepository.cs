@@ -13,9 +13,9 @@ namespace DataAccessLayer.Repositories;
 /// </summary>
 public class SalaryChangeRequestRepository : ISalaryChangeRequestRepository
 {
-    private readonly SapaBackendContext _context;
+    private readonly SapaFreshContext _context;
 
-    public SalaryChangeRequestRepository(SapaBackendContext context)
+    public SalaryChangeRequestRepository(SapaFreshContext context)
     {
         _context = context;
     }

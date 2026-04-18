@@ -10,9 +10,9 @@ namespace DataAccessLayer.Repositories
 {
     public class OrderComboItemRepository : IOrderComboItemRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public OrderComboItemRepository(SapaBackendContext context)
+        public OrderComboItemRepository(SapaFreshContext context)
         {
             _context = context;
         }

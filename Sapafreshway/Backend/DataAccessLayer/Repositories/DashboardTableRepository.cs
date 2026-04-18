@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class DashboardTableRepository : IDashboardTableRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public DashboardTableRepository(SapaBackendContext context)
+        public DashboardTableRepository(SapaFreshContext context)
         {
             _context = context;
         }

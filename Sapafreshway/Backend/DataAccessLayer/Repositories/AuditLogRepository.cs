@@ -13,9 +13,9 @@ namespace DataAccessLayer.Repositories;
 /// </summary>
 public class AuditLogRepository : IAuditLogRepository
 {
-    private readonly SapaBackendContext _context;
+    private readonly SapaFreshContext _context;
 
-    public AuditLogRepository(SapaBackendContext context)
+    public AuditLogRepository(SapaFreshContext context)
     {
         _context = context;
     }

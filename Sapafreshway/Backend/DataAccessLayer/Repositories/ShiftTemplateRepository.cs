@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class ShiftTemplateRepository : IShiftTemplateRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public ShiftTemplateRepository(SapaBackendContext context)
+        public ShiftTemplateRepository(SapaFreshContext context)
         {
             _context = context;
         }

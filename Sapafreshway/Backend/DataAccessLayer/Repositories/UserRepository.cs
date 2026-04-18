@@ -16,9 +16,9 @@ namespace DataAccessLayer.Repositories
     public class UserRepository : IUserRepository
     {
 
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public UserRepository(SapaBackendContext context)
+        public UserRepository(SapaFreshContext context)
         {
             _context = context;
         }

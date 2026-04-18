@@ -17,13 +17,16 @@ public class ShiftManagementService : IShiftManagementService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IAuditLogService _auditLogService;
 
     public ShiftManagementService(
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,
+        IAuditLogService auditLogService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _auditLogService = auditLogService;
     }
 
     // ========== OPENING SHIFT ==========

@@ -17,8 +17,12 @@ namespace BusinessAccessLayer.Services
             _repository = repository;
         }
 
-        public async Task<(IEnumerable<TableManageDto> Tables, int TotalCount)> GetTablesAsync(string? search,
-            int? capacity, int? areaId, int page, int pageSize, string? status )
+        public async Task<(IEnumerable<TableManageDto> Tables, int TotalCount)> GetTablesAsync(
+            string? search,
+            int? capacity,
+            int? areaId,
+            int page,
+            int pageSize, string? status )
         {
             var tables = await _repository.GetAllAsync(search, capacity, areaId, page, pageSize,status);
             var totalCount = await _repository.GetCountAsync(search, capacity, areaId);

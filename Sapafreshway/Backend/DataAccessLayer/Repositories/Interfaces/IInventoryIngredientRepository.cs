@@ -9,7 +9,7 @@ namespace DataAccessLayer.Repositories.Interfaces
 {
     public interface IInventoryIngredientRepository : IRepository<Ingredient>
     {
-        //Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches(int ingredientId, DateTime? startDate, DateTime? endDate);
+        Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches(int ingredientId, DateTime? startDate, DateTime? endDate);
 
         Task<IEnumerable<InventoryBatch>> getBatchById(int id);
         Task<InventoryBatch> getBatchByBatchId(int id);
@@ -27,6 +27,5 @@ namespace DataAccessLayer.Repositories.Interfaces
         Task<List<InventoryBatch>> GetAvailableBatchesByIngredientAsync(int ingredientId);
         Task<List<InventoryBatch>> GetAllBatchesByIngredientAsync(int ingredientId); // Lấy tất cả batches (kể cả available <= 0)
         Task<List<InventoryBatch>> GetReservedBatchesByIngredientAsync(int ingredientId);
-        Task<(decimal totalImport, decimal totalExport, decimal totalFirst)> GetTotalImportExportBatches(int BatchesId, DateTime? startDate, DateTime? endDate);
     }
 }

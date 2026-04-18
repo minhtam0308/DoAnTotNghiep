@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class PositionRepository : IPositionRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public PositionRepository(SapaBackendContext context)
+        public PositionRepository(SapaFreshContext context)
         {
             _context = context;
         }

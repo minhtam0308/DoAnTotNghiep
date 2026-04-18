@@ -19,7 +19,7 @@ namespace BusinessAccessLayer.Services
 {
     public class PhoneAuthService : IPhoneAuthService
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
         private readonly IUserRepository _users;
         private readonly OtpService _otpService;
         private readonly IConfiguration _configuration;
@@ -36,7 +36,7 @@ namespace BusinessAccessLayer.Services
             public List<DateTime> Timestamps { get; set; } = new();
         }
 
-        public PhoneAuthService(SapaBackendContext context, IUserRepository users, OtpService otpService, IConfiguration configuration)
+        public PhoneAuthService(SapaFreshContext context, IUserRepository users, OtpService otpService, IConfiguration configuration)
         {
             _context = context;
             _users = users;

@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class DayTypeRepository : IDayTypeRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public DayTypeRepository(SapaBackendContext context)
+        public DayTypeRepository(SapaFreshContext context)
         {
             _context = context;
         }

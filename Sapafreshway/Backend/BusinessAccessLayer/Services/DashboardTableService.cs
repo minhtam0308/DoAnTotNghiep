@@ -1,7 +1,7 @@
 ﻿using BusinessAccessLayer.DTOs;
 using BusinessAccessLayer.DTOs.OrderGuest;
 using BusinessAccessLayer.DTOs.OrderGuest.ListOrder;
-
+using BusinessAccessLayer.Hubs;
 using BusinessAccessLayer.Services.Interfaces;
 using BusinessAccessLayer.Constants;
 using DataAccessLayer.Common;
@@ -23,7 +23,8 @@ namespace BusinessAccessLayer.Services
         private readonly IDashboardTableRepository _dashboardRepo;
         private readonly IOrderTableRepository _orderTableRepo;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly SapaBackendContext _context; // Cần DbContext để Save
+        private readonly IHubContext<ReservationHub> _hubContext;
+        private readonly SapaFreshContext _context; // Cần DbContext để Save
         private readonly IInventoryIngredientService _inventoryService;
         private readonly IKitchenDisplayService _kitchenDisplayService;
 
@@ -32,7 +33,8 @@ namespace BusinessAccessLayer.Services
             IDashboardTableRepository dashboardRepo,
             IOrderTableRepository orderTableRepo,
             IUnitOfWork unitOfWork,
-            SapaBackendContext context,
+            IHubContext<ReservationHub> hubContext,
+            SapaFreshContext context,
             IInventoryIngredientService inventoryService,
             IKitchenDisplayService kitchenDisplayService
             )
@@ -40,6 +42,7 @@ namespace BusinessAccessLayer.Services
             _dashboardRepo = dashboardRepo;
             _orderTableRepo = orderTableRepo;
             _unitOfWork = unitOfWork;
+            _hubContext = hubContext;
             _context = context;
             _inventoryService = inventoryService;
             _kitchenDisplayService = kitchenDisplayService;
@@ -218,32 +221,32 @@ namespace BusinessAccessLayer.Services
             await _unitOfWork.SaveChangesAsync();
 
             // 4. Bắn SignalR (Realtime cho các máy khác)
-            //await NotifyClientsOfUpdate(reservation);
+            await NotifyClientsOfUpdate(reservation);
 
             // ⭐️ QUAN TRỌNG: Trả về đối tượng Reservation đã update
             return reservation;
         }
 
         // Hàm SignalR
-        //private async Task NotifyClientsOfUpdate(Reservation reservation)
-        //{
-        //    // ⭐️ SỬA LỖI 2: Giờ _hubContext đã tồn tại
-        //    await _hubContext.Clients.All.SendAsync("ReservationStatusChanged", new
-        //    {
-        //        reservationId = reservation.ReservationId,
-        //        newStatus = reservation.Status,
-        //        arrivalAt = reservation.ArrivalAt
-        //    });
+        private async Task NotifyClientsOfUpdate(Reservation reservation)
+        {
+            // ⭐️ SỬA LỖI 2: Giờ _hubContext đã tồn tại
+            await _hubContext.Clients.All.SendAsync("ReservationStatusChanged", new
+            {
+                reservationId = reservation.ReservationId,
+                newStatus = reservation.Status,
+                arrivalAt = reservation.ArrivalAt
+            });
 
-        //    var tableIds = reservation.ReservationTables.Select(rt => rt.TableId);
-        //    await _hubContext.Clients.All.SendAsync("TableStatusUpdated", new
-        //    {
-        //        tableIds = tableIds,
-        //        status = "Occupied",
-        //        reservationId = reservation.ReservationId,
-        //        arrivalAt = reservation.ArrivalAt
-        //    });
-        //}
+            var tableIds = reservation.ReservationTables.Select(rt => rt.TableId);
+            await _hubContext.Clients.All.SendAsync("TableStatusUpdated", new
+            {
+                tableIds = tableIds,
+                status = "Occupied",
+                reservationId = reservation.ReservationId,
+                arrivalAt = reservation.ArrivalAt
+            });
+        }
 
 
         // --- ĐÂY LÀ HÀM QUAN TRỌNG ĐÃ SỬA ---

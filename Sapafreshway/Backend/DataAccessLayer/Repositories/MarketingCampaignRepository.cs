@@ -11,9 +11,9 @@ namespace DataAccessLayer.Repositories
 {
     public class MarketingCampaignRepository : IMarketingCampaignRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public MarketingCampaignRepository(SapaBackendContext context)
+        public MarketingCampaignRepository(SapaFreshContext context)
         {
             _context = context;
         }

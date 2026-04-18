@@ -9,9 +9,9 @@ namespace DataAccessLayer.Repositories
 {
     public class BrandBannerRepository : Repository<BrandBanner>, IBrandBannerRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public BrandBannerRepository(SapaBackendContext context) : base(context)
+        public BrandBannerRepository(SapaFreshContext context) : base(context)
         {
             _context = context;
         }

@@ -15,9 +15,14 @@ namespace BusinessAccessLayer.Services.Interfaces
         Task<Reservation> CreateReservationAsync(ReservationCreateDto dto);
         Task AddDepositAsync(int reservationId, ReservationDeposit deposit);
         Task UpdateReservationDepositStatusAsync(Reservation reservation);
-        Task<object> GetPendingAndConfirmedReservationsAsync( string? status = null,
-            DateTime? date = null, string? customerName = null, string? phone = null, string? timeSlot = null, 
-            int page = 1, int pageSize = 10);
+        Task<object> GetPendingAndConfirmedReservationsAsync(
+    string? status = null,
+    DateTime? date = null,
+    string? customerName = null,
+    string? phone = null,
+    string? timeSlot = null,
+    int page = 1,
+    int pageSize = 10);
         Task<object?> GetReservationDetailAsync(int reservationId);
 
         Task<object> GetAllTablesGroupedByAreaAsync();

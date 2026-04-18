@@ -12,9 +12,9 @@ namespace BusinessAccessLayer.Services
     public class SystemLogoService : ISystemLogoService
     {
         private readonly ISystemLogoRepository _logoRepository;
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public SystemLogoService(ISystemLogoRepository logoRepository, SapaBackendContext context)
+        public SystemLogoService(ISystemLogoRepository logoRepository, SapaFreshContext context)
         {
             _logoRepository = logoRepository;
             _context = context;

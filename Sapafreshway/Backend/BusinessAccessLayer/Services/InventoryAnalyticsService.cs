@@ -7,9 +7,9 @@ namespace BusinessAccessLayer.Services.Inventory
 {
     public class InventoryAnalyticsService : IInventoryAnalyticsService
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public InventoryAnalyticsService(SapaBackendContext context)
+        public InventoryAnalyticsService(SapaFreshContext context)
         {
             _context = context;
         }

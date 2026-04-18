@@ -12,9 +12,9 @@ namespace DataAccessLayer.Repositories
 {
     public class StockTransactionRepository : IStockTransactionRepository
     {
-        private readonly SapaBackendContext _context;
+        private readonly SapaFreshContext _context;
 
-        public StockTransactionRepository(SapaBackendContext context)
+        public StockTransactionRepository(SapaFreshContext context)
         {
             _context = context;
         }

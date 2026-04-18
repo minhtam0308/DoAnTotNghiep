@@ -98,7 +98,7 @@ namespace DataAccessLayer.Repositories.Interfaces
         /// Lấy Top 5 users hoạt động nhiều nhất (theo số lần đăng nhập)
         /// Returns: List<(UserId, Username, FullName, LoginCount)>
         /// </summary>
-        //Task<List<(int UserId, string Username, string FullName, int LoginCount)>> GetTop5ActiveUsersAsync();
+        Task<List<(int UserId, string Username, string FullName, int LoginCount)>> GetTop5ActiveUsersAsync();
 
         /// <summary>
         /// Lấy Top 5 categories bán chạy nhất
@@ -111,7 +111,7 @@ namespace DataAccessLayer.Repositories.Interfaces
         /// Lấy 10 system logs gần nhất
         /// Returns: List<(Time, Username, Action)>
         /// </summary>
-        //Task<List<(DateTime Time, string Username, string Action)>> GetRecentSystemLogsAsync();
+        Task<List<(DateTime Time, string Username, string Action)>> GetRecentSystemLogsAsync();
     }
 }
 
