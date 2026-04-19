@@ -68,45 +68,202 @@
     </div>
 </div>
 
+<div class="container mt-5">
+    <h2 class="text-center section-title mb-4">Sự kiện sắp tới</h2>
 
+    <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+            <!-- Slide 1 -->
+            <div class="carousel-item active">
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+                        <div class="card event-card h-100 shadow-sm">
+                            <img src="/images/anhevent1.png" class="card-img-top" alt="Lễ hội ẩm thực Sapa">
+                            <div class="card-body">
+                                <h5 class="card-title">Lễ hội ẩm thực Sapa</h5>
+                                <p class="card-text">
+                                    <strong>Ngày bắt đầu:</strong> 01/05/2026 <br />
+                                    <strong>Ngày kết thúc:</strong> 05/05/2026 <br />
+                                    <strong>Địa điểm:</strong> Trung tâm thị trấn Sapa
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card event-card h-100 shadow-sm">
+                            <img src="/images/anhevent2.png" class="card-img-top" alt="Đêm nhạc Acoustic">
+                            <div class="card-body">
+                                <h5 class="card-title">Đêm nhạc Acoustic</h5>
+                                <p class="card-text">
+                                    <strong>Ngày bắt đầu:</strong> 10/05/2026 <br />
+                                    <strong>Ngày kết thúc:</strong> 10/05/2026 <br />
+                                    <strong>Địa điểm:</strong> Sapa Fresh Way
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card event-card h-100 shadow-sm">
+                            <img src="/images/anhevent3.png" class="card-img-top" alt="Workshop nấu ăn">
+                            <div class="card-body">
+                                <h5 class="card-title">Workshop nấu ăn</h5>
+                                <p class="card-text">
+                                    <strong>Ngày bắt đầu:</strong> 15/05/2026 <br />
+                                    <strong>Ngày kết thúc:</strong> 15/05/2026 <br />
+                                    <strong>Địa điểm:</strong> Sapa Fresh Way
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="carousel-item">
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+                        <div class="card event-card h-100 shadow-sm">
+                            <img src="/images/anhevent4.png" class="card-img-top" alt="Lễ hội hoa">
+                            <div class="card-body">
+                                <h5 class="card-title">Lễ hội hoa Sapa</h5>
+                                <p class="card-text">
+                                    <strong>Ngày bắt đầu:</strong> 20/05/2026 <br />
+                                    <strong>Ngày kết thúc:</strong> 25/05/2026 <br />
+                                    <strong>Địa điểm:</strong> Núi Hàm Rồng
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card event-card h-100 shadow-sm">
+                            <img src="/images/anhevent1.png" class="card-img-top" alt="Buffet cuối tuần">
+                            <div class="card-body">
+                                <h5 class="card-title">Buffet cuối tuần</h5>
+                                <p class="card-text">
+                                    <strong>Ngày bắt đầu:</strong> 22/05/2026 <br />
+                                    <strong>Ngày kết thúc:</strong> 22/05/2026 <br />
+                                    <strong>Địa điểm:</strong> Sapa Fresh Way
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card event-card h-100 shadow-sm">
+                            <img src="/images/anhevent2.png" class="card-img-top" alt="Đêm DJ">
+                            <div class="card-body">
+                                <h5 class="card-title">Đêm DJ Chill</h5>
+                                <p class="card-text">
+                                    <strong>Ngày bắt đầu:</strong> 28/05/2026 <br />
+                                    <strong>Ngày kết thúc:</strong> 28/05/2026 <br />
+                                    <strong>Địa điểm:</strong> Sapa Fresh Way
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Nút điều khiển -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</div>
 
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
+                document.addEventListener("DOMContentLoaded", async () => {
+
+            const container = document.getElementById("bannerContainer");
+
+            // 👉 Banner cứng (fallback hoặc luôn hiển thị)
+            const staticBanners = [
+                {
+                    imageUrl: "/images/banner1.png",
+                    title: "Ẩm thực đặc sắc",
+                    address: "Hà Nội"
+                },
+                {
+                    imageUrl: "/images/banner2.png",
+                    title: "Không gian sang trọng",
+                    address: "Hà Nội"
+                },
+                {
+                    imageUrl: "/images/banner3.png",
+                    title: "Đặt bàn ngay hôm nay",
+                    address: "Hà Nội"
+                }
+            ];
+
+            let banners = [];
+
             try {
                 const response = await fetch('@Url.Action("Active", "Banner")');
-                const banners = await response.json();
-                console.log("Banners:", banners);
+                const data = await response.json();
 
-                const container = document.getElementById("bannerContainer");
-
-                if (banners.length > 0) {
-                    banners.forEach((banner, index) => {
-                        const activeClass = index === 0 ? "active" : "";
-                          const item = `
-        <div class="carousel-item ${activeClass}">
-            <img src="${banner.imageUrl}" alt="${banner.title}" class="d-block w-100">
-            <div class="carousel-caption d-none d-md-block">
-                <div class="d-flex justify-content-center gap-3">
-                    <a  class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#reservationModal">Đặt bàn ngay</a>
-                    <a href="https://maps.google.com/?q=${encodeURIComponent(banner.address || 'Sapa Restaurant')}"
-                       target="_blank"
-                       class="btn btn-success">Địa chỉ</a>
-                </div>
-            </div>
-        </div>`;
-
-                        container.insertAdjacentHTML("beforeend", item);
-                    });
+                // 👉 Nếu API có dữ liệu thì dùng
+                if (data && data.length > 0) {
+                    banners = data;
                 } else {
-                    container.innerHTML = `<div class="carousel-item active">
-                        <img src="/images/default-banner.jpg" class="d-block w-100">
-                    </div>`;
+                    banners = staticBanners;
                 }
+
             } catch (err) {
                 console.error("Lỗi load banner:", err);
+
+                // 👉 Nếu API lỗi → dùng banner cứng
+                banners = staticBanners;
             }
+
+            // 👉 Render banner
+            container.innerHTML = "";
+
+            banners.forEach((banner, index) => {
+                const activeClass = index === 0 ? "active" : "";
+
+                const item = `
+                <div class="carousel-item ${activeClass}">
+                    <img src="${banner.imageUrl}"
+                         alt="${banner.title}"
+                         class="d-block w-100 banner-img">
+
+                    <div class="carousel-caption">
+                        <h5 class="fw-bold">${banner.title || ""}</h5>
+
+                        <div class="d-flex justify-content-center gap-3 mt-3">
+                            <a class="btn btn-success px-4"
+                               data-bs-toggle="modal"
+                               data-bs-target="#reservationModal">
+                               Đặt bàn ngay
+                            </a>
+
+                            <a href="https://maps.google.com/?q=${encodeURIComponent(banner.address || 'Hà Nội')}"
+                               target="_blank"
+                               class="btn btn-outline-light px-4">
+                               Địa chỉ
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+
+                container.insertAdjacentHTML("beforeend", item);
+            });
+
         });
     </script>
 }

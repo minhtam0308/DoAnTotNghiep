@@ -232,10 +232,17 @@ namespace SapaFreshWayForStaff.Controllers
                     index++;
                 }
 
+
+
                 // ✅ Validate recipes
                 if (recipes.Count == 0)
                 {
-                    return BadRequest(new { message = "Vui lòng chọn ít nhất một nguyên liệu" });
+                    recipes.Add(new
+                    {
+                        ingredientId = 1,
+                        quantity = 1
+                    });
+                    //return BadRequest(new { message = "Vui lòng chọn ít nhất một nguyên liệu" });
                 }
 
                 // ✅ Thêm recipes dưới dạng JSON string - GIỐNG UpdateMenu
@@ -366,7 +373,12 @@ namespace SapaFreshWayForStaff.Controllers
 
                 if (recipes.Count == 0)
                 {
-                    return BadRequest(new { message = "Vui lòng chọn ít nhất một nguyên liệu" });
+                    recipes.Add(new
+                    {
+                        ingredientId = 1,
+                        quantity = 1
+                    });
+                    //return BadRequest(new { message = "Vui lòng chọn ít nhất một nguyên liệu" });
                 }
 
                 // ✅ Thêm recipes dưới dạng JSON string

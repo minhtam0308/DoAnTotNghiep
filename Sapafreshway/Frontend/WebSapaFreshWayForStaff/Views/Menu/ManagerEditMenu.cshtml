@@ -1164,35 +1164,35 @@
                 }
 
                 // 10. Kiểm tra nguyên liệu
-                if (selectedIngredients.length === 0) {
-                    showToast('warning', 'Thiếu thông tin', 'Vui lòng chọn ít nhất một nguyên liệu!');
-                    isValid = false;
-                    const ingredientsSection = document.querySelector('.ingredients-section');
-                    if (ingredientsSection) {
-                        ingredientsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
+                // if (selectedIngredients.length === 0) {
+                //     showToast('warning', 'Thiếu thông tin', 'Vui lòng chọn ít nhất một nguyên liệu!');
+                //     isValid = false;
+                //     const ingredientsSection = document.querySelector('.ingredients-section');
+                //     if (ingredientsSection) {
+                //         ingredientsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                //     }
+                // }
 
                 // 11. Kiểm tra số lượng nguyên liệu
-                let hasInvalidQuantity = false;
-                let invalidMessage = '';
+                // let hasInvalidQuantity = false;
+                // let invalidMessage = '';
 
-                selectedIngredients.forEach(ing => {
-                    if (!ing.quantity || ing.quantity <= 0) {
-                        hasInvalidQuantity = true;
-                        invalidMessage = 'Vui lòng nhập số lượng hợp lệ cho tất cả nguyên liệu!';
-                    }
+                // selectedIngredients.forEach(ing => {
+                //     if (!ing.quantity || ing.quantity <= 0) {
+                //         hasInvalidQuantity = true;
+                //         invalidMessage = 'Vui lòng nhập số lượng hợp lệ cho tất cả nguyên liệu!';
+                //     }
 
-                    if (ing.unitType === 1 && !Number.isInteger(ing.quantity)) {
-                        hasInvalidQuantity = true;
-                        invalidMessage = `Nguyên liệu "${ing.name}" phải nhập số nguyên!`;
-                    }
-                });
+                //     if (ing.unitType === 1 && !Number.isInteger(ing.quantity)) {
+                //         hasInvalidQuantity = true;
+                //         invalidMessage = `Nguyên liệu "${ing.name}" phải nhập số nguyên!`;
+                //     }
+                // });
 
-                if (hasInvalidQuantity) {
-                    showToast('warning', 'Số lượng không hợp lệ', invalidMessage);
-                    isValid = false;
-                }
+                // if (hasInvalidQuantity) {
+                //     showToast('warning', 'Số lượng không hợp lệ', invalidMessage);
+                //     isValid = false;
+                // }
 
                 // Nếu có lỗi, dừng lại và focus vào field lỗi đầu tiên
                 if (!isValid) {

@@ -1902,7 +1902,6 @@
                 <div class="category-stat-card">
                     <div class="category-stat-header">
                         <h3 class="category-stat-title">${stat.name}</h3>
-                        <div class="category-stat-indicator ${stat.color}"></div>
                     </div>
                     <div class="category-stat-total">
                         <span class="category-stat-number">${stat.total}</span>
@@ -2014,7 +2013,7 @@
                 : '';
 
             return `
-                <div class="menu-item-card ${performance.status}" onclick="openModal(${item.menuItemId})">
+                <div class="menu-item-card normal" onclick="openModal(${item.menuItemId})">
                     <div class="menu-item-content">
                         <div class="menu-item-image">
                             ${imageHtml}
