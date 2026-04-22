@@ -49,7 +49,7 @@ namespace BusinessAccessLayer.Services
         public async Task<Reservation?> CreateReservationAsync(ReservationCreateDto dto)
         {
             // Lấy user theo phone
-            var user = await _userRepository.GetByPhoneAsync(dto.Phone);
+            var user = await _userRepository.GetByEmailAsync(dto.Email);
             if (user == null)
             {
                 //  FIX: Set Status=0 (active) để customer có thể đăng nhập ngay sau khi đặt bàn
@@ -59,9 +59,9 @@ namespace BusinessAccessLayer.Services
                 user = new User
                 {
                     FullName = dto.CustomerName,
-                    Email = $"customer_{dto.Phone}@gmail.com",
+                    Email = dto.Email,
                     PasswordHash = "666666", // TODO: hash thật
-                    Phone = dto.Phone,
+                    Phone = "0123456789",
                     RoleId = 5,
                     Status = 0, // 0 = Active, 1 = Inactive
                     AvatarUrl = defaultAvatar // use Cloudinary default avatar URL if configured
@@ -90,7 +90,7 @@ namespace BusinessAccessLayer.Services
 
             // Kiểm tra trùng đơn theo phone + ngày + ca
             var existingReservations = await _reservationRepository
-    .GetReservationsByPhoneAndDateAndSlotAsync(dto.Phone, dto.ReservationDate.Date, timeSlot);
+    .GetReservationsByPhoneAndDateAndSlotAsync(dto.Email, dto.ReservationDate.Date, timeSlot);
 
             if (existingReservations != null &&
                 existingReservations.Any(r => r.Status == "Pending" || r.Status == "Confirmed"))

@@ -594,10 +594,10 @@
         $(document).on('click', '#sendOtpBtn', async function (e) {
             e.preventDefault();
             var $form = $(this).closest('form');
-            var phone = $form.find('input[name="Phone"]').val();
+            var email = $form.find('input[name="Email"]').val();
 
-            if (!phone) {
-                toastr.warning("Vui lòng nhập số điện thoại.");
+            if (!email) {
+                toastr.warning("Vui lòng nhập email.");
                 return;
             }
 
@@ -605,7 +605,7 @@
                 var response = await fetch("/Reservation/SendOtp", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ phone: phone })
+                    body: JSON.stringify({ email: email })
                 });
 
                 var result = await response.json();

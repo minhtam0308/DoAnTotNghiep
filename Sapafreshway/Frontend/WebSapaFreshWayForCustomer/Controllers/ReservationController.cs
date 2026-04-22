@@ -38,7 +38,7 @@ namespace WebSapaFreshWayForCustomer.Controllers
         public async Task<IActionResult> SendOtp([FromBody] OtpRequestDto dto)
         {
             if (string.IsNullOrEmpty(dto.Email))
-                return BadRequest(new { success = false, message = "Số điện thoại không hợp lệ." });
+                return BadRequest(new { success = false, message = "Email không hợp lệ." });
 
             // Gửi đúng dạng string theo API
             var jsonContent = JsonConvert.SerializeObject(dto.Email);
@@ -91,7 +91,7 @@ namespace WebSapaFreshWayForCustomer.Controllers
             var dto = new
             {
                 CustomerName = model.CustomerName,
-                Phone = model.Phone,
+                Email = model.Email,
                 ReservationDate = model.ReservationDate,
                 ReservationTime = model.ReservationTime,
                 NumberOfGuests = model.NumberOfGuests,

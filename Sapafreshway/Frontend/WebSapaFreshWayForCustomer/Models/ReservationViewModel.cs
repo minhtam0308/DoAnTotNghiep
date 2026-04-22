@@ -10,10 +10,10 @@ namespace WebSapaFreshWayForCustomer.Models
         [Display(Name = "Tên khách hàng")]
         public string CustomerName { get; set; } = null!;
 
-        [Required(ErrorMessage = "Số điện thoại là bắt buộc")]
-        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
-        [Display(Name = "Số điện thoại")]
-        public string Phone { get; set; } = null!;
+        [Required(ErrorMessage = "Email là bắt buộc")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = null!;
 
         [Required(ErrorMessage = "Ngày đặt là bắt buộc")]
         [DataType(DataType.Date)]

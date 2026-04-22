@@ -1,7 +1,11 @@
 ﻿using BusinessAccessLayer.DTOs;
 using BusinessAccessLayer.Services;
 using BusinessAccessLayer.Services.Interfaces;
+using DataAccessLayer.Dbcontext;
+using DataAccessLayer.Repositories;
+using DomainAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PayOS;
  // WebhookData, verifiedData
@@ -10,6 +14,7 @@ using SapaFreshWayAPI.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -28,22 +33,32 @@ namespace SapaFreshWayAPI.Controllers
         private readonly IConfiguration _config;
         private readonly PayOSClient _payOSClient;
 
+        private readonly UserRepository userRepository;
+        private readonly IVerificationService _verificationService;
+        private readonly CustomerRepository _customerRepository;
+
+
         // ✅ thread-safe
         private static readonly ConcurrentDictionary<string, OtpInfo> _otpCache = new();
         private static readonly ConcurrentDictionary<string, ReservationCreateDto> _pendingReservationCache = new();
 
-        private const decimal DEPOSIT_PER_GUEST = 50000m;
+        private const decimal DEPOSIT_PER_GUEST = 10000m;
 
         public ReservationController(
             IReservationService reservationService,
             IMomoService momoService,
+            SapaFreshContext context,
             IPayosService payosService,
-            IConfiguration config)
+            IConfiguration config,
+            IVerificationService verificationService)
         {
             _reservationService = reservationService;
             _momoService = momoService;
             _payosService = payosService;
             _otpService = new OtpService();
+            _verificationService = verificationService;
+            userRepository = new UserRepository(context);
+            _customerRepository = new CustomerRepository(context);
 
             _config = config;
 
@@ -56,71 +71,86 @@ namespace SapaFreshWayAPI.Controllers
 
         // ====================== SEND OTP ======================
         [HttpPost("send-otp")]
-        public async Task<IActionResult> SendOtp([FromBody] string phone)
+        public async Task<IActionResult> SendOtp([FromBody] string email)
         {
             var now = DateTime.Now;
 
-            if (_otpCache.TryGetValue(phone, out var info))
-            {
-                if (info.LastSent.Date != now.Date)
-                {
-                    info.DailyCount = 0;
-                    info.Timestamps.Clear();
-                }
-
-                info.Timestamps = info.Timestamps.Where(t => (now - t).TotalMinutes < 10).ToList();
-
-                if (info.Timestamps.Count >= 2)
-                    return BadRequest(new { message = "Gửi OTP quá 2 lần trong 10 phút." });
-
-                if (info.DailyCount >= 3)
-                    return BadRequest(new { message = "Gửi OTP quá 3 lần trong ngày." });
-            }
 
             var otp = new Random().Next(100000, 999999).ToString();
-            var expired = now.AddMinutes(5);
+            var expired = now.AddMinutes(10);
 
-            if (!await _otpService.SendOtpAsync(phone, otp))
-                return BadRequest(new { message = "Không gửi được OTP." });
-
-            _otpCache.AddOrUpdate(
-                phone,
-                _ => new OtpInfo
+            try
+            {
+                var checkEmail = await userRepository.GetByEmailAsync(email);
+                if (checkEmail == null)
                 {
-                    OtpCode = otp,
-                    Expired = expired,
-                    DailyCount = 1,
-                    LastSent = now,
-                    Timestamps = new List<DateTime> { now }
-                },
-                (_, old) =>
+                    await userRepository.CreateAsync(new DomainAccessLayer.Models.User() { Email = email, Status = 0, RoleId = 5, PasswordHash = "User" });
+                }
+                checkEmail = await userRepository.GetByEmailAsync(email);
+                var checkUser = await _customerRepository.GetByUserIdAsync(checkEmail!.UserId);
+                if (checkUser == null)
                 {
-                    old.OtpCode = otp;
-                    old.Expired = expired;
-                    old.DailyCount++;
-                    old.LastSent = now;
-                    old.Timestamps.Add(now);
-                    return old;
-                });
+                    var newcus = new Customer()
+                    {
+                        UserId = checkEmail.UserId,
+                        IsVip = false
+                    };
+                    await _customerRepository.CreateAsync(newcus);
+                }
 
-            return Ok(new { message = "OTP đã gửi", expireAt = expired });
+                var code = await _verificationService.GenerateAndSendCodeAsync(checkEmail.UserId, checkEmail.Email, "verify reservation", 10);
+                
+
+                return Ok(new { message = "OTP đã gửi", expireAt = expired });
+
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+            
         }
 
         // ====================== CONFIRM RESERVATION ======================
+        //public class ReservationCreateDtoEmail
+        //{
+        //    [Required(ErrorMessage = "Tên khách hàng là bắt buộc.")]
+        //    public string CustomerName { get; set; } = null!;
+
+        //    [Required(ErrorMessage = "Email là bắt buộc.")]
+        //    [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
+        //    public string Email { get; set; } = null!;
+
+        //    [Required(ErrorMessage = "Ngày đặt bàn là bắt buộc.")]
+        //    public DateTime ReservationDate { get; set; }
+
+        //    [Required(ErrorMessage = "Giờ đặt bàn là bắt buộc.")]
+        //    public DateTime ReservationTime { get; set; }
+
+        //    [Range(1, 50, ErrorMessage = "Số lượng khách phải ít nhất 1 người.")]
+        //    public int NumberOfGuests { get; set; }
+
+        //    public string? Notes { get; set; }
+
+        //    [Required(ErrorMessage = "OTP là bắt buộc.")]
+        //    public string? OtpCode { get; set; }
+
+        //    /// <summary>
+        //    /// MOMO hoặc PAYOS (default PAYOS)
+        //    /// </summary>
+        //    public string PaymentMethod { get; set; } = "PAYOS";
+        //}
+
         [HttpPost("confirm")]
         public async Task<IActionResult> ConfirmReservation([FromBody] ReservationCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { success = false, message = "Dữ liệu không hợp lệ." });
 
-            if (!_otpCache.TryGetValue(dto.Phone, out var otpInfo))
-                return BadRequest(new { success = false, message = "Chưa gửi OTP." });
-
-            if (DateTime.Now > otpInfo.Expired)
-                return BadRequest(new { success = false, message = "OTP hết hạn." });
-
-            if (dto.OtpCode != otpInfo.OtpCode)
-                return BadRequest(new { success = false, message = "OTP không đúng." });
+            var ok = await _verificationService.VerifyCodeEmailAsync(dto.Email, "verify reservation", dto.OtpCode);
+            if (!ok)
+                return BadRequest(new { message = "OTP không hợp lệ." });
 
             decimal requiredDeposit = dto.NumberOfGuests * DEPOSIT_PER_GUEST;
 
@@ -158,7 +188,6 @@ namespace SapaFreshWayAPI.Controllers
                 }
 
                 _pendingReservationCache[orderId] = dto;
-                _otpCache.TryRemove(dto.Phone, out _);
 
                 return Ok(new
                 {

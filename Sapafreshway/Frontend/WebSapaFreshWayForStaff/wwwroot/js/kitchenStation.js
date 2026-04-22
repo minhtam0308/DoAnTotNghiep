@@ -9,22 +9,22 @@ function getApiBaseUrl() {
         console.log('[getApiBaseUrl] Using server config:', window.API_BASE_URL);
         return window.API_BASE_URL;
     }
-    
+
     // Fallback: Tự động detect từ current location
     const currentHost = window.location.hostname;
     const currentProtocol = window.location.protocol;
-    
+
     // Nếu đang chạy trên localhost, dùng HTTPS localhost:7096
     if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
         return 'https://localhost:7096/api';
     }
-    
+
     // Nếu đang chạy trên IP (192.168.x.x), thử HTTPS trước, nếu fail thì HTTP
     if (currentHost.match(/^\d+\.\d+\.\d+\.\d+$/)) {
         // Ưu tiên HTTPS (vì backend thường chạy HTTPS)
         return `https://${currentHost}:7096/api`;
     }
-    
+
     // Default fallback - dùng HTTPS localhost:7096
     return 'https://localhost:7096/api';
 }
@@ -39,15 +39,27 @@ let selectedCookingItems = new Set(); // Set<string> - format: "orderDetailId|or
 let retryCount = 0;
 const MAX_RETRIES = 3;
 
+function isHiddenKitchenStatus(status) {
+    if (!status) return false;
+    const s = status.toLowerCase().trim();
+    return s.includes('cancelled') || s.includes('canceled') || s.includes('hủy') ||
+        s.includes('đã hủy') || s.includes('returned') || s.includes('trả');
+}
+
+function sanitizeStationItems(items) {
+    if (!Array.isArray(items)) return [];
+    return items.filter(item => !isHiddenKitchenStatus(item?.status || ''));
+}
+
 // Initialize station - OPTIMIZED
 function initializeStation(categoryName) {
     currentCategoryName = categoryName;
     retryCount = 0; // Reset retry count
-    
+
     // Log API URL để debug
     console.log('[initializeStation] API Base URL:', API_BASE);
     console.log('[initializeStation] Category:', categoryName);
-    
+
     // OPTIMIZED: Hiển thị loading indicator
     const allItemsList = document.getElementById('allItemsList');
     const urgentItemsTable = document.getElementById('urgentItemsTable');
@@ -57,7 +69,7 @@ function initializeStation(categoryName) {
     if (urgentItemsTable) {
         urgentItemsTable.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="mdi mdi-loading mdi-spin" style="font-size: 24px;"></i> Đang tải...</td></tr>';
     }
-    
+
     // Load data trước, SignalR sau (lazy load)
     loadStationItems().then(() => {
         retryCount = 0; // Reset on success
@@ -131,7 +143,7 @@ function initializeSignalR() {
 async function loadStationItems() {
     const allItemsList = document.getElementById('allItemsList');
     const urgentItemsTable = document.getElementById('urgentItemsTable');
-    
+
     try {
         if (!currentCategoryName || currentCategoryName.trim() === '') {
             console.error('Category name is empty!');
@@ -147,7 +159,7 @@ async function loadStationItems() {
         console.log('[loadStationItems] Current location:', window.location.href);
         const url = `${API_BASE}/KitchenDisplay/station-items?categoryName=${encodeURIComponent(currentCategoryName)}`;
         console.log('[loadStationItems] Full URL:', url);
-        
+
         // Test connection trước khi fetch - thử ping API root
         try {
             const testUrl = API_BASE.replace('/api', '') + '/swagger/index.html';
@@ -177,12 +189,12 @@ async function loadStationItems() {
             clearTimeout(timeoutId);
         } catch (fetchError) {
             clearTimeout(timeoutId);
-            
+
             // Nếu lỗi và URL là HTTPS, thử HTTP
-            if (url.startsWith('https://') && 
-                (fetchError.message?.includes('Failed to fetch') || 
-                 fetchError.message?.includes('ERR_CONNECTION_REFUSED') ||
-                 fetchError.message?.includes('ERR_SSL'))) {
+            if (url.startsWith('https://') &&
+                (fetchError.message?.includes('Failed to fetch') ||
+                    fetchError.message?.includes('ERR_CONNECTION_REFUSED') ||
+                    fetchError.message?.includes('ERR_SSL'))) {
                 console.log('[loadStationItems] HTTPS failed, trying HTTP...');
                 const httpUrl = url.replace('https://', 'http://');
                 try {
@@ -203,16 +215,16 @@ async function loadStationItems() {
                     // Fall through to retry logic
                 }
             }
-            
+
             // Retry logic với exponential backoff
-            if (!response && retryCount < MAX_RETRIES && 
-                (fetchError.name === 'AbortError' || 
-                 fetchError.message?.includes('Failed to fetch') || 
-                 fetchError.message?.includes('ERR_CONNECTION_TIMED_OUT'))) {
+            if (!response && retryCount < MAX_RETRIES &&
+                (fetchError.name === 'AbortError' ||
+                    fetchError.message?.includes('Failed to fetch') ||
+                    fetchError.message?.includes('ERR_CONNECTION_TIMED_OUT'))) {
                 retryCount++;
                 const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000); // 1s, 2s, 4s
                 console.log(`[loadStationItems] Retry ${retryCount}/${MAX_RETRIES} after ${delay}ms...`);
-                
+
                 // Update UI với retry message
                 if (allItemsList) {
                     allItemsList.innerHTML = `
@@ -222,11 +234,11 @@ async function loadStationItems() {
                         </div>
                     `;
                 }
-                
+
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return loadStationItems(); // Retry
             }
-            
+
             // Không retry được nữa, throw error
             if (!response) {
                 if (fetchError.name === 'AbortError') {
@@ -272,7 +284,7 @@ async function loadStationItems() {
         console.error('[loadStationItems] Error:', error);
         const errorMessage = error.message || 'Lỗi kết nối API';
         showError(errorMessage);
-        
+
         // Hiển thị error message trong UI với retry button
         showErrorWithRetry(error);
     }
@@ -283,7 +295,7 @@ function showErrorWithRetry(error) {
     const allItemsList = document.getElementById('allItemsList');
     const urgentItemsTable = document.getElementById('urgentItemsTable');
     const errorMessage = error.message || 'Lỗi kết nối API';
-    
+
     if (allItemsList) {
         allItemsList.innerHTML = `
             <div class="empty-state" style="color: #dc3545;">
@@ -312,14 +324,14 @@ function retryLoadStationItems() {
     retryCount = 0; // Reset retry count
     const allItemsList = document.getElementById('allItemsList');
     const urgentItemsTable = document.getElementById('urgentItemsTable');
-    
+
     if (allItemsList) {
         allItemsList.innerHTML = '<div class="text-center py-5"><i class="mdi mdi-loading mdi-spin" style="font-size: 48px;"></i><p class="mt-3">Đang tải lại...</p></div>';
     }
     if (urgentItemsTable) {
         urgentItemsTable.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="mdi mdi-loading mdi-spin" style="font-size: 24px;"></i> Đang tải...</td></tr>';
     }
-    
+
     loadStationItems();
 }
 
@@ -337,7 +349,9 @@ function renderStationItems(data) {
         return;
     }
 
-    if (!data.allItems || data.allItems.length === 0) {
+    const visibleItems = sanitizeStationItems(data.allItems || []);
+
+    if (visibleItems.length === 0) {
         console.warn('[renderStationItems] No items in this station!');
         allItemsList.innerHTML = '<div class="empty-state">Không có món nào trong trạm này</div>';
         cookingTable.innerHTML = '<tr><td colspan="5" class="empty-state">Không có món nào cần nấu</td></tr>';
@@ -347,12 +361,12 @@ function renderStationItems(data) {
     }
 
     console.log('[renderStationItems] Item statuses:',
-        data.allItems.map(item => ({ name: item.menuItemName, status: item.status }))
+        visibleItems.map(item => ({ name: item.menuItemName, status: item.status }))
     );
 
     // BÊN TRÁI: Nhóm TẤT CẢ món theo tên (bất kể status)
     // Hiển thị tổng số lượng của từng món đang có trong hệ thống
-    const groupedAllItems = groupItemsByDish(data.allItems);
+    const groupedAllItems = groupItemsByDish(visibleItems);
     console.log('[renderStationItems] All grouped items:', groupedAllItems.length);
 
     if (groupedAllItems.length > 0) {
@@ -364,7 +378,7 @@ function renderStationItems(data) {
     }
 
     // BÊN PHẢI: CHỈ hiển thị items có status = "Cooking" (đã được bếp phó fire)
-    const cookingItems = data.allItems.filter(item => {
+    const cookingItems = visibleItems.filter(item => {
         const status = (item.status || '').toLowerCase();
         return status === 'cooking' || status === 'đang chế biến';
     });
@@ -385,7 +399,7 @@ function renderStationItems(data) {
                 const menuItemId = menuItemIdAttr ? parseInt(menuItemIdAttr) : NaN;
                 const menuItemName = this.textContent.trim();
                 if (!isNaN(menuItemId) && menuItemId > 0) {
-                    openRecipePopup(menuItemId, menuItemName);
+                    //openRecipePopup(menuItemId, menuItemName);
                 } else {
                     showError('Không tìm được thông tin công thức cho món này');
                 }
@@ -464,7 +478,7 @@ function createCookingTableRow(item) {
     // Tạo key: "orderDetailId|orderComboItemId" hoặc "orderDetailId|" nếu không có orderComboItemId
     const itemKey = `${item.orderDetailId}|${item.orderComboItemId || ''}`;
     const isChecked = selectedCookingItems.has(itemKey);
-    
+
     // Tính thời gian nấu còn lại (đếm ngược)
     // Dùng orderComboItemId nếu có, ngược lại dùng orderDetailId
     const itemId = item.orderComboItemId || item.orderDetailId;
@@ -507,22 +521,22 @@ function getCookingCountdown(startedAt, timeCook, itemId) {
     if (!startedAt || !timeCook || timeCook <= 0) {
         return `<span class="text-muted">-</span>`;
     }
-    
+
     const now = new Date();
     const elapsedSeconds = Math.floor((now - startedAt) / 1000);
     const totalSeconds = timeCook * 60;
     const remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds);
-    
+
     if (remainingSeconds <= 0) {
         return `<span class="text-danger fw-bold">Hết giờ</span>`;
     }
-    
+
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
     const isUrgent = remainingSeconds <= 60; // Cảnh báo khi còn < 1 phút
-    
+
     const timeClass = isUrgent ? 'text-danger fw-bold' : (remainingSeconds <= 300 ? 'text-warning' : 'text-success');
-    
+
     return `<span class="${timeClass}" id="countdown-${itemId}">${minutes}:${seconds.toString().padStart(2, '0')}</span>`;
 }
 
@@ -561,8 +575,10 @@ function selectAllCookingItems(checkbox) {
 function updateCounts(data) {
     if (!data || !data.allItems) return;
 
-    const groupedCount = groupItemsByDish(data.allItems).length;
-    const cookingCount = data.allItems.filter(item => {
+    const visibleItems = sanitizeStationItems(data.allItems || []);
+
+    const groupedCount = groupItemsByDish(visibleItems).length;
+    const cookingCount = visibleItems.filter(item => {
         const status = (item.status || '').toLowerCase();
         return status === 'cooking' || status === 'đang chế biến';
     }).length;
@@ -570,7 +586,7 @@ function updateCounts(data) {
     const allCountEl = document.getElementById('allCount');
     const cookingCountEl = document.getElementById('cookingCount');
     const urgentCountEl = document.getElementById('urgentCount');
-    
+
     if (allCountEl) {
         allCountEl.textContent = groupedCount;
     }
@@ -585,25 +601,25 @@ function updateCounts(data) {
 // Update timers - Cập nhật đếm ngược thời gian nấu
 function updateTimers() {
     const countdownCells = document.querySelectorAll('.countdown-cell');
-    
+
     countdownCells.forEach(cell => {
         const itemId = cell.getAttribute('data-item-id');
         const row = cell.closest('tr');
         if (!row) return;
-        
+
         const timeCook = parseInt(row.getAttribute('data-time-cook')) || 0;
         const startedAtStr = row.getAttribute('data-started-at');
-        
+
         if (!startedAtStr || !timeCook || timeCook <= 0) {
             cell.innerHTML = '<span class="text-muted">-</span>';
             return;
         }
-        
+
         const startedAt = new Date(startedAtStr);
         const countdownHtml = getCookingCountdown(startedAt, timeCook, itemId);
         cell.innerHTML = countdownHtml;
     });
-    
+
     // Reload data mỗi 30 giây để đảm bảo đồng bộ (đã có setInterval riêng)
 }
 
@@ -631,7 +647,7 @@ async function completeSelectedItems() {
     try {
         await Promise.all(promises);
         showSuccess(`✓ Đã hoàn thành ${itemsToComplete.length} món`);
-        
+
         // In ticket cho từng món đã hoàn thành (song song với delay nhỏ)
         const printPromises = itemsToComplete.map((itemKey, index) => {
             const [orderDetailId, orderComboItemId] = itemKey.split('|');
@@ -648,12 +664,12 @@ async function completeSelectedItems() {
                 }, index * 500); // Delay 500ms giữa mỗi lần in
             });
         });
-        
+
         // Đợi tất cả các ticket được in (không block UI)
         Promise.all(printPromises).catch(err => {
             console.error('[completeSelectedItems] Print promises error:', err);
         });
-        
+
         selectedCookingItems.clear();
         loadStationItems();
     } catch (error) {
@@ -724,7 +740,7 @@ async function printItemTicket(orderDetailId, orderComboItemId = null) {
         }
 
         const ticket = result.data;
-        
+
         // Tạo nội dung ticket để in
         const printContent = `
             <!DOCTYPE html>
@@ -803,7 +819,7 @@ async function printItemTicket(orderDetailId, orderComboItemId = null) {
         const printWindow = window.open('', '_blank');
         printWindow.document.write(printContent);
         printWindow.document.close();
-        
+
         // Đợi một chút để nội dung load xong, sau đó in
         setTimeout(() => {
             printWindow.print();
@@ -999,7 +1015,7 @@ function showConfirmPopup(message, title = 'Xác nhận') {
         const overlay = document.createElement('div');
         overlay.className = 'confirm-popup-overlay';
         overlay.style.zIndex = '100000'; // Đảm bảo cao hơn modal (99999)
-        
+
         overlay.innerHTML = `
             <div class="confirm-popup">
                 <div class="confirm-popup-header">
@@ -1019,7 +1035,7 @@ function showConfirmPopup(message, title = 'Xác nhận') {
         `;
 
         document.body.appendChild(overlay);
-        
+
         // Force reflow để đảm bảo z-index được áp dụng
         overlay.offsetHeight;
 

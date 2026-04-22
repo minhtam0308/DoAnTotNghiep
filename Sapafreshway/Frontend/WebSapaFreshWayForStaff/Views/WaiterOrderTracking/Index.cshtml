@@ -665,7 +665,26 @@
             <div class="orders-grid" id="ordersGrid">
                 @if (Model.OrderGroups != null && Model.OrderGroups.Any())
                 {
-                    @foreach (var group in Model.OrderGroups)
+                    var tableGroups = Model.OrderGroups
+                        .GroupBy(group => group.TableNumber)
+                        .Select(tableGroup => new
+                        {
+                            TableNumber = tableGroup.Key,
+                            AreaName = string.Join(" / ", tableGroup
+                                .Select(x => x.AreaName)
+                                .Where(x => !string.IsNullOrWhiteSpace(x))
+                                .Distinct()),
+                            OrderNumbers = tableGroup
+                                .Select(x => x.OrderNumber)
+                                .Where(x => !string.IsNullOrWhiteSpace(x))
+                                .Distinct()
+                                .ToList(),
+                            NumberOfGuests = tableGroup.Max(x => x.NumberOfGuests),
+                            Items = tableGroup.SelectMany(x => x.Items).ToList()
+                        })
+                        .ToList();
+
+                    @foreach (var group in tableGroups)
                     {
                         var maxWaitingMinutes = group.Items.Any() ? group.Items.Max(i => i.WaitingMinutes) : 0;
                         var timerClass = maxWaitingMinutes > 15 ? "timer-critical" : (maxWaitingMinutes >= 10 ? "timer-warning" : "timer-normal");
@@ -692,7 +711,7 @@
                         var canComplete = finishedCount == totalItems && totalItems > 0;
                         var hasUrgentItems = group.Items.Any(i => i.IsUrgent);
                         
-                        <div class="order-card @(readyCount > 0 ? "has-ready" : "") @(hasUrgentItems ? "has-urgent" : "")" data-order-id="@group.OrderNumber">
+                        <div class="order-card @(readyCount > 0 ? "has-ready" : "") @(hasUrgentItems ? "has-urgent" : "")" data-order-id="@string.Join(",", group.OrderNumbers)">
                             <!-- Card Header -->
                             <div class="order-card-header @(readyCount > 0 ? "has-ready" : "")">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -702,7 +721,7 @@
                                                 Bàn @group.TableNumber
                                             </span>
                                             <span style="font-size: 13px; color: #6b7280; font-weight: 500;">
-                                                (#@group.OrderNumber)
+                                                (#@string.Join(", ", group.OrderNumbers))
                                             </span>
                                             <span>@group.AreaName</span>
                                         </div>
@@ -1299,16 +1318,57 @@
         }
     }
 
+    function groupOrdersByTable(orderGroups) {
+        const grouped = new Map();
+
+        (orderGroups || []).forEach(group => {
+            const tableNumber = (group.tableNumber || 'N/A').trim();
+
+            if (!grouped.has(tableNumber)) {
+                grouped.set(tableNumber, {
+                    tableNumber: group.tableNumber || 'N/A',
+                    areaName: group.areaName || '',
+                    orderNumbers: [],
+                    numberOfGuests: group.numberOfGuests || 0,
+                    items: []
+                });
+            }
+
+            const target = grouped.get(tableNumber);
+
+            if (group.orderNumber && !target.orderNumbers.includes(group.orderNumber)) {
+                target.orderNumbers.push(group.orderNumber);
+            }
+
+            if (group.areaName && !target.areaName.includes(group.areaName)) {
+                target.areaName = target.areaName ? `${target.areaName} / ${group.areaName}` : group.areaName;
+            }
+
+            target.numberOfGuests = Math.max(target.numberOfGuests || 0, group.numberOfGuests || 0);
+
+            if (Array.isArray(group.items) && group.items.length > 0) {
+                target.items.push(...group.items);
+            }
+        });
+
+        return Array.from(grouped.values()).map(group => ({
+            ...group,
+            orderNumbersText: group.orderNumbers.length > 0 ? group.orderNumbers.join(', ') : ''
+        }));
+    }
+
     // Render orders (client-side rendering)
     function renderOrders(orderGroups) {
         const grid = document.getElementById('ordersGrid');
-        if (!orderGroups || orderGroups.length === 0) {
+        const displayGroups = groupOrdersByTable(orderGroups);
+
+        if (!displayGroups || displayGroups.length === 0) {
             grid.innerHTML = '<div class="empty-state"><p>Không có đơn hàng nào</p></div>';
             return;
         }
         
         let html = '';
-        orderGroups.forEach(group => {
+        displayGroups.forEach(group => {
             const maxWaitingMinutes = group.items && group.items.length > 0 
                 ? Math.max(...group.items.map(i => i.waitingMinutes || 0)) 
                 : 0;
@@ -1336,13 +1396,13 @@
             const hasUrgentItems = group.items ? group.items.some(i => i.isUrgent) : false;
             
             html += `
-                <div class="order-card ${readyCount > 0 ? "has-ready" : ""} ${hasUrgentItems ? "has-urgent" : ""}" data-order-id="${group.orderNumber}">
+                <div class="order-card ${readyCount > 0 ? "has-ready" : ""} ${hasUrgentItems ? "has-urgent" : ""}" data-order-id="${group.orderNumbersText || group.orderNumber || ''}">
                     <div class="order-card-header ${readyCount > 0 ? "has-ready" : ""}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="flex-grow-1">
                                 <div class="order-card-title">
                                     <span class="table-badge ${readyCount > 0 ? "has-ready" : ""}">Bàn ${escapeHtml(group.tableNumber || 'N/A')}</span>
-                                    <span style="font-size: 13px; color: #6b7280; font-weight: 500;">(#${group.orderNumber})</span>
+                                    <span style="font-size: 13px; color: #6b7280; font-weight: 500;">(#${escapeHtml(group.orderNumbersText || group.orderNumber || '')})</span>
                                     <span>${escapeHtml(group.areaName || '')}</span>
                                 </div>
                                 <div class="order-card-subtitle">
@@ -1424,11 +1484,6 @@
                 });
             }
             
-            html += `
-                    </div>
-                    ${canComplete ? '<div class="order-complete-section"><button class="order-complete-badge" onclick="completeOrderItems(' + (group.orderNumber || '').replace('A', '') + ')">Hoàn thành đơn</button></div>' : ''}
-                </div>
-            `;
         });
         
         // Sử dụng requestAnimationFrame để đảm bảo CSS được áp dụng đúng sau khi render

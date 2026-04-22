@@ -11,6 +11,7 @@ namespace BusinessAccessLayer.DTOs.Kitchen
         public int OrderId { get; set; }
         public string OrderNumber { get; set; } // "A01", "A02"...
         public string TableNumber { get; set; } // Tên nhân viên hoặc số bàn
+        public string AreaName { get; set; } = string.Empty; // Khu vực của bàn
         public int NumberOfGuests { get; set; } // Số lượng người của bàn
         public DateTime CreatedAt { get; set; }
         public int WaitingMinutes { get; set; } // Calculated: now - CreatedAt

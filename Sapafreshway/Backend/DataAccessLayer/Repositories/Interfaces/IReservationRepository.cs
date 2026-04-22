@@ -25,7 +25,7 @@ namespace DataAccessLayer.Repositories.Interfaces
         Task<List<int>> GetBookedTableIdsAsync(DateTime reservationDate, string timeSlot);
         Task<List<BookedTableDetailDto>> GetBookedTableDetailsAsync(DateTime reservationDate, string timeSlot);
         Task<Reservation?> GetReservationByIdAsync(int reservationId);
-        Task<List<Reservation>> GetReservationsByPhoneAndDateAndSlotAsync(string phone, DateTime date, string slot);
+        Task<List<Reservation>> GetReservationsByPhoneAndDateAndSlotAsync(string email, DateTime date, string slot);
         Task<List<Reservation>> GetReservationsByCustomerAsync(int customerId);
         Task<int> GetPendingCountAsync();
         Task SaveChangesAsync();

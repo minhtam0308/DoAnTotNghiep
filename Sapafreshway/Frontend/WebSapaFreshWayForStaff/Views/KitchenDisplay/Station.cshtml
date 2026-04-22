@@ -662,7 +662,7 @@
         window.API_BASE_URL = '@ViewBag.ApiBaseUrl' || 'https://localhost:7096/api';
         window.SIGNALR_HUB_URL = '@ViewBag.SignalRHubUrl' || 'https://localhost:7096/kitchenHub';
     </script>
-    <script src="~/js/kitchenStation.js"></script>
+    <script src="~/js/kitchenStation.js" asp-append-version="true"></script>
     <script>
         // Helper function to decode HTML entities (bao gồm cả hex entities như &#x1ECB;)
         function decodeHtmlEntities(text) {

@@ -252,7 +252,7 @@ namespace SapaFreshWayForStaff.Controllers
             var dto = new
             {
                 CustomerName = model.CustomerName,
-                Phone = model.Phone,
+                Email = model.Email,
                 ReservationDate = model.ReservationDate,
                 ReservationTime = model.ReservationTime,
                 NumberOfGuests = model.NumberOfGuests,

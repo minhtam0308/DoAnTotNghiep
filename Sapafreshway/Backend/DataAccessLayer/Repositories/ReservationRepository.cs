@@ -168,10 +168,11 @@ namespace DataAccessLayer.Repositories
                 .Include(r => r.ReservationTables)
                 .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
         }
-        public async Task<List<Reservation>> GetReservationsByPhoneAndDateAndSlotAsync(string phone, DateTime date, string slot)
+        //fix change get by email
+        public async Task<List<Reservation>> GetReservationsByPhoneAndDateAndSlotAsync(string email, DateTime date, string slot)
         {
             return await _context.Reservations
-                .Where(r => r.Customer.User.Phone == phone
+                .Where(r => r.Customer.User.Email == email
                          && r.ReservationDate == date
                          && r.TimeSlot == slot)
                 .ToListAsync();

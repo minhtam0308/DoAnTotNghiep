@@ -64,8 +64,23 @@ public class PaymentService : IPaymentService
     {
         var selectedDate = date ?? DateOnly.FromDateTime(DateTime.Now);
 
-        // 🔄 Luôn lấy toàn bộ orders, sau đó filter theo ngày dựa trên PaidAt (nếu có) hoặc CreatedAt
-        var orders = await _unitOfWork.Payments.GetAllOrdersWithDetailsAsync();
+        var normalizedStatus = statusFilter?.Trim().ToLowerInvariant();
+        IEnumerable<Order> orders;
+
+        // Tối ưu: lọc theo status ngay từ repository để tránh load toàn bộ orders không cần thiết.
+        if (normalizedStatus == "pending" || normalizedStatus == "confirmed" || normalizedStatus == "pendingpayment")
+        {
+            orders = await _unitOfWork.Payments.GetOrdersByStatusesWithDetailsAsync(PendingStatuses);
+        }
+        else if (normalizedStatus == "processed" || normalizedStatus == "paid" || normalizedStatus == "completed" || normalizedStatus == "success")
+        {
+            orders = await _unitOfWork.Payments.GetOrdersByStatusesWithDetailsAsync(ProcessedStatuses);
+        }
+        else
+        {
+            orders = await _unitOfWork.Payments.GetAllOrdersWithDetailsAsync();
+        }
+
         var orderDtos = new List<OrderDto>();
 
         foreach (var order in orders)

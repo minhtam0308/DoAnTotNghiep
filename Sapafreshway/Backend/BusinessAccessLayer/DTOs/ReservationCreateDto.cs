@@ -12,9 +12,9 @@ namespace BusinessAccessLayer.DTOs
         [Required(ErrorMessage = "Tên khách hàng là bắt buộc.")]
         public string CustomerName { get; set; } = null!;
 
-        [Required(ErrorMessage = "Số điện thoại là bắt buộc.")]
-        [Phone(ErrorMessage = "Số điện thoại không hợp lệ.")]
-        public string Phone { get; set; } = null!;
+        [Required(ErrorMessage = "Email là bắt buộc.")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
+        public string Email { get; set; } = null!;
 
         [Required(ErrorMessage = "Ngày đặt bàn là bắt buộc.")]
         public DateTime ReservationDate { get; set; }

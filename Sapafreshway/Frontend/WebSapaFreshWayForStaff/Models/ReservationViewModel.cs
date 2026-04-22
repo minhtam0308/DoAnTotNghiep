@@ -9,10 +9,9 @@ namespace SapaFreshWayForStaff.Models
         [Display(Name = "Tên khách hàng")]
         public string CustomerName { get; set; } = null!;
 
-        [Required(ErrorMessage = "Số điện thoại là bắt buộc.")]
-        [RegularExpression(@"^\d{9,11}$", ErrorMessage = "Số điện thoại phải gồm từ 9 đến 11 chữ số.")]
-        [Display(Name = "Số điện thoại")]
-        public string Phone { get; set; } = null!;
+        [Required(ErrorMessage = "Email là bắt buộc.")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
+        public string Email { get; set; } = null!;
 
         [Required(ErrorMessage = "Ngày đặt là bắt buộc.")]
         [DataType(DataType.Date)]
