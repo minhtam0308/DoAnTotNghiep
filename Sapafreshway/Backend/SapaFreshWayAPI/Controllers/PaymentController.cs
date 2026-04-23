@@ -51,9 +51,9 @@ public class PaymentController : ControllerBase
         try
         {
             var orders = await _paymentService.GetOrdersAsync(date, status, sortOrder, ct);
-            
-        
-            
+
+
+
             return Ok(orders);
         }
         catch (Exception ex)
@@ -72,14 +72,14 @@ public class PaymentController : ControllerBase
         try
         {
             var order = await _paymentService.GetOrderDetailAsync(id, ct);
-            
+
             if (order == null)
             {
                 return NotFound(new { message = $"Không tìm thấy đơn hàng với ID: {id}" });
             }
 
             //  DEBUG: Log để trace customer info
-            _logger.LogInformation("[GetOrderDetail] Order {OrderId} - CustomerId: {CustomerId}, CustomerName: {CustomerName}, CustomerPhone: {CustomerPhone}", 
+            _logger.LogInformation("[GetOrderDetail] Order {OrderId} - CustomerId: {CustomerId}, CustomerName: {CustomerName}, CustomerPhone: {CustomerPhone}",
                 id, order.CustomerId, order.CustomerName, order.CustomerPhone);
 
             return Ok(order);
@@ -238,7 +238,7 @@ public class PaymentController : ControllerBase
         try
         {
             var order = await _paymentService.GetOrderDetailAsync(orderId, ct);
-            
+
             if (order == null)
             {
                 return NotFound(new { message = $"Không tìm thấy đơn hàng với ID: {orderId}" });
@@ -281,7 +281,7 @@ public class PaymentController : ControllerBase
     /// POST /api/payment/discounts/validate
     /// </summary>
     [HttpPost("discounts/validate")]
-        public async Task<IActionResult> ValidateDiscount([FromBody] DiscountRequestDto request, CancellationToken ct = default)
+    public async Task<IActionResult> ValidateDiscount([FromBody] DiscountRequestDto request, CancellationToken ct = default)
     {
         try
         {
@@ -291,10 +291,11 @@ public class PaymentController : ControllerBase
             }
 
             var order = await _paymentService.ApplyDiscountAsync(request, ct);
-            return Ok(new { 
-                success = true, 
+            return Ok(new
+            {
+                success = true,
                 message = "Áp dụng ưu đãi thành công",
-                order = order 
+                order = order
             });
         }
         catch (InvalidOperationException ex)
@@ -329,10 +330,11 @@ public class PaymentController : ControllerBase
             request.ReservationId = reservationId;
 
             var reservationPayment = await _paymentService.ApplyDiscountByReservationAsync(request, ct);
-            return Ok(new { 
-                success = true, 
+            return Ok(new
+            {
+                success = true,
                 message = "Áp dụng ưu đãi thành công cho Reservation",
-                reservationPayment = reservationPayment 
+                reservationPayment = reservationPayment
             });
         }
         catch (InvalidOperationException ex)
@@ -364,11 +366,11 @@ public class PaymentController : ControllerBase
             }
 
             var transaction = await _paymentService.InitiatePaymentAsync(request, ct);
-            
+
             // If payment method is QR, generate QR code URL
             string? qrCodeUrl = null;
-            if (transaction.PaymentMethod != null && 
-                (transaction.PaymentMethod.Equals("QR", StringComparison.OrdinalIgnoreCase) || 
+            if (transaction.PaymentMethod != null &&
+                (transaction.PaymentMethod.Equals("QR", StringComparison.OrdinalIgnoreCase) ||
                  transaction.PaymentMethod.Equals("QRBankTransfer", StringComparison.OrdinalIgnoreCase)))
             {
                 try
@@ -425,11 +427,12 @@ public class PaymentController : ControllerBase
             {
                 return Unauthorized(new { message = "Người dùng chưa được xác thực" });
             }
-            var transaction = await _paymentService.ProcessPaymentAsync(request, userId.Value,ct);
-            return Ok(new { 
-                success = true, 
+            var transaction = await _paymentService.ProcessPaymentAsync(request, userId.Value, ct);
+            return Ok(new
+            {
+                success = true,
                 message = "Thanh toán thành công",
-                transaction = transaction 
+                transaction = transaction
             });
         }
         catch (KeyNotFoundException ex)
@@ -456,7 +459,7 @@ public class PaymentController : ControllerBase
         try
         {
             var transaction = await _paymentService.GetPaymentResultAsync(sessionId, ct);
-            
+
             if (transaction == null)
             {
                 return NotFound(new { message = $"Không tìm thấy giao dịch với sessionId: {sessionId}" });
@@ -484,7 +487,7 @@ public class PaymentController : ControllerBase
             var account = _configuration["BankSettings:Account"] ?? "0123456789";
 
             var qrResponse = await _paymentService.GenerateVietQRAsync(orderId, bankCode, account, amount, ct);
-            
+
             return Ok(new
             {
                 qrUrl = qrResponse.QrUrl,
@@ -535,8 +538,8 @@ public class PaymentController : ControllerBase
             {
                 return Unauthorized(new { message = "Người dùng chưa được xác thực" });
             }
-            var transaction = await _paymentService.ProcessPaymentAsync(paymentRequest,userId.Value, ct);
-            
+            var transaction = await _paymentService.ProcessPaymentAsync(paymentRequest, userId.Value, ct);
+
             return Ok(new
             {
                 success = true,
@@ -960,7 +963,7 @@ public class PaymentController : ControllerBase
 
             // Confirm payment in backend - updates order status to PAID
             var transaction = await _paymentService.ConfirmManualAsync(request, userId.Value, ct);
-            
+
             // Return success response for frontend
             return Ok(new
             {
@@ -1139,16 +1142,16 @@ public class PaymentController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error when downloading receipt for order {OrderId}. Exception: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}", 
+            _logger.LogError(ex, "Unexpected error when downloading receipt for order {OrderId}. Exception: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}",
                 orderId, ex.GetType().Name, ex.Message, ex.StackTrace);
-            
+
             // Trả về error message chi tiết hơn để frontend có thể hiển thị
             var errorMessage = $"Lỗi khi tải hóa đơn: {ex.Message}";
             if (ex.InnerException != null)
             {
                 errorMessage += $" Chi tiết: {ex.InnerException.Message}";
             }
-            
+
             return StatusCode(500, new { message = errorMessage, error = ex.Message, orderId = orderId });
         }
     }
@@ -1249,7 +1252,7 @@ public class PaymentController : ControllerBase
         try
         {
             var reservationPayment = await _paymentService.GetReservationPaymentAsync(reservationId, ct);
-            
+
             if (reservationPayment == null)
             {
                 return NotFound(new { message = $"Không tìm thấy Reservation với ID: {reservationId}" });
@@ -1408,14 +1411,15 @@ public class PaymentController : ControllerBase
             }
 
             // Validate: Tất cả Orders phải đã được xác nhận
-            var unconfirmedOrders = reservationPayment.Orders.Where(o => 
-                string.IsNullOrEmpty(o.Status) || 
+            var unconfirmedOrders = reservationPayment.Orders.Where(o =>
+                string.IsNullOrEmpty(o.Status) ||
                 !o.Status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (unconfirmedOrders.Any())
             {
-                return BadRequest(new { 
-                    message = $"Có {unconfirmedOrders.Count} đơn hàng chưa được xác nhận. Vui lòng xác nhận tất cả đơn hàng trước khi thanh toán." 
+                return BadRequest(new
+                {
+                    message = $"Có {unconfirmedOrders.Count} đơn hàng chưa được xác nhận. Vui lòng xác nhận tất cả đơn hàng trước khi thanh toán."
                 });
             }
 
@@ -1429,8 +1433,9 @@ public class PaymentController : ControllerBase
 
             if (request.CashAmount + request.QrAmount != totalAmount)
             {
-                return BadRequest(new { 
-                    message = $"Tổng tiền không khớp. Tổng cần thanh toán: {totalAmount:N0} VND, Nhập vào: {(request.CashAmount + request.QrAmount):N0} VND" 
+                return BadRequest(new
+                {
+                    message = $"Tổng tiền không khớp. Tổng cần thanh toán: {totalAmount:N0} VND, Nhập vào: {(request.CashAmount + request.QrAmount):N0} VND"
                 });
             }
 
@@ -1491,4 +1496,3 @@ public class SyncPaymentsRequestDto
 {
     public List<int> TransactionIds { get; set; } = new List<int>();
 }
-

@@ -47,6 +47,7 @@ namespace SapaFreshWayForStaff.Controllers
                     KpiCards = data.KpiCards,
                     RevenueTrend = data.RevenueTrend,
                     TopSellingItems = data.TopSellingItems,
+                    TopNotSellingItems = data.TopNotSellingItems,
                     BranchComparison = data.BranchComparison,
                     AlertsSummary = data.AlertsSummary
                 };

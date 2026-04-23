@@ -10,6 +10,7 @@ namespace SapaFreshWayForStaff.Models.Owner
         public KpiCardsDto KpiCards { get; set; } = new();
         public List<RevenueTrendDataDto> RevenueTrend { get; set; } = new();
         public List<TopSellingItemDto> TopSellingItems { get; set; } = new();
+        public List<TopSellingItemDto> TopNotSellingItems { get; set; } = new();
         public List<BranchComparisonDto> BranchComparison { get; set; } = new();
         public AlertsSummaryDto AlertsSummary { get; set; } = new();
 

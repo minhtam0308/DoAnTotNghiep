@@ -139,11 +139,11 @@ public class PaymentRepository : IPaymentRepository
         if (!string.IsNullOrWhiteSpace(tableNumber))
         {
             // Tìm kiếm qua ReservationTables -> Table.TableNumber
-            query = query.Where(o => o.Reservation != null && 
+            query = query.Where(o => o.Reservation != null &&
                 o.Reservation.ReservationTables != null &&
-                o.Reservation.ReservationTables.Any(rt => 
-                    rt.Table != null && 
-                    rt.Table.TableNumber != null && 
+                o.Reservation.ReservationTables.Any(rt =>
+                    rt.Table != null &&
+                    rt.Table.TableNumber != null &&
                     rt.Table.TableNumber.Contains(tableNumber)));
         }
 
@@ -244,7 +244,7 @@ public class PaymentRepository : IPaymentRepository
     {
         await _context.Set<OrderHistory>().AddAsync(history);
     }
-    
+
     public async Task<OrderDetail?> GetOrderDetailByIdAsync(int orderDetailId)
     {
         return await _context.Set<OrderDetail>()
@@ -298,4 +298,3 @@ public class PaymentRepository : IPaymentRepository
             .ToListAsync();
     }
 }
-

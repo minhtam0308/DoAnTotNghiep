@@ -82,44 +82,22 @@
      * Alerts Donut Chart
      */
     function renderAlertsDonutChart() {
-        const ctx = document.getElementById('alertsDonutChart');
-        if (!ctx) return;
+        const container = document.getElementById('alertsDonutChart');
+        if (!container) return;
 
-        const alerts = dashboardData.alertsSummary || {};
-        
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Tồn Kho Thấp', 'Sắp Hết Hạn', 'Đã Hết Hạn'],
-                datasets: [{
-                    data: [
-                        alerts.lowStockCount || 0,
-                        alerts.nearExpiryCount || 0,
-                        alerts.expiredCount || 0
-                    ],
-                    backgroundColor: [
-                        'rgba(255, 193, 7, 0.8)',
-                        'rgba(255, 99, 132, 0.8)',
-                        'rgba(108, 117, 125, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgb(255, 193, 7)',
-                        'rgb(255, 99, 132)',
-                        'rgb(108, 117, 125)'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
+        const data = dashboardData.topNotSellingItems || [];
+
+        if (data.length === 0) {
+            container.innerHTML = "<p>Không có món bán chậm</p>";
+            return;
+        }
+
+        container.innerHTML = data.map((item, index) => `
+        <div class="slow-item">
+            <span>${index + 1}. ${item.itemName}</span>
+            <span>0 đơn</span>
+        </div>
+    `).join('');
     }
 
     /**

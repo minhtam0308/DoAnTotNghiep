@@ -37,6 +37,14 @@
             font-weight: 600;
             padding: 15px;
         }
+
+        .slow-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
     </style>
 }
 
@@ -75,14 +83,14 @@
             </div>
             <div class="col-md-2">
                 <div class="kpi-card bg-info text-white">
-                    <div class="kpi-label">Tổng Đơn Hàng</div>
-                    <div class="kpi-value">@Model.KpiCards.TotalOrders</div>
+                    <div class="kpi-label">Doanh thu năm nay</div>
+                    <div class="kpi-value">@Model.KpiCards.ActiveCustomers</div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="kpi-card bg-warning text-white">
-                    <div class="kpi-label">Khách Hàng Hoạt Động</div>
-                    <div class="kpi-value">@Model.KpiCards.ActiveCustomers</div>
+                    <div class="kpi-label">Doanh thu tuần này</div>
+                    <div class="kpi-value">@Model.KpiCards.TotalOrders</div>
                 </div>
             </div>
             <div class="col-md-2" hidden>
@@ -107,22 +115,22 @@
                     </div>
                 </div>
             </div>
-            @* <div class="col-md-4" hidden>
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-exclamation-circle"></i> Phân Loại Cảnh Báo
+                        <i class="fas fa-exclamation-circle"></i> Cảnh báo các món bán chậm
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="alertsDonutChart"></canvas> 
+                            <div id="alertsDonutChart"></div>
                         </div>
                     </div>
                 </div>
-            </div> *@
+            </div>
         </div>
 
         <!-- Charts Row 2 -->
-        @* <div class="row mt-4">
+        <div class="row mt-4">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
@@ -136,7 +144,7 @@
                 </div>
             </div>
           
-        </div> *@
+        </div>
     }
 </div>
 
@@ -147,10 +155,11 @@
         var dashboardData = {
             revenueTrend: @Html.Raw(Json.Serialize(Model.RevenueTrend)),
             topSellingItems: @Html.Raw(Json.Serialize(Model.TopSellingItems)),
+            topNotSellingItems: @Html.Raw(Json.Serialize(Model.TopNotSellingItems)),
             branchComparison: @Html.Raw(Json.Serialize(Model.BranchComparison)),
             alertsSummary: @Html.Raw(Json.Serialize(Model.AlertsSummary))
         };
     </script>
-    <script src="~/js/owner-dashboard-charts.js"></script>
+    <script src="~/js/owner-dashboard-charts.js" asp-append-version="true"></script>
 }
 

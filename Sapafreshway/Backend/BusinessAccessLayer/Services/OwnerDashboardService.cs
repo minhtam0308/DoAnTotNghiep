@@ -39,7 +39,8 @@ namespace BusinessAccessLayer.Services
             var transactions = (await _unitOfWork.Payments.GetAllTransactionsAsync()).ToList();
             var orderDetails = (await _unitOfWork.OrderDetails.GetAllAsync()).ToList();
             var ingredients = (await _unitOfWork.InventoryIngredient.GetAllAsync()).ToList();
-            
+            var menuItem = (await _unitOfWork.MenuItem.GetManagerAllMenus()).ToList();
+
             // ✅ Load deposits trực tiếp từ database (giống AdminDashboardRepository)
             // CHỈ lấy deposits từ Reservation có Status = "Completed"
             var deposits = await _context.ReservationDeposits
@@ -51,6 +52,7 @@ namespace BusinessAccessLayer.Services
             var kpiTask = Task.Run(() => GetKpiCardsAsync(today, startOfMonth, yesterday, lastMonth, orders, transactions, deposits, ingredients));
             var revenueTrendTask = Task.Run(() => GetRevenueTrendAsync(today.AddDays(-30), today, transactions));
             var topSellingTask = Task.Run(() => GetTopSellingItemsAsync(startOfMonth, today, orders, orderDetails));
+            var topNotSellingTask = Task.Run(() => GetTopNotSellingItemsAsync(startOfMonth, today, orderDetails, menuItem));
             var branchComparisonTask = Task.Run(() => GetBranchComparisonAsync(startOfMonth, today, transactions));
             var alertsTask = Task.Run(() => GetAlertsSummaryAsync(today, ingredients));
 
@@ -61,6 +63,7 @@ namespace BusinessAccessLayer.Services
                 KpiCards = await kpiTask,
                 RevenueTrend = await revenueTrendTask,
                 TopSellingItems = await topSellingTask,
+                TopNotSellingItems = await topNotSellingTask,
                 BranchComparison = await branchComparisonTask,
                 AlertsSummary = await alertsTask
             };
@@ -160,18 +163,7 @@ namespace BusinessAccessLayer.Services
                 .Distinct()
                 .Count();
 
-            // Low Stock Alerts
-            var lowStockCount = ingredients.Count(i => 
-                i.ReorderLevel.HasValue && 
-                i.InventoryBatches.Sum(b => b.Available) < i.ReorderLevel.Value);
-
-            // Near Expiry Alerts (within 7 days)
-            var nearExpiryCount = ingredients
-                .SelectMany(i => i.InventoryBatches)
-                .Count(b => b.ExpiryDate.HasValue && 
-                       b.ExpiryDate.Value <= today.AddDays(7) &&
-                       b.ExpiryDate.Value > today &&
-                       b.IsActive);
+        
 
             // Calculate change percentages
             var todayChangePercent = yesterdayRevenue > 0 
@@ -181,15 +173,62 @@ namespace BusinessAccessLayer.Services
             var monthlyChangePercent = lastMonthRevenue > 0 
                 ? ((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
                 : 0;
+            var today1 = DateTime.Now;
+
+            var startOfWeek = today1.AddDays(-(int)today1.DayOfWeek + (int)DayOfWeek.Monday);
+            var endOfWeek = startOfWeek.AddDays(7);
+            // Last Month Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
+            var lastWeekTransactionRevenue = transactions
+                .Where(t => t.Status == "Paid" && (t.CompletedAt.HasValue || t.CreatedAt != default))
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
+                .Where(t => {
+                    var date = t.CompletedAt ?? t.CreatedAt;
+                    return date >= startOfWeek && date < endOfWeek; 
+                })
+                .Sum(t => t.Amount);
+
+            // Last Month Revenue from Deposits
+            var lastWeekDepositRevenue = deposits
+                .Where(d => {
+                    var date = d.DepositDate;
+                    return date >= startOfWeek && date < endOfWeek;
+                })
+                .Sum(d => d.Amount);
+
+            var lastWeekRevenue = lastWeekTransactionRevenue + lastWeekDepositRevenue;
+
+            var startOfYear = new DateTime(DateTime.Now.Year, 1, 1);
+            var endOfYear = startOfYear.AddYears(1);
+            // Last Month Revenue from Transactions (loại bỏ Split Bill parent và child transactions)
+            var lastYearTransactionRevenue = transactions
+                .Where(t => t.Status == "Paid" && (t.CompletedAt.HasValue || t.CreatedAt != default))
+                .Where(t => t.ParentTransactionId == null) // ✅ Loại bỏ child transactions
+                .Where(t => t.PaymentMethod != "Split") // ✅ Loại bỏ parent Split transactions
+                .Where(t => {
+                    var date = t.CompletedAt ?? t.CreatedAt;
+                    return date >= startOfYear && date < endOfYear;
+                })
+                .Sum(t => t.Amount);
+
+            // Last Month Revenue from Deposits
+            var lastYearDepositRevenue = deposits
+                .Where(d => {
+                    var date = d.DepositDate;
+                    return date >= startOfYear && date < endOfYear;
+                })
+                .Sum(d => d.Amount);
+
+            var lastYearRevenue = lastYearTransactionRevenue + lastYearDepositRevenue;
 
             return new KpiCardsDto
             {
                 TodayRevenue = todayRevenue,
                 MonthlyRevenue = monthlyRevenue,
-                TotalOrders = totalOrders,
-                ActiveCustomers = activeCustomers,
-                LowStockAlertsCount = lowStockCount,
-                NearExpiryAlertsCount = nearExpiryCount,
+                TotalOrders = (int)(lastWeekRevenue),
+                ActiveCustomers = (int)lastYearRevenue,
+                LowStockAlertsCount = 0,
+                NearExpiryAlertsCount = 0,
                 TodayRevenueChangePercent = todayChangePercent,
                 MonthlyRevenueChangePercent = monthlyChangePercent
             };
@@ -251,6 +290,31 @@ namespace BusinessAccessLayer.Services
                 })
                 .OrderByDescending(i => i.QuantitySold)
                 .Take(10)
+                .ToList();
+
+            return topItems;
+        }
+
+        private List<TopSellingItemDto> GetTopNotSellingItemsAsync(DateOnly startDate, DateOnly endDate,
+    List<OrderDetail> ordersDetails,
+    List<MenuItem> menuDetails)
+        {
+
+            var paidOrderIds = ordersDetails
+                .Select(o => o.OrderDetailId)
+                .ToHashSet();
+
+            var topItems = menuDetails
+                .Where(od => !paidOrderIds.Contains(od.MenuItemId))
+                .GroupBy(od => new { od.MenuItemId, od.Name })
+                .Select(g => new TopSellingItemDto
+                {
+                    ItemName = g.Key.Name,
+                    QuantitySold = 0,
+                    Revenue = 0
+                })
+                .OrderBy(i => i.QuantitySold)
+                .Take(5)
                 .ToList();
 
             return topItems;

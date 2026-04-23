@@ -29,9 +29,9 @@ namespace DataAccessLayer.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<MenuItem>> GetAllAsync()
+        public async Task<IEnumerable<MenuItem>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.MenuItems.ToListAsync();
         }
 
         public Task<MenuItem?> GetByIdAsync(int id)
