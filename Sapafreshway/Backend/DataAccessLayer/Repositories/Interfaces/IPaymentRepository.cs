@@ -31,11 +31,6 @@ public interface IPaymentRepository : IRepository<Order>
     Task<IEnumerable<Order>> GetAllOrdersWithDetailsAsync();
 
     /// <summary>
-    /// Lấy đơn hàng theo danh sách trạng thái (kèm đầy đủ navigation properties)
-    /// </summary>
-    Task<IEnumerable<Order>> GetOrdersByStatusesWithDetailsAsync(IEnumerable<string> statuses);
-
-    /// <summary>
     /// Lấy đơn hàng theo mã đơn hoặc số bàn
     /// </summary>
     Task<Order?> GetOrderByCodeOrTableAsync(string? orderCode, string? tableNumber);

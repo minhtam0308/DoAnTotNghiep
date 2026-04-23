@@ -127,24 +127,6 @@ public class PaymentRepository : IPaymentRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByStatusesWithDetailsAsync(IEnumerable<string> statuses)
-    {
-        var statusList = statuses
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        if (!statusList.Any())
-        {
-            return new List<Order>();
-        }
-
-        return await BuildOrderQuery()
-            .Where(o => !string.IsNullOrWhiteSpace(o.Status) && statusList.Contains(o.Status!))
-            .OrderByDescending(o => o.CreatedAt)
-            .ToListAsync();
-    }
-
     public async Task<Order?> GetOrderByCodeOrTableAsync(string? orderCode, string? tableNumber)
     {
         var query = BuildOrderQuery();
@@ -188,8 +170,7 @@ public class PaymentRepository : IPaymentRepository
                     .ThenInclude(c => c!.User)
             .Include(o => o.Payments)
             .Include(o => o.Transactions)
-                .ThenInclude(t => t.ConfirmedByUser)
-            .AsNoTracking();
+                .ThenInclude(t => t.ConfirmedByUser);
     }
 
     public async Task<Transaction> SaveTransactionAsync(Transaction transaction)

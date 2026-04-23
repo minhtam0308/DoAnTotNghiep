@@ -24,9 +24,9 @@ public class ReceiptService : IReceiptService
     private readonly ICloudinaryService? _cloudinaryService;
 
     public ReceiptService(
-        IUnitOfWork unitOfWork,
-        string webRootPath,
-        ILogger<ReceiptService> logger,
+        IUnitOfWork unitOfWork, 
+        string webRootPath, 
+        ILogger<ReceiptService> logger, 
         IConfiguration configuration,
         IServiceProvider? serviceProvider = null)
     {
@@ -34,7 +34,7 @@ public class ReceiptService : IReceiptService
         _webRootPath = webRootPath ?? throw new ArgumentNullException(nameof(webRootPath));
         _logger = logger;
         _configuration = configuration;
-
+        
         // Get CloudinaryService from DI if available (optional dependency)
         try
         {
@@ -95,7 +95,7 @@ public class ReceiptService : IReceiptService
                 // Bỏ qua món đã bị xóa hoặc đã hủy
                 var status = (od.Status ?? "").Trim();
                 var statusLower = status.ToLower();
-
+                
                 if (statusLower == "removed" || statusLower == "cancelled" || statusLower == "đã hủy")
                 {
                     continue;
@@ -103,7 +103,7 @@ public class ReceiptService : IReceiptService
 
                 //  LOGIC MỚI: Chỉ tính tiền món có Status = "Cooking", "Done", "Ready"
                 // Không tính tiền món có Status = "Pending"
-
+                
                 // Danh sách status được phép thanh toán
                 var billableStatuses = new[] { "cooking", "done", "ready", "served", "đang chế biến", "đã xong", "sẵn sàng" };
                 bool isBillable = billableStatuses.Any(s => statusLower == s);
@@ -145,7 +145,7 @@ public class ReceiptService : IReceiptService
                 }
 
                 int billableQuantity;
-
+                
                 // Apply billing logic based on item type
                 if (od.MenuItem?.BillingType == ItemBillingType.ConsumptionBased)
                 {
@@ -157,25 +157,25 @@ public class ReceiptService : IReceiptService
                     // Kitchen-prepared items: always charge for full quantity ordered
                     billableQuantity = od.Quantity;
                 }
-
+                
                 subtotal += od.UnitPrice * billableQuantity;
             }
         }
-
+        
         //  Làm tròn Subtotal lên mệnh giá 1000
         subtotal = RoundUpToThousand(subtotal);
-
+        
         // Tính VAT (10%) từ Subtotal đã làm tròn
         var vatAmount = RoundUpToThousand(subtotal * 0.1m);
-
+        
         // Tính phí dịch vụ (5%) từ Subtotal đã làm tròn
         var serviceFee = RoundUpToThousand(subtotal * 0.05m);
-
+        
         // Get discount from latest payment if available và làm tròn
         var discountAmount = RoundUpToThousand(
             order.Payments?.OrderByDescending(p => p.PaymentDate ?? DateTime.MinValue).FirstOrDefault()?.DiscountAmount ?? 0
         );
-
+        
         // Tính tổng cộng và làm tròn
         var totalAmount = order.TotalAmount ?? (subtotal + vatAmount + serviceFee - discountAmount);
         totalAmount = RoundUpToThousand(totalAmount);
@@ -183,7 +183,7 @@ public class ReceiptService : IReceiptService
         // Get payment method from latest transaction
         var latestTransaction = order.Transactions?.OrderByDescending(t => t.CreatedAt).FirstOrDefault();
         var paymentMethod = latestTransaction?.PaymentMethod ?? "N/A";
-
+        
         // Get confirmed by user
         var confirmedBy = latestTransaction?.ConfirmedByUser?.FullName ?? "N/A";
         var paidAt = latestTransaction?.CompletedAt ?? order.CreatedAt ?? DateTime.Now;
@@ -436,8 +436,8 @@ public class ReceiptService : IReceiptService
             try
             {
                 var pdfBytes = await System.IO.File.ReadAllBytesAsync(pdfPath, ct);
-                //cloudinaryUrl = await _cloudinaryService.UploadPdfAsync(pdfBytes, pdfFileName, "receipts");
-
+                cloudinaryUrl = await _cloudinaryService.UploadPdfAsync(pdfBytes, pdfFileName, "receipts");
+                
                 if (!string.IsNullOrEmpty(cloudinaryUrl))
                 {
                     _logger.LogInformation("Successfully uploaded receipt PDF to Cloudinary for order {OrderId}. URL: {CloudinaryUrl}", orderId, cloudinaryUrl);
@@ -628,15 +628,15 @@ public class ReceiptService : IReceiptService
             .Where(t => t.IsManualConfirmed && t.ConfirmedByUser != null)
             .OrderByDescending(t => t.CompletedAt)
             .ToList();
-
+        
         if (transactions.Any())
         {
             confirmedBy = transactions.First().ConfirmedByUser?.FullName ?? "Thu ngân";
         }
 
         // Lấy PaymentMethod từ Transaction
-        var paymentMethod = transactions.Any()
-            ? transactions.First().PaymentMethod ?? "Tiền mặt"
+        var paymentMethod = transactions.Any() 
+            ? transactions.First().PaymentMethod ?? "Tiền mặt" 
             : "Tiền mặt";
 
         // Tính tổng tất cả OrderDetails từ tất cả Orders
@@ -652,7 +652,7 @@ public class ReceiptService : IReceiptService
                     // Bỏ qua món đã bị xóa hoặc đã hủy
                     var status = (od.Status ?? "").Trim();
                     var statusLower = status.ToLower();
-
+                    
                     if (statusLower == "removed" || statusLower == "cancelled" || statusLower == "đã hủy")
                     {
                         continue;
@@ -714,7 +714,7 @@ public class ReceiptService : IReceiptService
         // Tính VAT, Service Fee, Discount, Total (sử dụng logic từ PaymentService)
         var vatAmount = subtotal * 0.1m;
         var serviceFee = subtotal * 0.05m;
-
+        
         // Lấy discount từ Transaction hoặc Order (nếu có)
         decimal discountAmount = 0;
         // TODO: Có thể lấy discount từ voucher/promotion nếu cần
@@ -758,7 +758,7 @@ public class ReceiptService : IReceiptService
         var pdfPath = Path.Combine(receiptsPath, pdfFileName);
 
         // Generate PDF
-        _logger.LogInformation("Composed receipt document for reservation {ReservationId}. Totals: subtotal {Subtotal}, VAT {Vat}, service fee {ServiceFee}, discount {Discount}, total {Total}",
+        _logger.LogInformation("Composed receipt document for reservation {ReservationId}. Totals: subtotal {Subtotal}, VAT {Vat}, service fee {ServiceFee}, discount {Discount}, total {Total}", 
             reservationId, subtotal, vatAmount, serviceFee, discountAmount, totalAmount);
 
         var document = Document.Create(container =>
@@ -957,12 +957,12 @@ public class ReceiptService : IReceiptService
             {
                 // Read PDF file from path
                 var pdfBytes = await File.ReadAllBytesAsync(pdfPath, ct);
-                //var cloudinaryUrl = await _cloudinaryService.UploadPdfAsync(pdfBytes, pdfFileName, "receipts");
-                //if (!string.IsNullOrEmpty(cloudinaryUrl))
-                //{
-                //    _logger.LogInformation("Receipt uploaded to Cloudinary for reservation {ReservationId}: {CloudinaryUrl}", reservationId, cloudinaryUrl);
-                //    return cloudinaryUrl;
-                //}
+                var cloudinaryUrl = await _cloudinaryService.UploadPdfAsync(pdfBytes, pdfFileName, "receipts");
+                if (!string.IsNullOrEmpty(cloudinaryUrl))
+                {
+                    _logger.LogInformation("Receipt uploaded to Cloudinary for reservation {ReservationId}: {CloudinaryUrl}", reservationId, cloudinaryUrl);
+                    return cloudinaryUrl;
+                }
             }
             catch (Exception ex)
             {

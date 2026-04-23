@@ -3,25 +3,25 @@
  * Handles combined cash + QR payment functionality
  */
 
-(function () {
+(function() {
     'use strict';
 
     // Combined Payment Module
     window.CombinedPayment = {
         // Initialize combined payment functionality
-        init: function () {
+        init: function() {
             // ✅ FIX: Đảm bảo validation được ẩn khi trang load
             const validation = document.getElementById('combinedTotalValidation');
             if (validation) {
                 validation.classList.add('d-none');
             }
-
+            
             this.bindEvents();
             this.checkPaymentResult();
         },
 
         // Bind combined payment events
-        bindEvents: function () {
+        bindEvents: function() {
             // Bind combined payment modal open
             const combinedPaymentBtn = document.querySelector('[onclick="openCombinedPaymentModal()"]');
             if (combinedPaymentBtn) {
@@ -45,7 +45,7 @@
         },
 
         // Open combined payment modal
-        openCombinedPaymentModal: function () {
+        openCombinedPaymentModal: function() {
             if (!window.PaymentCore || !window.PaymentCore.orderContext) {
                 console.error('PaymentCore not initialized');
                 return;
@@ -71,12 +71,12 @@
             // Sử dụng one-time event hoặc kiểm tra xem đã bind chưa
             const cashAmountInput = document.getElementById('cashAmount');
             const cashReceivedInput = document.getElementById('cashReceived');
-
+            
             if (cashAmountInput && !cashAmountInput.hasAttribute('data-bound')) {
                 cashAmountInput.setAttribute('data-bound', 'true');
                 cashAmountInput.addEventListener('input', () => this.updateCombinedPayment());
             }
-
+            
             if (cashReceivedInput && !cashReceivedInput.hasAttribute('data-bound')) {
                 cashReceivedInput.setAttribute('data-bound', 'true');
                 cashReceivedInput.addEventListener('input', () => this.updateCombinedPayment());
@@ -91,7 +91,7 @@
         },
 
         // Update combined payment calculations
-        updateCombinedPayment: function () {
+        updateCombinedPayment: function() {
             const cashAmountInput = document.getElementById('cashAmount');
             const cashReceivedInput = document.getElementById('cashReceived');
 
@@ -137,22 +137,22 @@
         },
 
         // Validate combined payment
-        validateCombinedPayment: function () {
+        validateCombinedPayment: function() {
             // ✅ FIX: Chỉ validate khi modal đang hiển thị
             const modal = document.getElementById('combinedPaymentModal');
             if (!modal) {
                 return; // Không validate nếu không tìm thấy modal
             }
-
+            
             // Kiểm tra xem modal có đang được hiển thị không (Bootstrap modal)
             // Bootstrap 5 sử dụng _element và _isShown, Bootstrap 4 có thể khác
             const modalInstance = bootstrap.Modal.getInstance(modal);
             const isModalShown = modalInstance && (
-                modalInstance._isShown ||
-                modal.classList.contains('show') ||
+                modalInstance._isShown || 
+                modal.classList.contains('show') || 
                 !modal.classList.contains('d-none')
             );
-
+            
             if (!isModalShown) {
                 // Đảm bảo validation được ẩn nếu modal chưa mở
                 const validation = document.getElementById('combinedTotalValidation');
@@ -204,7 +204,7 @@
         },
 
         // Generate QR for combined payment
-        generateCombinedQR: function () {
+        generateCombinedQR: function() {
             document.getElementById('combinedQrLoading').classList.remove('d-none');
             document.getElementById('combinedQrContent').classList.add('d-none');
             document.getElementById('generateQrBtn').disabled = true;
@@ -235,7 +235,7 @@
         },
 
         // Confirm combined payment
-        confirmCombinedPayment: function () {
+        confirmCombinedPayment: function() {
             if (document.getElementById('confirmCombinedPaymentBtn').disabled) {
                 window.PaymentCore.showToast('Vui lòng đảm bảo tổng hai phần khớp với tổng hóa đơn.', 'warning');
                 return;
@@ -262,7 +262,7 @@
                 // ✅ Kiểm tra xem có ReservationId không (Reservation-centric payment)
                 const isReservationPayment = window.PaymentCore.orderContext?.IsReservationPayment === true;
                 const reservationId = window.PaymentCore.orderContext?.ReservationId;
-
+                
                 if (isReservationPayment && reservationId) {
                     // Reservation payment: set ReservationId
                     const reservationIdInput = document.querySelector('#combinedPaymentForm input[name="ReservationId"]');
@@ -276,7 +276,7 @@
                         orderIdInput.value = window.PaymentCore.orderContext.OrderId;
                     }
                 }
-
+                
                 document.getElementById('combinedPaymentCashAmount').value = cashAmount;
                 document.getElementById('combinedPaymentCashReceived').value = cashReceived ?? '';
                 document.getElementById('combinedPaymentQrAmount').value = qrAmount;
@@ -303,7 +303,7 @@
         },
 
         // Show combined payment loading modal
-        showCombinedPaymentLoadingModal: function () {
+        showCombinedPaymentLoadingModal: function() {
             const modal = new bootstrap.Modal(document.getElementById('combinedPaymentLoadingModal'), {
                 backdrop: 'static',
                 keyboard: false
@@ -312,7 +312,7 @@
         },
 
         // Hide combined payment loading modal
-        hideCombinedPaymentLoadingModal: function () {
+        hideCombinedPaymentLoadingModal: function() {
             const modal = bootstrap.Modal.getInstance(document.getElementById('combinedPaymentLoadingModal'));
             if (modal) {
                 modal.hide();
@@ -320,7 +320,7 @@
         },
 
         // Show combined payment result modal
-        showCombinedPaymentResultModal: function (success, message, redirectUrl = null) {
+        showCombinedPaymentResultModal: function(success, message, redirectUrl = null) {
             const resultModal = document.getElementById('combinedPaymentResultModal');
             const resultIcon = document.getElementById('combinedPaymentResultIcon');
             const resultTitle = document.getElementById('combinedPaymentResultTitle');
@@ -333,7 +333,7 @@
                 resultTitle.textContent = 'Thành công';
                 resultBtn.textContent = 'Xem hóa đơn';
                 resultBtn.className = 'btn btn-success';
-                resultBtn.onclick = function () {
+                resultBtn.onclick = function() {
                     if (redirectUrl) {
                         window.location.href = redirectUrl;
                     } else {
@@ -346,7 +346,7 @@
                 resultTitle.textContent = 'Thất bại';
                 resultBtn.textContent = 'Đóng';
                 resultBtn.className = 'btn btn-secondary';
-                resultBtn.onclick = function () {
+                resultBtn.onclick = function() {
                     closeCombinedPaymentResultModal();
                 };
             }
@@ -358,7 +358,7 @@
         },
 
         // Check for combined payment result on page load
-        checkPaymentResult: function () {
+        checkPaymentResult: function() {
             // Check if we just processed a combined payment
             const wasProcessing = sessionStorage.getItem('combinedPaymentProcessing');
             if (wasProcessing === 'true') {
@@ -385,7 +385,7 @@
     };
 
     // Global function for closing combined payment result modal
-    window.closeCombinedPaymentResultModal = function () {
+    window.closeCombinedPaymentResultModal = function() {
         const modal = bootstrap.Modal.getInstance(document.getElementById('combinedPaymentResultModal'));
         if (modal) {
             modal.hide();
@@ -396,7 +396,7 @@
     };
 
     // Initialize on DOM ready
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         window.CombinedPayment.init();
     });
 

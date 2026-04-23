@@ -64,13 +64,28 @@ namespace SapaFreshWayForStaff.Controllers
                 ? "Paid"
                 : "Confirmed";
 
-            // Tải song song 2 danh sách để giảm thời gian chờ khi mở màn hình.
-            var confirmedTask = _paymentApiService.GetOrdersByStatusAndDateAsync("Confirmed", selectedDate);
-            var paidTask = _paymentApiService.GetOrdersByStatusAndDateAsync("Paid", selectedDate);
-            await Task.WhenAll(confirmedTask, paidTask);
+            // ✅ DEBUG: Log để kiểm tra
+            System.Diagnostics.Debug.WriteLine($"[OrderSelection] Date: {selectedDate}, Status: {status}, Normalized: {normalizedStatus}");
 
-            var confirmedOrders = confirmedTask.Result ?? new List<OrderDto>();
-            var paidOrders = paidTask.Result ?? new List<OrderDto>();
+            // Confirmed: waiter đã xác nhận, chờ thu ngân thanh toán
+            var confirmedOrders = await _paymentApiService.GetOrdersByStatusAndDateAsync("Confirmed", selectedDate) ?? new List<OrderDto>();
+            
+            // ✅ DEBUG: Log số lượng orders
+            System.Diagnostics.Debug.WriteLine($"[OrderSelection] Confirmed orders count: {confirmedOrders.Count}");
+            foreach (var order in confirmedOrders.Take(5))
+            {
+                System.Diagnostics.Debug.WriteLine($"[OrderSelection] Confirmed Order {order.OrderId}: Status = {order.Status}, ReservationId = {order.ReservationId}");
+            }
+
+            // Paid: đã thanh toán xong
+            var paidOrders = await _paymentApiService.GetOrdersByStatusAndDateAsync("Paid", selectedDate) ?? new List<OrderDto>();
+            
+            // ✅ DEBUG: Log số lượng orders
+            System.Diagnostics.Debug.WriteLine($"[OrderSelection] Paid orders count: {paidOrders.Count}");
+            foreach (var order in paidOrders.Take(5))
+            {
+                System.Diagnostics.Debug.WriteLine($"[OrderSelection] Paid Order {order.OrderId}: Status = {order.Status}, ReservationId = {order.ReservationId}");
+            }
 
             var viewModel = new OrderSelectionViewModel
             {
