@@ -18,7 +18,7 @@ namespace BusinessAccessLayer.Services
         private readonly ICustomerRepository _customerRepository; // thêm repo Customer
         private readonly IConfiguration _configuration;
 
-        private const decimal DEPOSIT_PER_GUEST = 50000m;
+        private const decimal DEPOSIT_PER_GUEST = 10000m;
 
         public ReservationService(
             IReservationRepository reservationRepository,
@@ -355,7 +355,7 @@ namespace BusinessAccessLayer.Services
 
             reservation.ReservationTables.Clear();
             reservation.Status = "Pending";
-            
+
             reservation.StaffId = null;
 
             await _reservationRepository.SaveChangesAsync();
@@ -521,7 +521,7 @@ namespace BusinessAccessLayer.Services
 
             if (reservation == null) return null;
 
-            return reservation.ReservationId; 
+            return reservation.ReservationId;
         }
     }
 }

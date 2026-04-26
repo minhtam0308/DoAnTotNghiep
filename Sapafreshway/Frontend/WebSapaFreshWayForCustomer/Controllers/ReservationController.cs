@@ -29,6 +29,7 @@ namespace WebSapaFreshWayForCustomer.Controllers
                 return RedirectToAction("Login", "Auth"); // chưa login thì chuyển tới login
 
             ViewBag.CustomerId = customerIdClaim; // truyền xuống view
+            ViewBag.ApiBase = _apiUrl;
             Console.WriteLine(ViewBag.CustomerId);
             return View();
         }

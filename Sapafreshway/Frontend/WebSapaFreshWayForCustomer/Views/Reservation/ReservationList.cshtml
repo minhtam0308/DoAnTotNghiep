@@ -105,7 +105,8 @@
 
 @section Scripts {
     <script>
-        const apiBase = "http://192.168.79.29:5001/api/Reservation";
+        // const apiBase = "http:192.168.79.29:5001/api/Reservation";
+        const apiBase = '@ViewBag.ApiBase';
         const customerId = parseInt('@ViewBag.CustomerId');
 // 👉 Thay bằng session thực tế
         let allData = [];
