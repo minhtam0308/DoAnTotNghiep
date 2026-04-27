@@ -84,13 +84,13 @@
             <div class="col-md-2">
                 <div class="kpi-card bg-info text-white">
                     <div class="kpi-label">Doanh thu năm nay</div>
-                    <div class="kpi-value">@Model.KpiCards.ActiveCustomers</div>
+                    <div class="kpi-value">@Model.KpiCards.ActiveCustomers.ToString("N0") đ</div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="kpi-card bg-warning text-white">
                     <div class="kpi-label">Doanh thu tuần này</div>
-                    <div class="kpi-value">@Model.KpiCards.TotalOrders</div>
+                    <div class="kpi-value">@Model.KpiCards.TotalOrders.ToString("N0") đ</div>
                 </div>
             </div>
             <div class="col-md-2" hidden>
