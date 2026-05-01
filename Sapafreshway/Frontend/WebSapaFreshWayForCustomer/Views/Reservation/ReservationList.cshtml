@@ -195,7 +195,7 @@
                         <td>${formatTime(r.reservationTime)}</td>
                         <td>${r.numberOfGuests}</td>
                         <td>${r.timeSlot}</td>
-                        <td><span class="badge bg-${getStatusColor(r.status)}">${r.status}</span></td>
+                        <td><span class="badge bg-${getStatusColor(r.status)}">${r.status === "Pending" ? "Chờ xử lý" : "Hoàn thành" }</span></td>
                         <td>${r.notes || ''}</td>
                         <td>
                             <button class="btn btn-sm btn-warning me-2" onclick="openEdit(${r.reservationId})"

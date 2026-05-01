@@ -108,12 +108,145 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Sapa Fresh Way Restaurant</p>
-    </footer>
+    <!-- Customer Reviews Section -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-success">Khách hàng nói gì về chúng tôi</h2>
+            <p class="text-muted">Những đánh giá chân thực từ thực khách</p>
+        </div>
+
+        <div class="row g-4">
+
+            <div id="review-container" class="row g-4"></div>
+        </div>
+    </section>
+
+    <!-- Review Section -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-success">Đánh giá của khách hàng</h2>
+            <p class="text-muted">Hãy chia sẻ trải nghiệm của bạn</p>
+        </div>
+
+        <!-- Form -->
+        @if (User.Identity?.IsAuthenticated == true && ViewBag.CanComment)
+        {
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <div class="mb-3">
+                    <input type="text" value="@ViewBag.Email" id="email" class="form-control" hidden>
+                </div>
+                <div class="mb-3">
+                    <textarea id="comment" class="form-control" rows="3" placeholder="Viết cảm nhận..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <select id="rating" class="form-select">
+                        <option value="5">★★★★★ (5 sao)</option>
+                        <option value="4">★★★★☆ (4 sao)</option>
+                        <option value="3">★★★☆☆ (3 sao)</option>
+                        <option value="2">★★☆☆☆ (2 sao)</option>
+                        <option value="1">★☆☆☆☆ (1 sao)</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="addReview()">Gửi đánh giá</button>
+            </div>
+        }
+        <!-- Hiển thị comment -->
+        <div id="review-list" class="row g-4"></div>
+    </section>
 
     <script>
+        const apiBase = '@ViewBag.ApiBase';
+                async function loadReviews() {
+            try {
+                const response = await fetch(`${apiBase}/getAllComment`);
+                if (!response.ok) throw new Error("API lỗi");
+
+                const reviews = await response.json();
+                const container = document.getElementById("review-container");
+                container.innerHTML = "";
+
+                reviews.forEach(r => {
+                    const stars = "★".repeat(r.rate) + "☆".repeat(5 - r.rate);
+
+                    const col = document.createElement("div");
+                    col.className = "col-md-4";
+
+                    col.innerHTML = `
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <h6 class="fw-bold mb-0">${r.email}</h6>
+                            <p class="text-muted">${r.commentString}</p>
+                            <small class="text-warning">${stars}</small>
+                        </div>
+                    `;
+
+                    container.appendChild(col);
+                });
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function addReview() {
+            const Email = document.getElementById("email").value;
+            const CommentString = document.getElementById("comment").value;
+            const Rate = parseInt(document.getElementById("rating").value);
+
+            if (!Email || !CommentString) {
+                alert("Vui lòng nhập đầy đủ thông tin!");
+                return;
+            }
+
+            const payload = 
+            {
+                Email: Email,
+                CommentString: CommentString,
+                Rate: Rate 
+            };
+            try {
+        const response = await fetch(`${apiBase}/AddComment`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            alert("Gửi đánh giá thất bại!");
+            return;
+        }
+
+
+
+
+            const stars = "★".repeat(Rate) + "☆".repeat(5 - Rate);
+
+            const container = document.getElementById("review-list");
+
+            const col = document.createElement("div");
+            col.className = "col-md-4";
+
+            col.innerHTML = `
+                <div class="card shadow-sm border-0 h-100 p-3">
+                    <h6 class="fw-bold mb-0">${Email}</h6>
+                    <p class="text-muted">"${CommentString}"</p>
+                    <small class="text-warning">${stars}</small>
+                </div>
+            `;
+
+            container.prepend(col);
+
+            // clear form
+            document.getElementById("email").value = "";
+            document.getElementById("comment").value = "";
+
+        } catch (err) {
+            console.error(err);
+            alert("Có lỗi xảy ra khi gửi đánh giá!");
+        }
+        }
+
         async function loadRestaurantIntro() {
             try {
                 const response = await fetch("https://localhost:7096/api/RestaurantIntro/active");
@@ -160,7 +293,8 @@
             }
         }
 
-        window.onload = loadRestaurantIntro;
+        // window.onload = loadRestaurantIntro;
+        window.onload = loadReviews;
     </script>
 
 </body>

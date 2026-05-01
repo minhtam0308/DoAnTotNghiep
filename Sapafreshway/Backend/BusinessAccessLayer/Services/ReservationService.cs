@@ -523,5 +523,14 @@ namespace BusinessAccessLayer.Services
 
             return reservation.ReservationId;
         }
+
+
+        //comment
+        public async Task<object> GetReservationsByCustomerCommentAsync(int customerId)
+        {
+            var reservations = await _reservationRepository.GetReservationsByCustomerAsync(customerId);
+
+            return reservations.Any(r => r.Status == "Completed");
+        }
     }
-}
+    }

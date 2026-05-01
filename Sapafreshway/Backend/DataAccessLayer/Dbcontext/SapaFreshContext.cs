@@ -134,6 +134,7 @@ public partial class SapaFreshContext : DbContext
 
 
     public virtual DbSet<VerificationCode> VerificationCodes { get; set; }
+    public virtual DbSet<Comment> Comment { get; set; }
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //{

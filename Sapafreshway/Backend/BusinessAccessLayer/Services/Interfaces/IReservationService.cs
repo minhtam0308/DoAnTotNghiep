@@ -38,5 +38,6 @@ namespace BusinessAccessLayer.Services.Interfaces
         Task<int> GetPendingCountAsync();
 
         Task<int?> GetActiveReservationIdByTableAsync(int tableId);
+        Task<object> GetReservationsByCustomerCommentAsync(int customerId);
     }
 }
