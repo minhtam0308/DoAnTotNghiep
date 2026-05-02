@@ -23,7 +23,7 @@ namespace SapaFreshWayAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Customer, Admin")] 
+    //[Authorize(Roles = "Customer, Admin")] 
     public class CustomerController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

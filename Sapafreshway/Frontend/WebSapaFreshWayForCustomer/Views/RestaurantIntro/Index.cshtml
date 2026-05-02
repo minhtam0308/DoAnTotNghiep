@@ -167,13 +167,15 @@
 
                 reviews.forEach(r => {
                     const stars = "★".repeat(r.rate) + "☆".repeat(5 - r.rate);
-
+                        // format ngày giờ
+                    const date = new Date(r.createdAt).toLocaleDateString("vi-VN");
                     const col = document.createElement("div");
                     col.className = "col-md-4";
 
                     col.innerHTML = `
                         <div class="card shadow-sm border-0 h-100 p-3">
                             <h6 class="fw-bold mb-0">${r.email}</h6>
+                            <small class="text-muted">${date}</small>
                             <p class="text-muted">${r.commentString}</p>
                             <small class="text-warning">${stars}</small>
                         </div>
@@ -219,23 +221,24 @@
 
 
 
-
+            const now = new Date().toLocaleDateString("vi-VN");
             const stars = "★".repeat(Rate) + "☆".repeat(5 - Rate);
 
-            const container = document.getElementById("review-list");
+            const container = document.getElementById("review-container");
 
             const col = document.createElement("div");
             col.className = "col-md-4";
 
             col.innerHTML = `
-                <div class="card shadow-sm border-0 h-100 p-3">
-                    <h6 class="fw-bold mb-0">${Email}</h6>
-                    <p class="text-muted">"${CommentString}"</p>
-                    <small class="text-warning">${stars}</small>
-                </div>
+                        <div class="card shadow-sm border-0 h-100 p-3">
+            <h6 class="fw-bold mb-0">${Email}</h6>
+            <small class="text-muted">${now}</small>
+            <p class="text-muted">${CommentString}</p>
+            <small class="text-warning">${stars}</small>
+        </div>
             `;
 
-            container.prepend(col);
+            container.appendChild(col);
 
             // clear form
             document.getElementById("email").value = "";

@@ -83,6 +83,13 @@ namespace WebSapaFreshWayForCustomer.Services
                     using var client2 = GetAuthenticatedClient();
                     response = await send(client2);
                 }
+                else
+                {
+                    var context = _httpContextAccessor.HttpContext;
+
+                    context?.Session.Remove("Token");
+                    context?.Session.Remove("RefreshToken");
+                }
             }
             return response;
         }
@@ -138,7 +145,10 @@ namespace WebSapaFreshWayForCustomer.Services
             try
             {
                 var response = await SendWithAutoRefreshAsync(c => c.GetAsync("/api/Customer/profile"));
+                //if(response.StatusCode == 401)
+                //{
 
+                //}
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();

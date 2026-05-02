@@ -21,5 +21,8 @@ namespace DomainAccessLayer.Models
 
         public String CommentString { get; set; } = "";
 
+        // ✅ Thêm ngày tạo
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
     }
 }
