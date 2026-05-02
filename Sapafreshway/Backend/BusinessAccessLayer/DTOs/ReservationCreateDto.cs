@@ -34,6 +34,8 @@ namespace BusinessAccessLayer.DTOs
         /// MOMO hoặc PAYOS (default PAYOS)
         /// </summary>
         public string PaymentMethod { get; set; } = "PAYOS";
+
+        public List<int>? TableIds { get; set; } = new();
     }
 
 }

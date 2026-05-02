@@ -467,6 +467,238 @@
 
         // AJAX submit form đặt bàn trong modal
         $(document).ready(function () {
+            let selectedTableIds = [];
+
+            function getReservationForm() {
+                return $('#reservationForm');
+            }
+
+            function getReservationPayload(tableIds) {
+                const $form = getReservationForm();
+                const date = $form.find('input[name="ReservationDate"]').val();
+                const time = $form.find('select[name="ReservationTime"]').val();
+
+                return {
+                    customerName: $form.find('input[name="CustomerName"]').val(),
+                    email: $form.find('input[name="Email"]').val(),
+                    reservationDate: date ? `${date}T00:00:00` : null,
+                    reservationTime: (date && time) ? `${date}T${time}:00` : null,
+                    numberOfGuests: parseInt($form.find('input[name="NumberOfGuests"]').val() || '0'),
+                    notes: $form.find('textarea[name="Notes"]').val(),
+                    otpCode: $form.find('input[name="OtpCode"]').val(),
+                    paymentMethod: $form.find('input[name="PaymentMethod"]:checked').val() || 'PAYOS',
+                    tableIds: tableIds || []
+                };
+            }
+
+            function updateSelectedTablesSummary() {
+                if (!selectedTableIds.length) {
+                    $('#selectedTablesSummary').text('');
+                    return;
+                }
+
+                $('#selectedTablesSummary').text(`Đã chọn ${selectedTableIds.length} bàn.`);
+            }
+
+            function renderTablePicker(result) {
+                const areas = result?.areas || result?.Areas || [];
+                const $content = $('#tablePickerContent');
+
+                if (!areas.length) {
+                    $content.html('<div class="text-muted">Không tìm thấy bàn trống phù hợp.</div>');
+                    return;
+                }
+
+                let html = '';
+                areas.forEach(area => {
+                    const areaName = area.areaName || area.AreaName || 'Khu vực';
+                    const tables = area.allAvailableTables || area.AllAvailableTables || [];
+                    const suggestedSingles = new Set((area.suggestedSingleTables || area.SuggestedSingleTables || []).map(t => t.tableId ?? t.TableId));
+
+                    html += `
+                        <div class="card mb-3 border-success">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <strong>${areaName}</strong>
+                                <span class="badge bg-success">${tables.length} bàn trống</span>
+                            </div>
+                            <div class="card-body">
+                    `;
+
+                    if (!tables.length) {
+                        html += '<div class="text-muted">Không còn bàn trống ở khu vực này.</div>';
+                    } else {
+                        html += '<div class="row g-2">';
+                        tables.forEach(table => {
+                            const tableId = table.tableId ?? table.TableId;
+                            const tableName = table.tableName ?? table.TableName ?? `Bàn ${tableId}`;
+                            const capacity = table.capacity ?? table.Capacity ?? 0;
+                            const checked = suggestedSingles.has(tableId) ? 'checked' : '';
+                            const suggestedTag = suggestedSingles.has(tableId) ? '<span class="badge bg-warning text-dark ms-2">Gợi ý</span>' : '';
+
+                            html += `
+                                <div class="col-md-4">
+                                    <label class="border rounded p-2 w-100 h-100 d-flex align-items-start gap-2 table-picker-option">
+                                        <input class="form-check-input mt-1" type="checkbox" name="tableIds" value="${tableId}" ${checked}>
+                                        <div>
+                                            <div class="fw-semibold">${tableName}${suggestedTag}</div>
+                                            <div class="small text-muted">Sức chứa: ${capacity} khách</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                    }
+
+                    html += '</div></div>';
+                });
+
+                $content.html(html);
+            }
+
+            async function loadTableSuggestions() {
+                const $form = getReservationForm();
+                const date = $form.find('input[name="ReservationDate"]').val();
+                const time = $form.find('select[name="ReservationTime"]').val();
+                const guests = parseInt($form.find('input[name="NumberOfGuests"]').val() || '0');
+
+                if (!date || !time || !guests) {
+                    toastr.warning('Vui lòng chọn ngày, giờ và số khách trước.');
+                    return false;
+                }
+
+                $('#tablePickerPanel').removeClass('d-none');
+                $('#tablePickerMessage').removeClass('alert-danger').addClass('alert-info').text('Đang tìm bàn trống...');
+                $('#tablePickerContent').html('<div class="text-muted">Đang tải dữ liệu...</div>');
+
+                try {
+                    const response = await fetch(`/ReservationTable/SuggestTables?reservationDate=${encodeURIComponent(date)}&timeSlot=${encodeURIComponent(time)}&numberOfGuests=${guests}`);
+                    const result = await response.json();
+                    renderTablePicker(result);
+                    $('#tablePickerMessage').removeClass('alert-info alert-danger').addClass('alert-success').text('Chọn ít nhất một bàn rồi xác nhận.');
+                    return true;
+                } catch (error) {
+                    console.error(error);
+                    $('#tablePickerMessage').removeClass('alert-info alert-success').addClass('alert-danger').text('Không thể tải danh sách bàn trống.');
+                    $('#tablePickerContent').html('<div class="text-danger">Lỗi tải dữ liệu bàn trống.</div>');
+                    return false;
+                }
+            }
+
+            async function submitReservationWithTables() {
+                const selectedIds = $('#tablePickerContent input[name="tableIds"]:checked').map(function () {
+                    return parseInt(this.value);
+                }).get().filter(x => !isNaN(x));
+
+                if (!selectedIds.length) {
+                    toastr.warning('Vui lòng chọn ít nhất một bàn.');
+                    return;
+                }
+
+                const payload = getReservationPayload(selectedIds);
+                payload.tableIds = selectedIds;
+
+                const token = getReservationForm().find('input[name="__RequestVerificationToken"]').val();
+
+                try {
+                    const response = await fetch('/ReservationTable/ConfirmWithTables', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    let result = await response.json();
+
+                    if (typeof result === 'string') {
+                        try { result = JSON.parse(result); } catch { }
+                    }
+
+                    if (result && typeof result.success !== 'undefined') {
+                        if (result.success) {
+                            let msg = result.message || 'Đặt bàn thành công!';
+                            let extra = '';
+
+                            if (result.requiredDeposit) {
+                                const formatted = Number(result.requiredDeposit).toLocaleString('vi-VN');
+                                extra += `<br/>Tiền cọc: <strong>${formatted} đ</strong>`;
+                            }
+
+                            if (result.orderId) {
+                                extra += `<br/>Mã đơn (orderId): <code>${result.orderId}</code>`;
+                            }
+
+                            toastr.success(msg + extra);
+
+                            if (result.payUrl) {
+                                const $form = getReservationForm();
+                                $form.find('#btnPayDeposit').remove();
+                                let btnText = 'Thanh toán tiền đặt cọc';
+                                let iconClass = 'bi-credit-card';
+
+                                if (result.paymentMethod === 'MOMO') {
+                                    btnText = 'Thanh toán qua MoMo';
+                                    iconClass = 'bi-wallet2';
+                                } else if (result.paymentMethod === 'PAYOS') {
+                                    btnText = 'Thanh toán qua PayOS';
+                                    iconClass = 'bi-credit-card';
+                                }
+
+                                const $btn = $(`
+                                    <button type="button" id="btnPayDeposit" class="btn btn-success w-100 mt-3">
+                                        <i class="bi ${iconClass} me-2"></i>${btnText}
+                                    </button>`);
+
+                                $form.find('button[type="submit"]').before($btn);
+                                $form.find('button[type="submit"]').hide();
+
+                                $btn.off('click').on('click', function () {
+                                    window.open(result.payUrl, '_blank');
+                                });
+                            }
+                        } else {
+                            toastr.error(result.message || 'Đặt bàn thất bại!');
+                        }
+                    } else {
+                        toastr.error('Đặt bàn thất bại!');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    toastr.error('Có lỗi xảy ra khi gửi yêu cầu đặt bàn.');
+                }
+            }
+
+            $(document).on('click', '#openTablePickerBtn', async function () {
+                const loaded = await loadTableSuggestions();
+                if (loaded) {
+                    $('#tablePickerPanel').removeClass('d-none');
+                    selectedTableIds = $('#tablePickerContent input[name="tableIds"]:checked').map(function () {
+                        return parseInt(this.value);
+                    }).get().filter(x => !isNaN(x));
+                    updateSelectedTablesSummary();
+                }
+            });
+
+            $(document).on('click', '#refreshTablePickerBtn', async function () {
+                await loadTableSuggestions();
+            });
+
+            $(document).on('click', '#closeTablePickerBtn', function () {
+                $('#tablePickerPanel').addClass('d-none');
+            });
+
+            $(document).on('change', '#tablePickerContent input[name="tableIds"]', function () {
+                selectedTableIds = $('#tablePickerContent input[name="tableIds"]:checked').map(function () {
+                    return parseInt(this.value);
+                }).get().filter(x => !isNaN(x));
+                updateSelectedTablesSummary();
+            });
+
+            $(document).on('click', '#confirmTableSelectionBtn', async function () {
+                await submitReservationWithTables();
+            });
 
             // Khi mở modal, load form mới từ server
             $('#reservationModal').on('show.bs.modal', function () {

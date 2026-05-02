@@ -26,7 +26,7 @@
     border: 1px solid #795548;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 5px 18px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.3);
     font-family: "Segoe UI", sans-serif;
 }
 
@@ -44,8 +44,9 @@
 .reservation-title {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #1B5E20 !important; /* Xanh đậm rất rõ */
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    color: #1B5E20 !important;
+    /* Xanh đậm rất rõ */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Nút close */
@@ -56,14 +57,14 @@
     opacity: 0.8;
 }
 
-    .reservation-close:focus {
-        outline: none;
-        box-shadow: none;
-    }
+.reservation-close:focus {
+    outline: none;
+    box-shadow: none;
+}
 
-    .reservation-close:hover {
-        opacity: 1;
-    }
+.reservation-close:hover {
+    opacity: 1;
+}
 
 /* Label form */
 .form-label {
@@ -73,17 +74,21 @@
 }
 
 /* Input, select, textarea */
-.form-control, .form-select, textarea {
+.form-control,
+.form-select,
+textarea {
     border: 1px solid #8d6e63 !important;
     border-radius: 8px;
     background-color: #fdfcfb !important;
     color: #333 !important;
 }
 
-    .form-control:focus, .form-select:focus, textarea:focus {
-        border-color: #6d4c41 !important;
-        box-shadow: 0 0 0 0.2rem rgba(109, 76, 65, 0.25) !important;
-    }
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: #6d4c41 !important;
+    box-shadow: 0 0 0 0.2rem rgba(109, 76, 65, 0.25) !important;
+}
 
 /* Nút xác nhận đặt bàn */
 .btn-reservation {
@@ -95,9 +100,9 @@
     padding: 12px;
 }
 
-    .btn-reservation:hover {
-        background-color: #4e342e !important;
-    }
+.btn-reservation:hover {
+    background-color: #4e342e !important;
+}
 
 /* Nút gửi OTP */
 #sendOtpBtn {
@@ -107,9 +112,9 @@
     border: none;
 }
 
-    #sendOtpBtn:hover {
-        background-color: #8d6e63 !important;
-    }
+#sendOtpBtn:hover {
+    background-color: #8d6e63 !important;
+}
 
 /* Hàng ngày và giờ */
 .date-time-row {
@@ -118,11 +123,11 @@
     flex-wrap: wrap;
 }
 
-    .date-time-row .form-group {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
+.date-time-row .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
 /* Thông báo validate ngày giờ */
 #dateTimeValidation {
@@ -153,15 +158,47 @@ textarea.input-validation-error {
     margin-top: 1rem;
 }
 
+/* Khối chọn bàn */
+.reservation-table-picker {
+    border: 1px solid rgba(109, 76, 65, 0.22);
+    border-radius: 14px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.table-picker-title {
+    color: #1B5E20;
+    font-weight: 700;
+}
+
+.table-picker-option {
+    cursor: pointer;
+    background: #fff;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.table-picker-option:hover {
+    transform: translateY(-1px);
+    border-color: #1B5E20 !important;
+    box-shadow: 0 6px 16px rgba(27, 94, 32, 0.12);
+}
+
+.reservation-table-picker .card-header {
+    background: #f6fbf5 !important;
+}
+
 /* Responsive */
 @media (max-width: 576px) {
     #reservationForm {
         padding: 20px;
     }
 
-        #reservationForm .date-time-row {
-            flex-direction: column;
-        }
+    #reservationForm .date-time-row {
+        flex-direction: column;
+    }
 
     .reservation-title {
         font-size: 1.2rem;

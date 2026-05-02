@@ -341,6 +341,24 @@ namespace SapaFreshWayAPI.Controllers
 
             var reservation = await _reservationService.CreateReservationAsync(dto);
 
+            if (dto.TableIds != null && dto.TableIds.Count > 0)
+            {
+                try
+                {
+                    await _reservationService.AssignTablesAsync(new AssignTableDto
+                    {
+                        ReservationId = reservation.ReservationId,
+                        TableIds = dto.TableIds,
+                        StaffId = 1,
+                        ConfirmBooking = false
+                    });
+                }
+                catch (Exception tableEx)
+                {
+                    Console.WriteLine("Assign tables failed: " + tableEx.Message);
+                }
+            }
+
             var deposit = new DomainAccessLayer.Models.ReservationDeposit
             {
                 ReservationId = reservation.ReservationId,

@@ -37,7 +37,7 @@
     <div class="mb-3">
         <label asp-for="Email" class="form-label"></label>
         <div class="input-group">
-            <input asp-for="Email" class="form-control" placeholder="Nhập số điện thoại" />
+            <input asp-for="Email" class="form-control" placeholder="Nhập email" />
             <button type="button" id="sendOtpBtn" class="btn btn-outline-primary">Gửi OTP</button>
         </div>
         <span asp-validation-for="Email" class="text-danger"></span>
@@ -83,6 +83,17 @@
         <span asp-validation-for="NumberOfGuests" class="text-danger"></span>
     </div>
 
+    <div class="mb-3">
+        <button type="button" id="openTablePickerBtn" class="btn btn-outline-success w-100">
+            Chọn bàn trống theo ngày giờ
+        </button>
+        <small class="text-muted d-block mt-2">
+            Nếu muốn chọn bàn trước, hệ thống sẽ tìm những bàn còn trống theo khung giờ bạn đã nhập.
+        </small>
+    </div>
+
+    <div id="selectedTablesSummary" class="mb-3 small text-success fw-semibold"></div>
+
     <!-- ✅ Chọn phương thức thanh toán -->
     <div class="mb-3">
         <label class="form-label">Phương thức thanh toán tiền cọc</label>
@@ -124,6 +135,28 @@
 
     <button type="submit" class="btn btn-reservation w-100">Xác nhận đặt bàn</button>
 </form>
+
+<div id="tablePickerPanel" class="reservation-table-picker d-none mt-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 class="mb-0 table-picker-title">Chọn bàn trống</h6>
+        <button type="button" id="closeTablePickerBtn" class="btn-close" aria-label="Close"></button>
+    </div>
+
+    <div id="tablePickerMessage" class="alert alert-info py-2 mb-3">
+        Chọn ngày, giờ và số khách rồi bấm "Chọn bàn trống theo ngày giờ".
+    </div>
+
+    <div id="tablePickerContent"></div>
+
+    <div class="d-flex gap-2 mt-3">
+        <button type="button" id="refreshTablePickerBtn" class="btn btn-outline-secondary">
+            Tải lại danh sách bàn
+        </button>
+        <button type="button" id="confirmTableSelectionBtn" class="btn btn-success flex-grow-1">
+            Xác nhận bàn đã chọn
+        </button>
+    </div>
+</div>
 
 <!-- Vùng hiển thị kết quả / thông tin tiền cọc / orderId nếu muốn dùng sau -->
 <div id="reservationResult" class="mt-3"></div>

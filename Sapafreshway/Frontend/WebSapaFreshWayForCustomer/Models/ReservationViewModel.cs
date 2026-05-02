@@ -39,6 +39,8 @@ namespace WebSapaFreshWayForCustomer.Models
 
         [Required(ErrorMessage = "Vui lòng chọn phương thức thanh toán.")]
         public string PaymentMethod { get; set; } = "PAYOS";
+
+        public List<int>? TableIds { get; set; } = new();
         // Kiểm tra logic tổng hợp ngày & giờ đặt
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
