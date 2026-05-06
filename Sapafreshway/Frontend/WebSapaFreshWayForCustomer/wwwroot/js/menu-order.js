@@ -1109,6 +1109,13 @@ $(document).ready(function () {
             const btn = $('#btn-submit-order');
             btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...');
 
+            // 1. Lọc ra danh sach cac mon lon hon 10
+            const orderItemsCheck = cart
+                .filter(item => item && item.type === 'item' && item.quantity > 10)
+            if (orderItemsCheck.length > 0) {
+                showMobileToast('Mỗi bàn không được đặt quá 10 món mỗi loại!', 'error');
+            }
+
             // 1. Lọc ra 2 danh sách (Giữ nguyên logic của bạn)
             const orderItems = cart
                 .filter(item => item && item.type === 'item' && item.quantity > 0)
