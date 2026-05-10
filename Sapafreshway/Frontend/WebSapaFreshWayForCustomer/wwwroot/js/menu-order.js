@@ -1114,6 +1114,7 @@ $(document).ready(function () {
                 .filter(item => item && item.type === 'item' && item.quantity > 10)
             if (orderItemsCheck.length > 0) {
                 showMobileToast('Mỗi bàn không được đặt quá 10 món mỗi loại!', 'error');
+                return;
             }
 
             // 1. Lọc ra 2 danh sách (Giữ nguyên logic của bạn)

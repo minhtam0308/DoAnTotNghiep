@@ -61,7 +61,7 @@ namespace BusinessAccessLayer.Services
             var now = DateTime.UtcNow;
             var checkEmail = await userRepository.GetByEmailAsync(email);
             var entity = await _context.VerificationCodes
-                .Where(v => v.UserId == checkEmail.UserId && v.Purpose == purpose && v.Code == code && v.ExpiresAt >= now)
+                .Where(v => v.UserId == checkEmail.UserId && v.Purpose == purpose && v.Code == code && v.IsUsed == false && v.ExpiresAt >= now)
                 .OrderByDescending(v => v.VerificationCodeId)
                 .FirstOrDefaultAsync(ct);
             if (entity == null) return false;

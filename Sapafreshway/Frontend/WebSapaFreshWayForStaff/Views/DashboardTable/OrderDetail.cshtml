@@ -920,7 +920,13 @@
 
         const tableNumber = '@Model.TableNumber';
         const customerName = '@(Model.CustomerName ?? "Khách vãng lai")';
-        const totalAmount = visibleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        @* const totalAmount = visibleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0); *@
+        const totalAmount = parseInt(
+    document.getElementById("lblGrandTotal")
+        .textContent
+        .replace(/\./g, '')      // bỏ dấu chấm
+        .replace(/[^\d]/g, '')   // bỏ ký tự đ và khoảng trắng
+);
 
         // ✅ Sử dụng dữ liệu từ backend (đã tính toán sẵn)
         const totalQty = @Model.TotalQuantity;
@@ -1061,7 +1067,13 @@
         const tableNumber = '@Model.TableNumber';
         const customerName = '@(Model.CustomerName ?? "Khách vãng lai")';
         const totalQty = visibleItems.reduce((sum, item) => sum + item.quantity, 0);
-        const totalAmount = visibleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        @* const totalAmount = visibleItems.reduce((sum, item) => sum + (item.price * item.quantity), 0); *@
+        const totalAmount = parseInt(
+    document.getElementById("lblGrandTotal")
+        .textContent
+        .replace(/\./g, '')      // bỏ dấu chấm
+        .replace(/[^\d]/g, '')   // bỏ ký tự đ và khoảng trắng
+);
 
         // ✅ Double-check status trước khi hiển thị popup
         if (!orderStatus || orderStatus.toLowerCase() !== 'confirmed') {

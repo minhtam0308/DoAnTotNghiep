@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using QRCoder;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 namespace BusinessAccessLayer.Services
 {
     public class OrderTableService : IOrderTableService
@@ -238,7 +239,7 @@ namespace BusinessAccessLayer.Services
             // 3. Lấy danh sách món đã gọi
             var orderedItems = reservation.Orders
                 .SelectMany(o => o.OrderDetails)
-                .Where(od => od.Status != "Đã hủy")
+                .Where(od => od.Status != "Cancelled")
                 .Select(od => new OrderDetailStatusDto
                 {
                     OrderDetailId = od.OrderDetailId,
